@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>DAW</title>
+		<style>
+			canvas {
+				border: 1px solid;
+			}
+		</style>
+		<script>
+		window.AudioContext = window.AudioContext || window.webkitAudioContext;
+		var context = new AudioContext();
+
+		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+
+		var buffer = [];
+		var sample = [];
+		var canvas, ctx, node;
+		var int = null;
+
+		function pause() {
+			clearInterval(int);
+			node.disconnect(context.destination);
+			int = null;
+		}
+
+		function play() {
+			var sound = context.createBufferSource();
+			var buff = context.createBuffer(1, 22050, 44100);
+			var b = buff.getChannelData(0);
+			
+			for(var i=0;i<sample.length-1;i++) {
+				for(var j=0;j<sample[i].length;j++) {
+					b[i*512+j] = sample[i][j];
+				}
+			}
+
+			sound.buffer = buff;
+			sound.connect(context.destination);
+			sound.start(0);
+		}
+
+		function record() {
+			if(int) {
+				return;
+			}
+			int = setInterval(function() {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				for(var i=0;i<buffer.length;i+=3) {
+					ctx.beginPath();
+					ctx.strokeStyle = 'red';
+					var height = buffer[i] * 65535;
+					ctx.moveTo(i, canvas.height / 2 - height / 2);
+					ctx.lineTo(i, canvas.height / 2 + height / 2);
+					ctx.stroke();
+				}
+			}, 1000 / 30);
+		}
+
+		function init() {
+
+			canvas = document.getElementById('canvas');
+			ctx = canvas.getContext('2d');
+
+			navigator.getUserMedia({audio: true}, function(stream) {
+				var mic = context.createMediaStreamSource(stream);
+
+				mic.connect(node);
+
+				node.connect(context.destination);
+
+			}, function(err) {
+				console.log(err);
+			});
+
+			node = context.createScriptProcessor(canvas.width, 1, 1);
+
+			node.onaudioprocess = function(e) {
+				if(!int) {
+					return;
+				}
+				buffer = e.inputBuffer.getChannelData(0);
+				sample = sample.concat(buffer);
+			}
+			
+		}
+
+		</script>
+	</head>
+	<body onload="init()">
+		<canvas id="canvas" width="512" height="200"></canvas>
+		<div>
+			<button onclick="record()">Record</button>
+			<button onclick="pause()">Pause</button>
+			<button onclick="play()">Play</button>
+		</div>
+	</body>
+</html>
