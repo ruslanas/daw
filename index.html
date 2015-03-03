@@ -2,11 +2,13 @@
 <html>
 	<head>
 		<title>DAW</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<style>
 			canvas {
 				border: 1px solid;
 			}
 		</style>
+		<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 		<script>
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
 		var context = new AudioContext();
@@ -14,47 +16,59 @@
 		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
 
 		var buffer = [];
-		var sample = [];
-		var canvas, ctx, node;
+		var sample = new Float32Array();
+		var canvas, ctx;
+		var visualiser, mic, recorder, player; // nodes
 		var int = null;
+		
+		var pos = 0;
+
+		function Float32Concat(first, second)
+		{
+		    var firstLength = first.length,
+		        result = new Float32Array(firstLength + second.length);
+
+		    result.set(first);
+		    result.set(second, firstLength);
+
+		    return result;
+		}
 
 		function pause() {
-			clearInterval(int);
-			node.disconnect(context.destination);
+			$('#pause-btn').attr('disabled', 'disabled');
+			$('#play-btn').removeAttr('disabled');
+			$('#record-btn').removeAttr('disabled');
+
+			player.disconnect(visualiser);
+			recorder.disconnect(visualiser);
+
 			int = null;
 		}
 
 		function play() {
-			var sound = context.createBufferSource();
-			var buff = context.createBuffer(1, 22050, 44100);
-			var b = buff.getChannelData(0);
-			
-			for(var i=0;i<sample.length-1;i++) {
-				for(var j=0;j<sample[i].length;j++) {
-					b[i*512+j] = sample[i][j];
-				}
+			$('#pause-btn').removeAttr('disabled');
+			$('#play-btn').attr('disabled', 'disabled');
+
+			player.buffer = context.createBuffer(1, sample.length, 44100);
+			var ch = player.buffer.getChannelData(0);
+
+			for(var i=0;i<sample.length;i++) {
+				ch[i] = sample[i];
 			}
 
-			sound.buffer = buff;
-			sound.connect(context.destination);
-			sound.start(0);
+			player.connect(visualiser);
+
+			player.start(0);
+
+			player.onended = pause;
 		}
 
 		function record() {
-			if(int) {
-				return;
-			}
-			int = setInterval(function() {
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				for(var i=0;i<buffer.length;i+=3) {
-					ctx.beginPath();
-					ctx.strokeStyle = 'red';
-					var height = buffer[i] * 65535;
-					ctx.moveTo(i, canvas.height / 2 - height / 2);
-					ctx.lineTo(i, canvas.height / 2 + height / 2);
-					ctx.stroke();
-				}
-			}, 1000 / 30);
+			$('#record-btn').attr('disabled', 'disabled');
+			$('#pause-btn').removeAttr('disabled');
+			
+			recorder.connect(visualiser);
+
 		}
 
 		function init() {
@@ -63,36 +77,75 @@
 			ctx = canvas.getContext('2d');
 
 			navigator.getUserMedia({audio: true}, function(stream) {
-				var mic = context.createMediaStreamSource(stream);
 
-				mic.connect(node);
+				mic = context.createMediaStreamSource(stream);
+				mic.connect(recorder);
 
-				node.connect(context.destination);
+				visualiser.connect(context.destination);
 
 			}, function(err) {
 				console.log(err);
 			});
 
-			node = context.createScriptProcessor(canvas.width, 1, 1);
+			visualiser = context.createScriptProcessor(512, 1, 1);
 
-			node.onaudioprocess = function(e) {
-				if(!int) {
-					return;
-				}
+			// update visualiser buffer
+			visualiser.onaudioprocess = function(e) {
+
 				buffer = e.inputBuffer.getChannelData(0);
-				sample = sample.concat(buffer);
+				var output = e.outputBuffer.getChannelData(0);
+				for(var i=0;i<buffer.length;i++) {
+					output[i] = buffer[i];
+				}
 			}
+
+			recorder = context.createScriptProcessor(1024, 1, 1);
+			recorder.onaudioprocess = function(e) {
+				var input = e.inputBuffer.getChannelData(0);
+				sample = Float32Concat(sample, input);
+
+				var output = e.outputBuffer.getChannelData(0);
+
+				for(var i=0;i<buffer.length;i++) {
+					output[i] = input[i];
+				}
+			}
+
+			player = context.createBufferSource();
+
+			var h = canvas.height / 2;
+
+			int = setInterval(function() {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				for(var i=0;i<buffer.length;i+=3) {
+					ctx.beginPath();
+					ctx.strokeStyle = 'red';
+					var height = buffer[i] * 6553.5;
+					ctx.moveTo(i, h);
+					ctx.lineTo(i, h + height);
+					ctx.stroke();
+				}
+			}, 1000 / 30);
 			
 		}
 
+		$(document).ready(function() {
+			init();
+		});
+
 		</script>
 	</head>
-	<body onload="init()">
-		<canvas id="canvas" width="512" height="200"></canvas>
-		<div>
-			<button onclick="record()">Record</button>
-			<button onclick="pause()">Pause</button>
-			<button onclick="play()">Play</button>
+	<body>
+		<div class="container">
+			<h1>Recorder</h1>
+			<canvas id="canvas" width="512" height="200"></canvas>
+			<div>
+				<button onclick="record()" id="record-btn" class="btn btn-danger">
+					<i class="glyphicon glyphicon-record"></i> Record
+				</button>
+				<button onclick="pause()" id="pause-btn" disabled="disabled" class="btn"><i class="glyphicon glyphicon-pause"></i> Pause</button>
+				<button onclick="play()" id="play-btn" class="btn"><i class="glyphicon glyphicon-play"></i> Play</button>
+			</div>
 		</div>
 	</body>
 </html>
