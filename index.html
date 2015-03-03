@@ -7,6 +7,9 @@
 			canvas {
 				border: 1px solid;
 			}
+			#editor {
+				background-color: #000;
+			}
 		</style>
 		<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 		<script>
@@ -44,11 +47,13 @@
 			int = null;
 		}
 
+		var player;
+
 		function play() {
 			$('#pause-btn').removeAttr('disabled');
 			$('#play-btn').attr('disabled', 'disabled');
 
-			var player = context.createBufferSource();
+			player = context.createBufferSource();
 
 			player.buffer = context.createBuffer(1, sample.length, 44100);
 			var ch = player.buffer.getChannelData(0);
@@ -82,6 +87,9 @@
 			canvas = document.getElementById('canvas');
 			ctx = canvas.getContext('2d');
 
+			editorCanvas = document.getElementById('editor');
+			editorContext = editorCanvas.getContext('2d');
+
 			navigator.getUserMedia({audio: true}, function(stream) {
 
 				mic = context.createMediaStreamSource(stream);
@@ -100,12 +108,12 @@
 
 				buffer = e.inputBuffer.getChannelData(0);
 				var output = e.outputBuffer.getChannelData(0);
-				for(var i=0;i<buffer.length;i++) {
+				for(var i=0;i<512;i++) {
 					output[i] = buffer[i];
 				}
 			}
 
-			recorder = context.createScriptProcessor(1024, 1, 1);
+			recorder = context.createScriptProcessor(2048, 1, 1);
 			recorder.onaudioprocess = function(e) {
 				var input = e.inputBuffer.getChannelData(0);
 				sample = Float32Concat(sample, input);
@@ -116,12 +124,16 @@
 					output[i] = input[i];
 				}
 			}
-			var coef = 65535 / 200;
+
+			ctx.fillStyle = '#F00';
+			editorContext.fillStyle = '#FF0';
 
 			int = setInterval(function() {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 				var h = canvas.height / 2;
+
+				updateEditorView();
 
 				for(var i=0;i<buffer.length;i++) {
 					var height = buffer[i] * coef;
@@ -129,6 +141,23 @@
 				}
 			}, 1000 / 30);
 			
+		}
+
+		var coef = 65535 / 200;
+
+		function updateEditorView() {
+			// update wave editor
+
+			var m = 0;
+			var step = 16;
+			editorContext.clearRect(0,0,editorCanvas.width,editorCanvas.height);
+
+			for(var i=0;i<editorCanvas.width * step;i++) {
+				var a = coef * sample[sample.length - m] / 10;
+				editorContext.fillRect(editorCanvas.width - i, editorCanvas.height / 2 + a, 1, 1);
+				m += step;
+			}
+
 		}
 
 		$(document).ready(function() {
@@ -140,7 +169,12 @@
 	<body>
 		<div class="container">
 			<h1>Recorder</h1>
-			<canvas id="canvas" width="512" height="200"></canvas>
+			<div>
+				<canvas id="canvas" width="512" height="200"></canvas>
+			</div>
+			<div>
+				<canvas id="editor" width="512" height="100"></canvas>
+			</div>
 			<div class="form-group">
 				<div class="btn-group">
 					<button onclick="record()" id="record-btn" class="btn btn-danger">
