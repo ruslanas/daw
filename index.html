@@ -18,9 +18,9 @@
 		var buffer = [];
 		var sample = new Float32Array();
 		var canvas, ctx;
-		var visualiser, mic, recorder, player; // nodes
+		var visualiser, mic, recorder; // nodes
 		var int = null;
-		
+
 		var pos = 0;
 
 		function Float32Concat(first, second)
@@ -39,7 +39,6 @@
 			$('#play-btn').removeAttr('disabled');
 			$('#record-btn').removeAttr('disabled');
 
-			player.disconnect(visualiser);
 			recorder.disconnect(visualiser);
 
 			int = null;
@@ -48,6 +47,8 @@
 		function play() {
 			$('#pause-btn').removeAttr('disabled');
 			$('#play-btn').attr('disabled', 'disabled');
+
+			var player = context.createBufferSource();
 
 			player.buffer = context.createBuffer(1, sample.length, 44100);
 			var ch = player.buffer.getChannelData(0);
@@ -60,12 +61,17 @@
 
 			player.start(0);
 
-			player.onended = pause;
+			player.onended = function() {
+				player.disconnect(visualiser);
+				pause();
+			};
 		}
 
 		function record() {
 			$('#record-btn').attr('disabled', 'disabled');
 			$('#pause-btn').removeAttr('disabled');
+
+			sample = new Float32Array();
 			
 			recorder.connect(visualiser);
 
@@ -110,20 +116,16 @@
 					output[i] = input[i];
 				}
 			}
-
-			player = context.createBufferSource();
-
-			var h = canvas.height / 2;
+			var coef = 65535 / 200;
 
 			int = setInterval(function() {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				for(var i=0;i<buffer.length;i+=3) {
-					ctx.beginPath();
-					ctx.strokeStyle = 'red';
-					var height = buffer[i] * 6553.5;
-					ctx.moveTo(i, h);
-					ctx.lineTo(i, h + height);
-					ctx.stroke();
+
+				var h = canvas.height / 2;
+
+				for(var i=0;i<buffer.length;i++) {
+					var height = buffer[i] * coef;
+					ctx.fillRect(i, h + height, 1, 1);
 				}
 			}, 1000 / 30);
 			
@@ -139,12 +141,14 @@
 		<div class="container">
 			<h1>Recorder</h1>
 			<canvas id="canvas" width="512" height="200"></canvas>
-			<div>
-				<button onclick="record()" id="record-btn" class="btn btn-danger">
-					<i class="glyphicon glyphicon-record"></i> Record
-				</button>
-				<button onclick="pause()" id="pause-btn" disabled="disabled" class="btn"><i class="glyphicon glyphicon-pause"></i> Pause</button>
-				<button onclick="play()" id="play-btn" class="btn"><i class="glyphicon glyphicon-play"></i> Play</button>
+			<div class="form-group">
+				<div class="btn-group">
+					<button onclick="record()" id="record-btn" class="btn btn-danger">
+						<i class="glyphicon glyphicon-record"></i>
+					</button>
+					<button onclick="pause()" id="pause-btn" disabled="disabled" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
+					<button onclick="play()" id="play-btn" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></button>
+				</div>
 			</div>
 		</div>
 	</body>
