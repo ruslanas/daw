@@ -165,15 +165,6 @@ define('daw', ['jquery'], function($) {
 			this.createProcessors();
 
 			setInterval(function() {
-				self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
-
-				var h = self.canvas.height / 2;
-
-				for(var i=0;i<self.buffer.length;i++) {
-					var height = self.buffer[i] * self.coef;
-					self.ctx.fillRect(i, h + height, 1, 1);
-				}
-
 				for(var i=0;i<self.gadgets.length;i++) {
 					self.gadgets[i].redraw();
 				}

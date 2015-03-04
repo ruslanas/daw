@@ -3,10 +3,10 @@ Gadget is connected to GUI canvas. It is responsible
 for redrawing itself.
 */
 
-define('editor', ['jquery', 'Class'], function($, Class) {
+define('editor', ['jquery', 'Gadget'], function($, Gadget) {
 
 	// Gadget class
-	var Gadget = Class.extend({
+	var Editor = Gadget.extend({
 		redraw: function() {
 			var m = 0, step = this.rack.step;
 			var sample = this.rack.sample;
@@ -16,9 +16,10 @@ define('editor', ['jquery', 'Class'], function($, Class) {
 				this.canvas.height);
 
 			var pos = $('#frame').val();
+
 			for(var i=0;i<this.canvas.width * step; i+=2) {
 				// magic number frame size
-				var amp = 655.35 * sample[pos * 4096 - m];
+				var amp = 655.35 * sample[pos * 4096 - m] / 2;
 				this.context.fillRect(
 					this.canvas.width - i,
 					this.canvas.height / 2, 1, amp + 1);
@@ -26,14 +27,8 @@ define('editor', ['jquery', 'Class'], function($, Class) {
 			}
 
 		},
-		connect: function(selector, rack) {
-			this.rack = rack;
-			this.canvas = document.querySelector(selector);
-			this.context = this.canvas.getContext('2d');
-			this.context.fillStyle = '#FF0';
-		}
 	});
 
-	return new Gadget();
+	return new Editor();
 });
 
