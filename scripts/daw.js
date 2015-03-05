@@ -15,7 +15,7 @@ define('daw', ['jquery'], function($) {
 		player: null,
 		pos: 0,
 		coef: 65535 / 200,
-		recordFrameLen: 4096,
+		recordFrameLen: 2048,
 		step: 16,
 
 		plug: function(selector, gadget) {
@@ -27,6 +27,7 @@ define('daw', ['jquery'], function($) {
 			this.recorder.disconnect(this.visualiser);
 
 			if(this.player) {
+				this.player.stop();
 				this.player.disconnect(this.visualiser);
 			}
 
@@ -40,7 +41,9 @@ define('daw', ['jquery'], function($) {
 		play: function () {
 			$('#pause-btn').removeAttr('disabled');
 			$('#play-btn').attr('disabled', 'disabled');
+			$('#record-btn').attr('disabled', 'disabled');
 
+			this.masterGain.gain.value = 0.5;
 			this.player = this.context.createBufferSource();
 
 			this.player.buffer = this.context.createBuffer(1,
@@ -66,12 +69,31 @@ define('daw', ['jquery'], function($) {
 		},
 
 		record: function () {
+			this.masterGain.gain.value = 0;
 			this.rewind();
 
 			$('#record-btn').attr('disabled', 'disabled');
+			$('#play-btn').attr('disabled', 'disabled');
 			$('#pause-btn').removeAttr('disabled');
 
-			this.recorder.connect(this.visualiser);
+			if(!this.mic) {
+				var self = this;
+				navigator.getUserMedia({audio: true}, function(stream) {
+
+					self.mic = self.context.createMediaStreamSource(stream);
+					self.micGain = self.context.createGain();
+
+					self.mic.connect(self.micGain);
+					self.micGain.gain.value = 0.5;
+					self.micGain.connect(self.recorder);
+					self.recorder.connect(self.visualiser);
+
+				}, function(err) {
+					alert(err);
+				});
+			} else {
+				this.recorder.connect(this.visualiser);
+			}
 
 		},
 
@@ -83,7 +105,6 @@ define('daw', ['jquery'], function($) {
 			}
 
 			this.sample.set(buff, end);
-			$('#frame').val(this.pos);
 			this.pos++;
 		},
 
@@ -112,6 +133,11 @@ define('daw', ['jquery'], function($) {
 				var output = e.outputBuffer.getChannelData(0);
 				output.set(input);
 			};
+
+			this.masterGain = this.context.createGain();
+			self.visualiser.connect(self.masterGain);
+			self.masterGain.connect(self.context.destination);
+
 		},
 
 		initialize: function () {
@@ -120,10 +146,6 @@ define('daw', ['jquery'], function($) {
 
 			// allocate memory for track
 			this.sample = new Float32Array(this.sampleBuffLen);
-
-			this.canvas = document.getElementById('canvas');
-			this.ctx = this.canvas.getContext('2d');
-			this.ctx.fillStyle = '#FF0';
 
 			$('#record-btn').click(function() {
 				self.record();
@@ -137,43 +159,34 @@ define('daw', ['jquery'], function($) {
 				self.play();
 			});
 
-			$('#frame').change(function() {
-				self.pos = $(this).val();
-			});
-
 			$(window).bind('wheel', function(e) {
 				var newPos = parseInt(self.pos) - parseInt(e.originalEvent.deltaY / 100);
 				if(e.ctrlKey) {
 					self.step = (self.step > 0) ? self.step + e.originalEvent.deltaY / 100 : 1;
 				} else {
-					$('#frame').val(newPos).change();
+					self.pos = newPos;
 				}
 				return false;
 			});
 
-			navigator.getUserMedia({audio: true}, function(stream) {
-
-				self.mic = self.context.createMediaStreamSource(stream);
-				self.mic.connect(self.recorder);
-
-				self.visualiser.connect(self.context.destination);
-
-			}, function(err) {
-				console.log(err);
-			});
-
 			this.createProcessors();
 
-			setInterval(function() {
-				for(var i=0;i<self.gadgets.length;i++) {
-					self.gadgets[i].redraw();
-				}
+			window.requestAnimationFrame(function() {
+				self.redraw();
+			});
 
-			}, 1000 / 30);
-
+		},
+		redraw: function() {
+			for(var i=0;i<this.gadgets.length;i++) {
+				this.gadgets[i].redraw();
+			}
+			var self = this;
+			window.requestAnimationFrame(function() {
+				self.redraw();
+			});
 		}
+
 	};
 
 	return daw;
 });
-

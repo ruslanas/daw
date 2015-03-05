@@ -6,19 +6,19 @@
 		<style>
 			canvas {
 				background-color: #000;
-				opacity: 0.5;
 			}
 		</style>
 		<script data-main="scripts/main" src="scripts/lib/requirejs/require.js"></script>
 	</head>
 	<body>
 		<div class="container">
-			<h1>Recorder</h1>
+			<h1>Web DAW</h1>
 			<div>
-				<canvas id="canvas" width="512" height="200"></canvas>
+				<canvas id="visualiser" width="215" height="100"></canvas>
+				<canvas id="analyzer" width="215" height="100"></canvas>
 			</div>
 			<div>
-				<canvas id="editor" width="512" height="100"></canvas>
+				<canvas id="editor" width="435" height="100"></canvas>
 			</div>
 			<form class="form-inline">
 				<div class="form-group">
@@ -26,10 +26,13 @@
 						<button id="record-btn" class="btn btn-danger">
 							<i class="glyphicon glyphicon-record"></i>
 						</button>
-						<button id="pause-btn" disabled="disabled" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
-						<button id="play-btn" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></button>
+						<button id="pause-btn" disabled="disabled" class="btn btn-success">
+							<i class="glyphicon glyphicon-stop"></i>
+						</button>
+						<button id="play-btn" disabled="disabled" class="btn btn-success">
+							<i class="glyphicon glyphicon-play"></i>
+						</button>
 					</div>
-					<label>Frame #</label> <input type="number" id="frame" value="0" class="form-control"/>
 				</div>
 			</form>
 		</div>

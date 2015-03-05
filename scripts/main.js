@@ -8,9 +8,16 @@ require.config({
 	}
 });
 
-require(['daw', 'editor', 'visualiser'], function(DAW, editor, visualiser) {
+require([
+	'daw',
+ 	'editor',
+ 	'visualiser',
+ 	'analyzer'
+ 	], function(DAW, editor, visualiser, analyzer) {
+
 	DAW.initialize();
 
-	DAW.plug('#canvas', visualiser);
+	DAW.plug('#visualiser', visualiser);
 	DAW.plug('#editor', editor);
+	DAW.plug('#analyzer', analyzer);
 });

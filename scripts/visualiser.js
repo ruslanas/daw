@@ -6,15 +6,18 @@ define('visualiser', ['Gadget'], function(Gadget) {
 
 	// Gadget class
 	var Visualiser = Gadget.extend({
+		init: function() {
+			this.title = 'Visualizer';
+		},
 		redraw: function() {
 
-			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+			this.clear();
 
 			var h = this.canvas.height / 2;
 
 			for(var i=0;i<this.rack.buffer.length;i++) {
-				var height = this.rack.buffer[i] * this.rack.coef;
-				this.context.fillRect(i, h + height, 1, 1);
+				var height = h + this.rack.buffer[i] * this.rack.coef;
+				this.context.fillRect(i, height, 1, 1);
 			}
 
 		},
