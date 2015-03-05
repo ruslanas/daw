@@ -1,0 +1,6 @@
+canvas {
+	background-color: #000;
+}
+.btn {
+	transition: background-color .5s;
+}
