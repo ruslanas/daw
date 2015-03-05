@@ -12,11 +12,9 @@ define('visualiser', ['Gadget'], function(Gadget) {
 		redraw: function() {
 
 			this.clear();
-
-			var h = this.canvas.height / 2;
-
+			// 43 - vertical center
 			for(var i=0;i<this.rack.buffer.length;i++) {
-				var height = h + this.rack.buffer[i] * 88;
+				var height = 57 + this.rack.buffer[i] * 86;
 				this.context.fillRect(i, height, 1, 1);
 			}
 

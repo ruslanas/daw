@@ -14,8 +14,9 @@ define('daw', ['jquery'], function($) {
 		recorder: null,
 		player: null,
 		pos: 0,
-		recordFrameLen: 1024,
+		recordFrameLen: 2048,
 		step: 16,
+		onAir: false,
 
 		plug: function(selector, gadget) {
 			this.gadgets.push(gadget);
@@ -23,6 +24,12 @@ define('daw', ['jquery'], function($) {
 		},
 
 		pause: function() {
+			this.onAir = false;
+			if(this.stream) {
+				this.stream.stop();
+				this.stream = null;
+			}
+
 			this.recorder.disconnect(this.visualiser);
 
 			if(this.player) {
@@ -75,25 +82,16 @@ define('daw', ['jquery'], function($) {
 			$('#play-btn').attr('disabled', 'disabled');
 			$('#pause-btn').removeAttr('disabled');
 
-			if(!this.mic) {
-				var self = this;
-				navigator.getUserMedia({audio: true}, function(stream) {
-
-					self.mic = self.context.createMediaStreamSource(stream);
-					self.micGain = self.context.createGain();
-
-					self.mic.connect(self.micGain);
-					self.micGain.gain.value = 0.5;
-					self.micGain.connect(self.recorder);
-					self.recorder.connect(self.visualiser);
-
-				}, function(err) {
-					alert(err);
-				});
-			} else {
-				this.recorder.connect(this.visualiser);
-			}
-
+			var self = this;
+			navigator.getUserMedia({audio: true}, function(stream) {
+				self.onAir = true;
+				self.stream = stream;
+				self.mic = self.context.createMediaStreamSource(stream);
+				self.mic.connect(self.micGain);
+				self.recorder.connect(self.visualiser);
+			}, function(err) {
+				alert(err);
+			});
 		},
 
 		appendFrame: function(buff, length) {
@@ -110,17 +108,14 @@ define('daw', ['jquery'], function($) {
 		createProcessors: function() {
 
 			var self = this;
-			this.visualiser = this.context.createScriptProcessor(256, 1, 1);
+			this.visualiser = this.context.createScriptProcessor(this.recordFrameLen, 1, 1);
 
 			// update visualiser buffer
 			this.visualiser.onaudioprocess = function(e) {
 
 				self.buffer = e.inputBuffer.getChannelData(0);
 				var output = e.outputBuffer.getChannelData(0);
-				// limiter
-				for(var i=0;i<output.length;i++) {
-					output[i] = Math.min(1, self.buffer[i]);
-				}
+				output.set(self.buffer);
 			};
 
 			this.recorder = this.context.createScriptProcessor(
@@ -136,8 +131,11 @@ define('daw', ['jquery'], function($) {
 				self.appendFrame(output, self.recordFrameLen);
 			};
 
-			this.masterGain = this.context.createGain();
+			this.micGain = this.context.createGain();
+			this.micGain.gain.value = 0.3;
+			this.micGain.connect(this.recorder);
 
+			this.masterGain = this.context.createGain();
 			self.visualiser.connect(self.masterGain);
 			self.masterGain.connect(self.context.destination);
 
