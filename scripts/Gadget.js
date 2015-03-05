@@ -1,6 +1,6 @@
 /*
 Gadget is connected to GUI canvas. It is responsible
-for redrawing itself.
+for redrawing it's control surface.
 */
 
 define('Gadget', ['Class'], function(Class) {
@@ -11,11 +11,10 @@ define('Gadget', ['Class'], function(Class) {
 			this.title = 'Gadget';
 		},
 		initialize: function() {
-			console.log(this.title);
+			this.context.fillText(this.title, 5, 10);
 		},
 		clear: function() {
-			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-			this.context.fillText(this.title, 5, 10);
+			this.context.clearRect(0, 12, this.canvas.width, 88);
 		},
 		connect: function(selector, rack) {
 			this.rack = rack;

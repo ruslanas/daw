@@ -1,6 +1,5 @@
 /*
-Gadget is connected to GUI canvas. It is responsible
-for redrawing itself.
+Waveform examiner
 */
 
 define('editor', ['Gadget'], function(Gadget) {
@@ -17,9 +16,10 @@ define('editor', ['Gadget'], function(Gadget) {
 
 			var pos = this.rack.pos;
 			var h = this.canvas.height / 2;
-			for(var i=0;i<this.canvas.width * step; i+=2) {
-				// magic number frame size
-				var amp = 164 * this.rack.sample[pos * this.rack.recordFrameLen - m] + 1;
+			var len = this.canvas.width * step;
+			for(var i=0;i<len;i+=2) {
+				// max = canvas.height - titlebar.height
+				var amp = 88 * this.rack.sample[pos * this.rack.recordFrameLen - m];
 				this.context.fillRect(this.canvas.width - i, h + amp, 1, 1);
 				m += step;
 			}

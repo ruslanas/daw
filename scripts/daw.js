@@ -5,7 +5,7 @@ define('daw', ['jquery'], function($) {
 		gadgets: [],
 		context: new AudioContext(),
 		buffer: new Float32Array(),
-		sampleBuffLen: 44100 * 10,
+		sampleBuffLen: 0,
 		sample: null,
 		canvas: null,
 		ctx: null,
@@ -14,8 +14,7 @@ define('daw', ['jquery'], function($) {
 		recorder: null,
 		player: null,
 		pos: 0,
-		coef: 65535 / 200,
-		recordFrameLen: 2048,
+		recordFrameLen: 1024,
 		step: 16,
 
 		plug: function(selector, gadget) {
@@ -43,7 +42,7 @@ define('daw', ['jquery'], function($) {
 			$('#play-btn').attr('disabled', 'disabled');
 			$('#record-btn').attr('disabled', 'disabled');
 
-			this.masterGain.gain.value = 0.5;
+			this.masterGain.gain.value = 1;
 			this.player = this.context.createBufferSource();
 
 			this.player.buffer = this.context.createBuffer(1,
@@ -111,14 +110,17 @@ define('daw', ['jquery'], function($) {
 		createProcessors: function() {
 
 			var self = this;
-			this.visualiser = this.context.createScriptProcessor(512, 1, 1);
+			this.visualiser = this.context.createScriptProcessor(256, 1, 1);
 
 			// update visualiser buffer
 			this.visualiser.onaudioprocess = function(e) {
 
 				self.buffer = e.inputBuffer.getChannelData(0);
 				var output = e.outputBuffer.getChannelData(0);
-				output.set(self.buffer);
+				// limiter
+				for(var i=0;i<output.length;i++) {
+					output[i] = Math.min(1, self.buffer[i]);
+				}
 			};
 
 			this.recorder = this.context.createScriptProcessor(
@@ -127,14 +129,15 @@ define('daw', ['jquery'], function($) {
 			this.recorder.onaudioprocess = function(e) {
 				var input = e.inputBuffer.getChannelData(0);
 
-				// add frame to buffer
-				self.appendFrame(input, self.recordFrameLen);
-
 				var output = e.outputBuffer.getChannelData(0);
+				// bypass
 				output.set(input);
+				// add frame to buffer
+				self.appendFrame(output, self.recordFrameLen);
 			};
 
 			this.masterGain = this.context.createGain();
+
 			self.visualiser.connect(self.masterGain);
 			self.masterGain.connect(self.context.destination);
 
@@ -145,6 +148,7 @@ define('daw', ['jquery'], function($) {
 			var self = this;
 
 			// allocate memory for track
+			this.sampleBuffLen = this.context.sampleRate * 10;
 			this.sample = new Float32Array(this.sampleBuffLen);
 
 			$('#record-btn').click(function() {

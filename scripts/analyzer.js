@@ -32,6 +32,7 @@ define('analyzer', ['Gadget'], function(Gadget) {
 			this.rack.analyzer.fftSize = 256;
 			this.bufferLength = this.rack.analyzer.frequencyBinCount;
 			this.dataArray = new Uint8Array(this.bufferLength);
+			this._super();
 		}
 	});
 

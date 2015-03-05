@@ -16,7 +16,7 @@ define('visualiser', ['Gadget'], function(Gadget) {
 			var h = this.canvas.height / 2;
 
 			for(var i=0;i<this.rack.buffer.length;i++) {
-				var height = h + this.rack.buffer[i] * this.rack.coef;
+				var height = h + this.rack.buffer[i] * 88;
 				this.context.fillRect(i, height, 1, 1);
 			}
 
