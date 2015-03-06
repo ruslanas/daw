@@ -52,7 +52,7 @@ require(['riff'], function(Riff) {
 		fd.append('data', blob);		
 
 		var req = new XMLHttpRequest();
-		req.open("POST", '/daw/upload.php', true);
+		req.open("POST", '../upload.php', true);
 
 		/*
 		req.setRequestHeader('Content-Type',
