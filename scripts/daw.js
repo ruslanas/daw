@@ -163,7 +163,7 @@ define('daw', ['jquery'], function($) {
 
 			$('#save-btn').click(function() {
 				$(this).attr('disabled', 'disabled');
-				self.worker = new Worker('scripts/uploadWorker.js');
+				self.worker = new Worker('scripts/mp3Worker.js');
 				self.worker.postMessage('hi');
 				self.worker.addEventListener('message', function(e) {
 					switch(e.data) {

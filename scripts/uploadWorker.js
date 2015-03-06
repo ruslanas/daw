@@ -54,11 +54,6 @@ require(['riff'], function(Riff) {
 		var req = new XMLHttpRequest();
 		req.open("POST", '../upload.php', true);
 
-		/*
-		req.setRequestHeader('Content-Type',
-		'application/x-www-form-urlencoded');
-		*/
-		
 		req.onreadystatechange = function() {
 			if(req.readyState === 4) {
 				postMessage('done');
@@ -70,4 +65,3 @@ require(['riff'], function(Riff) {
 	};
 
 });
-
