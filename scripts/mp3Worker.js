@@ -44,7 +44,7 @@ require(['lib/libmp3lame/dist/libmp3lame'], function(lame) {
 		var mp3data = Lame.encode_buffer_ieee_float(mp3codec, buff, buff);
 
 
-		postMessage('Done encoding.');
+		postMessage('Loading...');
 
 		Lame.encode_flush(mp3codec);
 

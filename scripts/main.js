@@ -12,12 +12,16 @@ require([
 	'daw',
  	'plugins/editor',
  	'plugins/visualiser',
- 	'plugins/analyzer'
- 	], function(DAW, editor, visualiser, analyzer) {
+ 	'plugins/analyzer',
+ 	'jquery'
+ 	], function(DAW, editor, visualiser, analyzer, $) {
 
 	DAW.initialize();
 
 	DAW.plug('#visualiser', visualiser);
 	DAW.plug('#editor', editor);
 	DAW.plug('#analyzer', analyzer);
+
+	DAW.load();
+
 });

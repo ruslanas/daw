@@ -162,6 +162,7 @@ define('daw', ['jquery'], function($) {
 			});
 
 			$('#save-btn').click(function() {
+				$('#message').html('Saving...');
 				$(this).attr('disabled', 'disabled');
 				self.worker = new Worker('scripts/mp3Worker.js');
 				self.worker.postMessage('hi');
@@ -172,9 +173,11 @@ define('daw', ['jquery'], function($) {
 							break;
 						case 'done':
 							$('#save-btn').removeAttr('disabled');
+							$('#message').html('Done');
+							self.load();
 							break;
 						default:
-							console.log(e.data);
+							$('#message').html(e.data);
 					};
 				});
 				return false;
@@ -204,6 +207,16 @@ define('daw', ['jquery'], function($) {
 			var self = this;
 			window.requestAnimationFrame(function() {
 				self.redraw();
+			});
+		},
+		load: function() {
+			$.getJSON('api/list', {}, function(data) {
+				$('#list').html('');
+				for(var i=0;i<data.length;i++) {
+					$('#list').append('<div><audio controls><source src="uploads/' +
+						data[i]+'" type="audio/mpeg">' +
+						'</source></audio></div>');
+				}
 			});
 		}
 
