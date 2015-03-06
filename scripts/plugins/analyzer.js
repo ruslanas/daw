@@ -3,7 +3,7 @@ Gadget is connected to GUI canvas. It is responsible
 for redrawing itself.
 */
 
-define('analyzer', ['Gadget'], function(Gadget) {
+define('plugins/analyzer', ['Gadget'], function(Gadget) {
 
 	// Gadget class
 	var Analyzer = Gadget.extend({

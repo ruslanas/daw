@@ -2,7 +2,7 @@
 Visualises current frame
 */
 
-define('visualiser', ['Gadget'], function(Gadget) {
+define('plugins/visualiser', ['Gadget'], function(Gadget) {
 
 	// Gadget class
 	var Visualiser = Gadget.extend({

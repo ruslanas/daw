@@ -2,7 +2,7 @@
 Waveform examiner
 */
 
-define('editor', ['Gadget'], function(Gadget) {
+define('plugins/editor', ['Gadget'], function(Gadget) {
 
 	// Gadget class
 	var Editor = Gadget.extend({

@@ -10,9 +10,9 @@ require.config({
 
 require([
 	'daw',
- 	'editor',
- 	'visualiser',
- 	'analyzer'
+ 	'plugins/editor',
+ 	'plugins/visualiser',
+ 	'plugins/analyzer'
  	], function(DAW, editor, visualiser, analyzer) {
 
 	DAW.initialize();
