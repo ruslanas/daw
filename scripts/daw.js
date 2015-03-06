@@ -168,10 +168,9 @@ define('daw', ['jquery'], function($) {
 				self.worker.addEventListener('message', function(e) {
 					switch(e.data) {
 						case 'ready':
-							self.worker.postMessage(JSON.stringify(self.sample.buffer));
+							self.worker.postMessage(JSON.stringify(self.sample));
 							break;
 						case 'done':
-							console.log('Oh my God!');
 							$('#save-btn').removeAttr('disabled');
 							break;
 						default:

@@ -1,8 +1,14 @@
 <?php
 $tmp = $_FILES['data']['tmp_name'];
 
-if(move_uploaded_file($tmp, 'uploads/8bit.wav')) {
-	error_log('File uploaded', 3, 'server.log');
+$fname = 'uploads' . DIRECTORY_SEPARATOR . uniqid() . '.wav';
+
+$date = date_create();
+$date_formated = date_format('Y-m-d H:i:s');
+if(move_uploaded_file($tmp, $fname)) {
+	"File uploaded to " . $fname;
 } else {
-	error_log('Upload failed', 3, 'server.log');
+	"File upload failed";
 }
+
+error_log("\n" . $data_formated . ' ' . $message, 3, 'server.log');
