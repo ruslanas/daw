@@ -40,7 +40,7 @@ require(['riff'], function(Riff) {
 
 		// data
 		for(var i=0;i<len;i++) {
-			riff.appendUint8(arr[i] * 256 * 0.7);   // 8 bit music
+			riff.appendUint8(arr[i] * 256 - 128);   // 8 bit music
 		}
 
 		var blob = new Blob([riff.view], {
