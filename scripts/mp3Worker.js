@@ -1,10 +1,6 @@
 importScripts('lib/requirejs/require.js');
 
-require({
-	paths: {
-		lame: 'http://audior.ec/recordmp3js/js/libmp3lame.min'
-	}
-}, ['lib/libmp3lame/dist/libmp3lame'], function(lame) {
+require(['lib/libmp3lame/dist/libmp3lame'], function(lame) {
 
 	var mp3codec;
 
