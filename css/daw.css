@@ -2,5 +2,5 @@ canvas {
 	background-color: #000;
 }
 .btn {
-	transition: background-color .5s;
+	transition: background-color .7s ease-in;
 }

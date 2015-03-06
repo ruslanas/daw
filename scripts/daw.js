@@ -140,7 +140,7 @@ define('daw', ['jquery'], function($) {
 			self.masterGain.connect(self.context.destination);
 
 		},
-
+		worker: null,
 		initialize: function () {
 
 			var self = this;
@@ -159,6 +159,26 @@ define('daw', ['jquery'], function($) {
 
 			$('#play-btn').click(function() {
 				self.play();
+			});
+
+			$('#save-btn').click(function() {
+				$(this).attr('disabled', 'disabled');
+				self.worker = new Worker('scripts/uploadWorker.js');
+				self.worker.postMessage('hi');
+				self.worker.addEventListener('message', function(e) {
+					switch(e.data) {
+						case 'ready':
+							self.worker.postMessage(JSON.stringify(self.sample.buffer));
+							break;
+						case 'done':
+							console.log('Oh my God!');
+							$('#save-btn').removeAttr('disabled');
+							break;
+						default:
+							console.log(e.data);
+					};
+				});
+				return false;
 			});
 
 			$(window).bind('wheel', function(e) {
