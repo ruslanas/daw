@@ -10,6 +10,7 @@ define('plugins/editor', ['Gadget'], function(Gadget) {
 			this._super();
 			this.title = 'Wave editor';
 			this.width(512);
+			this.height(150);
 		},
 		redraw: function() {
 			// do not interrupt recording
@@ -22,14 +23,18 @@ define('plugins/editor', ['Gadget'], function(Gadget) {
 
 			var pos = this.rack.pos;
 			var len = this.canvas.width * step;
+
+			var scale = this.height() - 14 / 2;
 			// optimize this
 			for(var i=0;i<len;i+=2) {
-				var amp = this.baseline + 86 *
+				var amp = this.baseline + scale *
 					this.rack.sample[pos * this.rack.recordFrameLen - m];
 
 				this.context.fillRect(this.canvas.width - i, amp, 2, 1);
 				m += step;
 			}
+
+			// frame number
 			this.context.fillText(pos, 5, this.canvas.height - 10);
 
 		},

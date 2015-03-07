@@ -16,7 +16,9 @@ require([
  	'plugins/analyzer'
  	], function(DAW, sampler, editor, visualiser, analyzer) {
 
-	DAW.initialize();
+	DAW.initialize({
+		duration: 5
+	});
 
 	DAW.plug('#narrow', visualiser);
 	DAW.plug('#narrow', analyzer);

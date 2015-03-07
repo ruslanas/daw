@@ -3,7 +3,7 @@ define('daw', ['jquery'], function($) {
 
 	var daw = {
 		gadgets: [],
-		context: new AudioContext(),
+		context: null,
 		buffer: new Float32Array(),
 		sampleBuffLen: 0,
 		sample: null,
@@ -146,12 +146,17 @@ define('daw', ['jquery'], function($) {
 
 		},
 		worker: null,
-		initialize: function () {
+		initialize: function (options) {
 
+			this.options = options || {};
+
+			var duration = options.duration || 10;
+
+			this.context = new AudioContext();
 			var self = this;
 
 			// allocate memory for track
-			this.sampleBuffLen = this.context.sampleRate * 10;
+			this.sampleBuffLen = this.context.sampleRate * duration;
 			this.sample = new Float32Array(this.sampleBuffLen);
 
 			$('#record-btn').click(function() {

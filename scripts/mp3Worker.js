@@ -11,8 +11,7 @@ require(['lib/libmp3lame/dist/libmp3lame'], function(lame) {
 
     onmessage = function(msg) {
 
-        // recreate Float32Array
-        var size = 48000 * 10;
+        var size = msg.data.length;
 
         mp3codec = Lame.init();
 
