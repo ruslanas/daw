@@ -10,18 +10,23 @@ require.config({
 
 require([
 	'daw',
+	'plugins/sampler',
  	'plugins/editor',
  	'plugins/visualiser',
- 	'plugins/analyzer',
- 	'jquery'
- 	], function(DAW, editor, visualiser, analyzer, $) {
+ 	'plugins/analyzer'
+ 	], function(DAW, sampler, editor, visualiser, analyzer) {
 
 	DAW.initialize();
 
-	DAW.plug('#visualiser', visualiser);
-	DAW.plug('#editor', editor);
-	DAW.plug('#analyzer', analyzer);
+	DAW.plug('#narrow', visualiser);
+	DAW.plug('#narrow', analyzer);
+	DAW.plug('#wide', editor);
 
+	DAW.plug('#wide', sampler, {
+	 	url: 'test.mp3'
+	});
+
+	// load tracks
 	DAW.load();
 
 });

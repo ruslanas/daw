@@ -14,7 +14,7 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 			this.clear();
 			// 43 - vertical center
 			for(var i=0;i<this.rack.buffer.length;i++) {
-				var height = 57 + this.rack.buffer[i] * 86;
+				var height = this.baseline + this.rack.buffer[i] * 86;
 				this.context.fillRect(i, height, 1, 1);
 			}
 

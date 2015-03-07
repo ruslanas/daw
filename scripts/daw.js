@@ -18,9 +18,9 @@ define('daw', ['jquery'], function($) {
 		step: 16,
 		onAir: false,
 
-		plug: function(selector, gadget) {
+		plug: function(selector, gadget, options) {
 			this.gadgets.push(gadget);
-			gadget.connect(selector, this);
+			gadget.connect(selector, this, options || {});
 		},
 
 		pause: function() {

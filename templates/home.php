@@ -9,12 +9,9 @@
 	<body>
 		<div class="container text-center">
 			<h1>Say something 8bit</h1>
-			<div>
-				<canvas id="visualiser" width="215" height="100"></canvas>
-				<canvas id="analyzer" width="215" height="100"></canvas>
+			<div id="narrow">
 			</div>
-			<div>
-				<canvas id="editor" width="435" height="100"></canvas>
+			<div id="wide">
 			</div>
 			<form class="form-inline">
 				<div class="form-group">

@@ -10,3 +10,7 @@ canvas {
 #message {
 	font-size: 0.8em;
 }
+
+canvas {
+    clear: both;
+}

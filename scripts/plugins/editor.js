@@ -22,13 +22,25 @@ define('plugins/editor', ['Gadget'], function(Gadget) {
 			var len = this.canvas.width * step;
 			// optimize this
 			for(var i=0;i<len;i+=2) {
-				var amp = 57 + 86 * this.rack.sample[pos * this.rack.recordFrameLen - m];
+				var amp = this.baseline + 86 *
+					this.rack.sample[pos * this.rack.recordFrameLen - m];
+
 				this.context.fillRect(this.canvas.width - i, amp, 2, 1);
 				m += step;
 			}
 			this.context.fillText(pos, 5, this.canvas.height - 10);
 
 		},
+		initialize: function() {
+			this._super();
+			this.canvas.setAttribute('width', '512');
+			this.context.fillStyle = '#007';
+			this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+			this.context.fillStyle = '#FFF';
+			this.context.fillText(this.title, 5, 10);
+			this.context.fillStyle = '#FF0';
+			this.context.strokeStyle = '#F00';
+		}
 	});
 
 	return new Editor();
