@@ -9,6 +9,7 @@ define('plugins/sampler', ['Gadget'], function(Gadget) {
         init: function() {
             this._super();
             this.title = 'Sampler';
+            this.width(512);
         },
 
         redraw: function() {

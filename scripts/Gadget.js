@@ -7,16 +7,31 @@ define('Gadget', ['Class'], function() {
 	// Gadget class
 	var Gadget = Class.extend({
 
+		_width: 0,
+		_height: 0,
+
 		init: function() {
 			this.title = 'Gadget';
+			this.width(256);
+			this.height(114);
+		},
+
+		width: function(val) {
+			this._width = val || this._width;
+			return this._width;
+		},
+
+		height: function(val) {
+			this._height = val || this._height;
+			return this._height;
 		},
 
 		initialize: function() {
 
 			this.canvas = document.createElement('canvas');
 
-			this.canvas.setAttribute('height', 114);
-			this.canvas.setAttribute('width', 256);
+			this.canvas.setAttribute('height', this.height());
+			this.canvas.setAttribute('width', this.width());
 
 			this.parent.appendChild(this.canvas);
 			this.context = this.canvas.getContext('2d');

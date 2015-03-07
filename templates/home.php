@@ -8,11 +8,10 @@
 	</head>
 	<body>
 		<div class="container text-center">
-			<h1>Say something 8bit</h1>
-			<div id="narrow">
-			</div>
-			<div id="wide">
-			</div>
+			<h1>Digital Audio Workstation</h1>
+			<div id="narrow"></div>
+			<div id="wide"></div>
+			<div id="tracks"></div>
 			<form class="form-inline">
 				<div class="form-group">
 					<div class="btn-group">

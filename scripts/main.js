@@ -22,7 +22,7 @@ require([
 	DAW.plug('#narrow', analyzer);
 	DAW.plug('#wide', editor);
 
-	DAW.plug('#wide', sampler, {
+	DAW.plug('#tracks', sampler, {
 	 	url: 'test.mp3'
 	});
 

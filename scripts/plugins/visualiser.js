@@ -7,6 +7,7 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 	// Gadget class
 	var Visualiser = Gadget.extend({
 		init: function() {
+			this._super();
 			this.title = 'Visualizer';
 		},
 		redraw: function() {

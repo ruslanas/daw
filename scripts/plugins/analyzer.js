@@ -8,10 +8,13 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 	// Gadget class
 	var Analyzer = Gadget.extend({
 		init: function() {
+			this._super();
 			this.title = 'Analyzer';
 		},
 		redraw: function() {
+
 			this.clear();
+
 			this.rack.analyzer.getByteFrequencyData(this.dataArray);
 
 			var barWidth = (this.canvas.width / this.bufferLength) * 2.5;

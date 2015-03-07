@@ -7,7 +7,9 @@ define('plugins/editor', ['Gadget'], function(Gadget) {
 	// Gadget class
 	var Editor = Gadget.extend({
 		init: function() {
+			this._super();
 			this.title = 'Wave editor';
+			this.width(512);
 		},
 		redraw: function() {
 			// do not interrupt recording
@@ -33,13 +35,7 @@ define('plugins/editor', ['Gadget'], function(Gadget) {
 		},
 		initialize: function() {
 			this._super();
-			this.canvas.setAttribute('width', '512');
-			this.context.fillStyle = '#007';
-			this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-			this.context.fillStyle = '#FFF';
-			this.context.fillText(this.title, 5, 10);
-			this.context.fillStyle = '#FF0';
-			this.context.strokeStyle = '#F00';
+			this.context.fillStyle = '#F00';
 		}
 	});
 
