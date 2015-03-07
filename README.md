@@ -68,4 +68,4 @@ Todo.
 License
 -------
 
-MIT
+[MIT License](LICENSE)
