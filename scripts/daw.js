@@ -24,6 +24,12 @@ define('daw', ['jquery'], function($) {
 		},
 
 		pause: function() {
+			// Update GUI
+			$('#save-btn').removeAttr('disabled');
+			$('#pause-btn').attr('disabled', 'disabled');
+			$('#play-btn').removeAttr('disabled');
+			$('#record-btn').removeAttr('disabled');
+
 			this.onAir = false;
 			if(this.stream) {
 				this.stream.stop();
@@ -37,14 +43,10 @@ define('daw', ['jquery'], function($) {
 				this.player.disconnect(this.visualiser);
 			}
 
-			// Update GUI
-			$('#pause-btn').attr('disabled', 'disabled');
-			$('#play-btn').removeAttr('disabled');
-			$('#record-btn').removeAttr('disabled');
-
 		},
 
 		play: function () {
+			$('#save-btn').attr('disabled', 'disabled');
 			$('#pause-btn').removeAttr('disabled');
 			$('#play-btn').attr('disabled', 'disabled');
 			$('#record-btn').attr('disabled', 'disabled');
@@ -89,6 +91,7 @@ define('daw', ['jquery'], function($) {
 				self.mic = self.context.createMediaStreamSource(stream);
 				self.mic.connect(self.micGain);
 				self.recorder.connect(self.visualiser);
+				$('#save-btn').attr('disabled', 'disabled');
 			}, function(err) {
 				alert(err);
 			});
@@ -108,7 +111,9 @@ define('daw', ['jquery'], function($) {
 		createProcessors: function() {
 
 			var self = this;
-			this.visualiser = this.context.createScriptProcessor(this.recordFrameLen, 1, 1);
+			var audio = this.context;
+			var bufferLength = this.recordFrameLen;
+			this.visualiser = audio.createScriptProcessor(bufferLength, 1, 1);
 
 			// update visualiser buffer
 			this.visualiser.onaudioprocess = function(e) {
@@ -118,7 +123,7 @@ define('daw', ['jquery'], function($) {
 				output.set(self.buffer);
 			};
 
-			this.recorder = this.context.createScriptProcessor(
+			this.recorder = audio.createScriptProcessor(
 				this.recordFrameLen, 1, 1);
 
 			this.recorder.onaudioprocess = function(e) {
@@ -131,13 +136,13 @@ define('daw', ['jquery'], function($) {
 				self.appendFrame(output, self.recordFrameLen);
 			};
 
-			this.micGain = this.context.createGain();
-			this.micGain.gain.value = 0.3;
+			this.micGain = audio.createGain();
+			this.micGain.gain.value = 0.5;
 			this.micGain.connect(this.recorder);
 
-			this.masterGain = this.context.createGain();
-			self.visualiser.connect(self.masterGain);
-			self.masterGain.connect(self.context.destination);
+			this.masterGain = audio.createGain();
+			this.visualiser.connect(this.masterGain);
+			this.masterGain.connect(this.context.destination);
 
 		},
 		worker: null,
@@ -169,11 +174,11 @@ define('daw', ['jquery'], function($) {
 				self.worker.addEventListener('message', function(e) {
 					switch(e.data) {
 						case 'ready':
-							self.worker.postMessage(JSON.stringify(self.sample));
+							self.worker.postMessage(self.sample);
 							break;
 						case 'done':
-							$('#save-btn').removeAttr('disabled');
 							$('#message').html('Done');
+							$('#save-btn').attr('disabled', 'disabled');
 							self.load();
 							break;
 						default:
@@ -184,9 +189,10 @@ define('daw', ['jquery'], function($) {
 			});
 
 			$(window).bind('wheel', function(e) {
-				var newPos = parseInt(self.pos) - parseInt(e.originalEvent.deltaY / 100);
+				var delta = parseInt(e.originalEvent.deltaY / 100);
+				var newPos = parseInt(self.pos) - delta;
 				if(e.ctrlKey) {
-					self.step = (self.step > 0) ? self.step + e.originalEvent.deltaY / 100 : 1;
+					self.step = (self.step > 0) ? self.step + delta : 1;
 				} else {
 					self.pos = newPos;
 				}
@@ -213,7 +219,8 @@ define('daw', ['jquery'], function($) {
 			$.getJSON('api/list', {}, function(data) {
 				$('#list').html('');
 				for(var i=0;i<data.length;i++) {
-					$('#list').append('<div><audio controls><source src="uploads/' +
+					$('#list').append('<div><audio controls>' +
+						'<source src="uploads/' +
 						data[i]+'" type="audio/mpeg">' +
 						'</source></audio></div>');
 				}

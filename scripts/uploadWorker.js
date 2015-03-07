@@ -9,8 +9,6 @@ require(['riff'], function(Riff) {
 	postMessage('ready');
 
 	onmessage = function(msg) {
-		
-		var arr = JSON.parse(msg.data);
 
 		var len = 48000 * 10;                // 10 seconds
 		var fsize = len + 44;
@@ -40,7 +38,7 @@ require(['riff'], function(Riff) {
 
 		// data
 		for(var i=0;i<len;i++) {
-			riff.appendUint8(arr[i] * 256 - 128);   // 8 bit music
+			riff.appendUint8(msg.data[i] * 256 - 128);   // 8 bit music
 		}
 
 		var blob = new Blob([riff.view], {
@@ -49,7 +47,7 @@ require(['riff'], function(Riff) {
 
 		var fd = new FormData();
 		fd.append('fname', '8bit.wav');
-		fd.append('data', blob);		
+		fd.append('data', blob);
 
 		var req = new XMLHttpRequest();
 		req.open("POST", '../upload.php', true);

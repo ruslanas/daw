@@ -62,7 +62,3 @@
     return Class;
   };
 })();
-
-define('Class', [], function() {
-  return Class;
-});

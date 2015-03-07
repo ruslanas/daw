@@ -2,8 +2,7 @@
 Gadget is connected to GUI canvas. It is responsible
 for redrawing it's control surface.
 */
-
-define('Gadget', ['Class'], function(Class) {
+define('Gadget', ['Class'], function() {
 
 	// Gadget class
 	var Gadget = Class.extend({

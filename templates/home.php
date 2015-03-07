@@ -19,20 +19,31 @@
 			<form class="form-inline">
 				<div class="form-group">
 					<div class="btn-group">
-						<button id="record-btn" class="btn btn-danger btn-sm">
+						<button id="record-btn"
+								title="Record a sound"
+								class="btn btn-danger btn-sm">
 							<i class="glyphicon glyphicon-record"></i>
 						</button>
-						<button id="pause-btn" disabled="disabled" class="btn btn-success btn-sm">
+						<button id="pause-btn"
+								disabled="disabled"
+								title="Pause playback"
+								class="btn btn-success btn-sm">
 							<i class="glyphicon glyphicon-stop"></i>
 						</button>
-						<button id="play-btn" disabled="disabled" class="btn btn-success btn-sm">
+						<button id="play-btn"
+								disabled="disabled"
+								title="Play recorded sound"
+								class="btn btn-success btn-sm">
 							<i class="glyphicon glyphicon-play"></i>
 						</button>
 					</div>
-					<button class="btn btn-sm btn-primary" id="save-btn">
+					<button class="btn btn-sm btn-primary"
+							title="Upload to server"
+							disabled="disabled"
+							id="save-btn">
 						<i class="glyphicon glyphicon-hdd"></i>
 					</button>
-					<div id="message">Hit red button.</div>
+					<div id="message">Click red button to start recording</div>
 				</div>
 			</form>
 			<div id="list"></div>
