@@ -13,9 +13,9 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 		redraw: function() {
 
 			this.clear();
-			// 43 - vertical center
+			var scale = this.height() - 14 / 2;
 			for(var i=0;i<this.rack.buffer.length;i++) {
-				var height = this.baseline + this.rack.buffer[i] * 86;
+				var height = this.baseline + this.rack.buffer[i] * scale;
 				this.context.fillRect(i, height, 1, 1);
 			}
 

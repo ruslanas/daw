@@ -13,10 +13,6 @@ define('plugins/editor', ['Gadget'], function(Gadget) {
 			this.height(150);
 		},
 		redraw: function() {
-			// do not interrupt recording
-			if(this.rack.onAir) {
-				return;
-			}
 			var m = 0, step = this.rack.step;
 
 			this.clear();
@@ -26,21 +22,26 @@ define('plugins/editor', ['Gadget'], function(Gadget) {
 
 			var scale = this.height() - 14 / 2;
 			// optimize this
-			for(var i=0;i<len;i+=2) {
-				var amp = this.baseline + scale *
+			for(var i=0;i<len;i++) {
+				var amp = scale *
 					this.rack.sample[pos * this.rack.recordFrameLen - m];
 
-				this.context.fillRect(this.canvas.width - i, amp, 2, 1);
+				this.context.fillRect(this.canvas.width - i,
+					this.baseline, 1, amp + 1);
 				m += step;
 			}
 
 			// frame number
-			this.context.fillText(pos, 5, this.canvas.height - 10);
+			this.context.fillText(
+				'Frame: ' + pos + ' Step: ' + step +
+				' Mouse wheel +- CTRL scroll/zoom',
+				5, this.canvas.height - 10);
 
 		},
 		initialize: function() {
 			this._super();
-			this.context.fillStyle = '#F00';
+			this.context.fillStyle = '#369';
+			this.context.font = '12px Arial';
 		}
 	});
 

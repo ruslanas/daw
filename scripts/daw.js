@@ -17,6 +17,7 @@ define('daw', ['jquery'], function($) {
 		recordFrameLen: 2048,
 		step: 16,
 		onAir: false,
+		worker: null,
 
 		plug: function(selector, gadget, options) {
 			this.gadgets.push(gadget);
@@ -145,7 +146,7 @@ define('daw', ['jquery'], function($) {
 			this.masterGain.connect(this.context.destination);
 
 		},
-		worker: null,
+
 		initialize: function (options) {
 
 			this.options = options || {};
@@ -197,7 +198,10 @@ define('daw', ['jquery'], function($) {
 				var delta = parseInt(e.originalEvent.deltaY / 100);
 				var newPos = parseInt(self.pos) - delta;
 				if(e.ctrlKey) {
-					self.step = (self.step > 0) ? self.step + delta : 1;
+
+					self.step = (self.step > 0 || delta > 0) ?
+						self.step + delta : 1;
+
 				} else {
 					self.pos = newPos;
 				}
@@ -211,6 +215,7 @@ define('daw', ['jquery'], function($) {
 			});
 
 		},
+
 		redraw: function() {
 			for(var i=0;i<this.gadgets.length;i++) {
 				this.gadgets[i].redraw();
@@ -220,15 +225,15 @@ define('daw', ['jquery'], function($) {
 				self.redraw();
 			});
 		},
-		load: function() {
+
+		load: function(done) {
+			var self = this;
+			this.onload = done || this.onload || function() {
+				throw "No callback";
+			};
+
 			$.getJSON('api/list', {}, function(data) {
-				$('#list').html('');
-				for(var i=0;i<data.length;i++) {
-					$('#list').append('<div><audio controls>' +
-						'<source src="uploads/' +
-						data[i]+'" type="audio/mpeg">' +
-						'</source></audio></div>');
-				}
+				self.onload(data);
 			});
 		}
 

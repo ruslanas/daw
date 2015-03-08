@@ -38,10 +38,9 @@ define('Gadget', ['Class'], function() {
 
 			this.baseline = (this.canvas.height + 14) / 2;
 
-			this.context.fillStyle = '#007';
-			this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 			this.context.fillStyle = '#FFF';
-			this.context.fillText(this.title, 5, 10);
+			this.context.font = '12px Arial';
+			this.context.fillText(this.title, 5, 12);
 			this.context.fillStyle = '#FF0';
 			this.context.strokeStyle = '#FF0';
 		},
@@ -55,13 +54,15 @@ define('Gadget', ['Class'], function() {
 			);
 		},
 
+		redraw: function() {
+			// void
+		},
+
 		// do not call from plugins
 		connect: function(container, rack, options) {
 			this.parent = document.querySelector(container);
 			this.options = options;
 			this.rack = rack;
-			// this.canvas = document.querySelector(selector);
-			// this.context = this.canvas.getContext('2d');
 			this.initialize();
 		}
 	});

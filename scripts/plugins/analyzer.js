@@ -28,6 +28,7 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
       	},
       	// insert between visualiser and masterGain
 		initialize: function() {
+			this._super();
 			this.rack.analyzer = this.rack.context.createAnalyser();
 			this.rack.visualiser.disconnect(this.rack.masterGain);
 			this.rack.visualiser.connect(this.rack.analyzer);
@@ -35,7 +36,7 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 			this.rack.analyzer.fftSize = 64;
 			this.bufferLength = this.rack.analyzer.frequencyBinCount;
 			this.dataArray = new Uint8Array(this.bufferLength);
-			this._super();
+			this.context.fillStyle = '#369'
 		}
 	});
 
