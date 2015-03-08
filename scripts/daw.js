@@ -52,7 +52,7 @@ define('daw', ['jquery'], function($) {
 			$('#play-btn').attr('disabled', 'disabled');
 			$('#record-btn').attr('disabled', 'disabled');
 
-			this.masterGain.gain.value = 1;
+			this.masterGain.gain.value = 0.777;
 			this.player = this.context.createBufferSource();
 
 			this.player.buffer = this.context.createBuffer(1,

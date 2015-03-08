@@ -39,7 +39,7 @@ define('plugins/sampler', ['Gadget', 'jquery'], function(Gadget, $) {
             }
 
             // may be muted after recording session
-            this.rack.masterGain.gain.value = 1;
+            this.rack.masterGain.gain.value = 0.777;
 
         },
 

@@ -4,9 +4,25 @@ canvas {
 .btn {
 	transition: background-color .7s ease-in;
 }
-#list {
-	margin-top: 20px;
+#tracks {
+    width: 512px;
+}
+#tracks div {
+    transition: background-color 1s;
+}
+#tracks .glyphicon {
+    display: none;
 }
 #message {
 	font-size: 0.8em;
+}
+.playing {
+    background-color: #369;
+}
+.playing a {
+    color: #FFF !important;
+}
+
+.playing .glyphicon {
+    display: inherit !important;
 }

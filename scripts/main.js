@@ -35,8 +35,14 @@ require([
 	});
 
 	$('#tracks').click(function(e) {
-		var audioNode = $(e.target).next()[0];
+		var audioNode = $(e.target).closest('a').next()[0];
+		$(audioNode).closest('div').addClass('playing');
 		audioNode.play();
+		audioNode.onended = function() {
+			$(audioNode).closest('div').removeClass('playing');
+			$(audioNode).closest('div').next().find('a').click();
+		};
+
 		return false;
 	});
 });
