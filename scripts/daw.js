@@ -199,11 +199,10 @@ define('daw', ['jquery'], function($) {
 				var newPos = parseInt(self.pos) - delta;
 				if(e.ctrlKey) {
 
-					self.step = (self.step > 0 || delta > 0) ?
-						self.step + delta : 1;
+					self.step = Math.max(1, self.step + delta);
 
 				} else {
-					self.pos = newPos;
+					self.pos = Math.max(1, newPos);
 				}
 				return false;
 			});

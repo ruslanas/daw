@@ -4,6 +4,7 @@
   "dependencies": {
     "jquery": "2.1",
     "requirejs": null,
-    "libmp3lame": "https://github.com/kobigurk/libmp3lame-js.git"
+    "libmp3lame": "https://github.com/kobigurk/libmp3lame-js.git",
+    "bootstrap": "~3.3.2"
   }
 }

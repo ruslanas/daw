@@ -39,7 +39,7 @@ define('Gadget', ['Class'], function() {
 			this.baseline = (this.canvas.height + 14) / 2;
 
 			this.context.fillStyle = '#FFF';
-			this.context.font = '12px Arial';
+			this.context.font = "12px 'Open Sans'";
 			this.context.fillText(this.title, 5, 12);
 			this.context.fillStyle = '#FF0';
 			this.context.strokeStyle = '#FF0';
@@ -60,6 +60,7 @@ define('Gadget', ['Class'], function() {
 
 		// do not call from plugins
 		connect: function(container, rack, options) {
+			this.title = options.title || this.title;
 			this.parent = document.querySelector(container);
 			this.options = options;
 			this.rack = rack;

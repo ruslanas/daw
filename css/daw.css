@@ -1,11 +1,17 @@
 canvas {
 	background-color: #000;
 }
-.btn {
-	transition: background-color .7s ease-in;
+.btn i {
+    transition: transform .2s;
+}
+.btn-group .btn:hover i {
+    transform: scale(1.7, 1.7);
 }
 #tracks {
     width: 512px;
+}
+#tracks a {
+    color: rgb(119, 119, 119);
 }
 #tracks div {
     transition: background-color 1s;
@@ -25,4 +31,7 @@ canvas {
 
 .playing .glyphicon {
     display: inherit !important;
+}
+#wide canvas {
+    border: 1px solid rgb(119, 119, 119);
 }

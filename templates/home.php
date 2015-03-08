@@ -2,7 +2,8 @@
 <html>
 	<head>
 		<title>DAW</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<link rel="stylesheet"
+			href="scripts/lib/bootstrap/dist/css/bootstrap.css">
 		<link rel="stylesheet" href="css/daw.css">
 		<script data-main="scripts/main" src="scripts/lib/requirejs/require.js"></script>
 	</head>
@@ -12,7 +13,6 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<div id="narrow"></div>
-					<div id="wide"></div>
 					<form class="form-inline">
 						<div class="form-group">
 							<div class="btn-group">
@@ -38,11 +38,12 @@
 									title="Upload to server"
 									disabled="disabled"
 									id="save-btn">
-								<i class="glyphicon glyphicon-hdd"></i>
+								<i class="glyphicon glyphicon-cloud-upload"></i>
 							</button>
-							<div id="message">Click red button to start recording</div>
+							<p id="message">Click circle to record 5 sec. sound</p>
 						</div>
 					</form>
+					<div id="wide"></div>
 				</div>
 				<div class="col-sm-6">
 					<div id="tracks" class="text-left"></div>

@@ -35,13 +35,13 @@ define('plugins/editor', ['Gadget'], function(Gadget) {
 			this.context.fillText(
 				'Frame: ' + pos + ' Step: ' + step +
 				' Mouse wheel +- CTRL scroll/zoom',
-				5, this.canvas.height - 10);
+				0, this.canvas.height);
 
 		},
 		initialize: function() {
 			this._super();
 			this.context.fillStyle = '#369';
-			this.context.font = '12px Arial';
+			this.context.font = '12px "Open Sans"';
 		}
 	});
 

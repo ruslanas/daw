@@ -17,7 +17,7 @@ define('plugins/sampler', ['Gadget', 'jquery'], function(Gadget, $) {
             this.height(50);
         },
 
-        loadTracks: function(data) {
+        loadTracks: function(data, done) {
             var container = $('#tracks').html('');
             for(var i=0;i<data.length;i++) {
 
@@ -40,7 +40,7 @@ define('plugins/sampler', ['Gadget', 'jquery'], function(Gadget, $) {
 
             // may be muted after recording session
             this.rack.masterGain.gain.value = 0.777;
-
+            done();
         },
 
         initialize: function() {
