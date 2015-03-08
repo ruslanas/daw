@@ -22,7 +22,7 @@ define('plugins/sampler', ['Gadget', 'jquery'], function(Gadget, $) {
             for(var i=0;i<data.length;i++) {
 
                 var div = $('<div/>');
-                var a = $('<a href="#" class="btn bnt-default">' +
+                var a = $('<a href="#" class="btn">' +
                     '<i class="glyphicon glyphicon-play"></i>' + "\n" +
                     data[i] + '</a>');
                 var audio = $('<audio><source src="uploads/' +
