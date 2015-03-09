@@ -1,9 +1,16 @@
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+/**
+ * Modular Audio Application Framework <http://daw.wri.lt>
+ * @author Ruslanas Balciunas
+ */
+
+navigator.getUserMedia = navigator.getUserMedia
+	|| navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 require.config({
 	baseUrl: "scripts",
 	paths: {
+		"jquery-mousewheel": ["lib/jquery-mousewheel/jquery.mousewheel"],
 		"jquery": ["lib/jquery/dist/jquery"]
 	}
 });

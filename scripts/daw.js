@@ -1,5 +1,9 @@
-define('daw', ['jquery'], function($) {
+/**
+ * Modular Audio Application Framework <http://daw.wri.lt>
+ * @author Ruslanas Balciunas
+ */
 
+define('daw', ['jquery', 'jquery-mousewheel'], function($) {
 
 	var daw = {
 		gadgets: [],
@@ -38,6 +42,7 @@ define('daw', ['jquery'], function($) {
 			}
 
 			this.recorder.disconnect(this.visualiser);
+			this.recorder.onaudioprocess = null;
 
 			if(this.player) {
 				this.player.stop();
@@ -91,10 +96,21 @@ define('daw', ['jquery'], function($) {
 				self.stream = stream;
 				self.mic = self.context.createMediaStreamSource(stream);
 				self.mic.connect(self.micGain);
+
+				self.recorder.onaudioprocess = function(e) {
+					var input = e.inputBuffer.getChannelData(0);
+
+					var output = e.outputBuffer.getChannelData(0);
+					// bypass
+					output.set(input);
+					// add frame to buffer
+					self.appendFrame(output, self.recordFrameLen);
+				};
+
 				self.recorder.connect(self.visualiser);
 				$('#save-btn').attr('disabled', 'disabled');
 			}, function(err) {
-				alert(err);
+				$('#message').html('User media not available');
 			});
 		},
 
@@ -127,16 +143,6 @@ define('daw', ['jquery'], function($) {
 			this.recorder = audio.createScriptProcessor(
 				this.recordFrameLen, 1, 1);
 
-			this.recorder.onaudioprocess = function(e) {
-				var input = e.inputBuffer.getChannelData(0);
-
-				var output = e.outputBuffer.getChannelData(0);
-				// bypass
-				output.set(input);
-				// add frame to buffer
-				self.appendFrame(output, self.recordFrameLen);
-			};
-
 			this.micGain = audio.createGain();
 			this.micGain.gain.value = 0.5;
 			this.micGain.connect(this.recorder);
@@ -149,30 +155,39 @@ define('daw', ['jquery'], function($) {
 
 		initialize: function (options) {
 
+			var self = this;
+
 			this.options = options || {};
 
 			var duration = options.duration || 10;
 
 			this.context = new AudioContext();
-			var self = this;
 
 			// allocate memory for track
 			this.sampleBuffLen = this.context.sampleRate * duration;
 			this.sample = new Float32Array(this.sampleBuffLen);
 
-			$('#record-btn').click(function() {
+			$('#record-btn').click(function(event) {
+				event.stopPropagation();
+				event.preventDefault();
 				self.record();
 			});
 
-			$('#pause-btn').click(function() {
+			$('#pause-btn').click(function(event) {
+				event.stopPropagation();
+				event.preventDefault();
 				self.pause();
 			});
 
-			$('#play-btn').click(function() {
+			$('#play-btn').click(function(event) {
+				event.stopPropagation();
+				event.preventDefault();
 				self.play();
 			});
 
-			$('#save-btn').click(function() {
+			$('#save-btn').click(function(event) {
+				event.stopPropagation();
+				event.preventDefault();
 				$('#message').html('Saving...');
 				$(this).attr('disabled', 'disabled');
 				self.worker = new Worker('scripts/mp3Worker.js');
@@ -191,19 +206,6 @@ define('daw', ['jquery'], function($) {
 							$('#message').html(e.data);
 					};
 				});
-				return false;
-			});
-
-			$(window).bind('wheel', function(e) {
-				var delta = parseInt(e.originalEvent.deltaY / 100);
-				var newPos = parseInt(self.pos) - delta;
-				if(e.ctrlKey) {
-
-					self.step = Math.max(1, self.step + delta);
-
-				} else {
-					self.pos = Math.max(1, newPos);
-				}
 				return false;
 			});
 
