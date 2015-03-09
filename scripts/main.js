@@ -21,11 +21,13 @@ require([
  	'plugins/editor',
  	'plugins/visualiser',
  	'plugins/analyzer',
+ 	'plugins/synth',
  	'jquery'
- 	], function(DAW, sampler, editor, visualiser, analyzer, $) {
+ 	], function(DAW, sampler, editor, visualiser, analyzer, synth, $) {
 
 	DAW.initialize({
-		duration: 5
+		duration: 5,
+		buffer_size: 2048
 	});
 
 	DAW.plug('#narrow', visualiser, {
@@ -34,13 +36,18 @@ require([
 	DAW.plug('#narrow', analyzer, {
 		title: ' '
 	});
+
 	DAW.plug('#wide', editor, {
-		title: 'Recorded waveform'
+		title: ' '
 	});
 
 	DAW.plug('#wide', sampler, {
 		hidden: true
 	});
+
+	// DAW.plug('#wide', synth, {
+	// 	title: 'Synth'
+	// });
 
 	// load tracks
 	DAW.load(function(data) {

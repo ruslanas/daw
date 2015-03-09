@@ -5,261 +5,290 @@
 
 define('daw', ['jquery', 'jquery-mousewheel'], function($) {
 
-	var daw = {
-		gadgets: [],
-		context: null,
-		buffer: new Float32Array(),
-		sampleBuffLen: 0,
-		sample: null,
-		canvas: null,
-		ctx: null,
-		visualiser: null,
-		mic: null,
-		recorder: null,
-		player: null,
-		pos: 0,
-		recordFrameLen: 2048,
-		step: 16,
-		onAir: false,
-		worker: null,
+    var daw = {
+        gadgets: [],
+        context: null,
+        buffer: null,
+        sampleBuffLen: 0,
+        sample: null,
+        canvas: null,
+        ctx: null,
+        visualiser: null,
+        mic: null,
+        recorder: null,
+        player: null,
+        pos: 0,
+        duration: 5,           // seconds
+        recordFrameLen: 256,   // samples
+        step: 16,
+        onAir: false,
+        worker: null,
 
-		plug: function(selector, gadget, options) {
-			this.gadgets.push(gadget);
-			gadget.connect(selector, this, options || {});
-		},
+        plug: function(selector, gadget, options) {
+            this.gadgets.push(gadget);
+            gadget.connect(selector, this, options || {});
+        },
 
-		pause: function() {
-			// Update GUI
-			$('#save-btn').removeAttr('disabled');
-			$('#pause-btn').attr('disabled', 'disabled');
-			$('#play-btn').removeAttr('disabled');
-			$('#record-btn').removeAttr('disabled');
+        pause: function() {
+            // Update GUI
+            $('#save-btn').removeAttr('disabled');
+            $('#pause-btn').attr('disabled', 'disabled');
+            $('#play-btn').removeAttr('disabled');
+            $('#record-btn').removeAttr('disabled');
 
-			this.onAir = false;
-			if(this.stream) {
-				this.stream.stop();
-				this.stream = null;
-			}
+            this.onAir = false;
+            if(this.stream) {
+                this.stream.stop();
+                this.stream = null;
+            }
 
-			this.recorder.disconnect(this.visualiser);
-			this.recorder.onaudioprocess = null;
+            this.recorder.disconnect(this.visualiser);
+            this.recorder.onaudioprocess = null;
 
-			if(this.player) {
-				this.player.stop();
-				this.player.disconnect(this.visualiser);
-				this.player = null;
-			}
+            if(this.player) {
+                this.player.stop();
+                this.player.disconnect(this.visualiser);
+                this.player = null;
+            }
 
-		},
+        },
 
-		play: function () {
-			$('#save-btn').attr('disabled', 'disabled');
-			$('#pause-btn').removeAttr('disabled');
-			$('#play-btn').attr('disabled', 'disabled');
-			$('#record-btn').attr('disabled', 'disabled');
+        play: function () {
+            $('#save-btn').attr('disabled', 'disabled');
+            $('#pause-btn').removeAttr('disabled');
+            $('#play-btn').attr('disabled', 'disabled');
+            $('#record-btn').attr('disabled', 'disabled');
 
-			this.player = this.context.createBufferSource();
+            this.player = this.context.createBufferSource();
 
-			var buff = this.context.createBuffer(1,
-				this.sample.length,
-				this.context.sampleRate);
+            var buff = this.context.createBuffer(1,
+                this.sample.length,
+                this.context.sampleRate);
 
-			var ch = buff.getChannelData(0);
+            var ch = buff.getChannelData(0);
 
-			ch.set(this.sample);
+            ch.set(this.sample);
 
-			this.player.buffer = buff;
+            this.player.buffer = buff;
 
-			this.player.connect(this.visualiser);
+            this.player.connect(this.visualiser);
 
-			this.masterGain.gain.value = 0.777;
+            this.setVolume(1);
 
-			this.player.start();
+            this.player.start();
 
-			var self = this;
-			this.player.onended = function() {
-				self.pause();
-			};
-		},
+            var self = this;
+            this.player.onended = function() {
+                self.pause();
+            };
+        },
 
-		rewind: function() {
-			this.pos = 0;
-		},
+        rewind: function() {
+            this.pos = 0;
+        },
 
-		record: function () {
-			this.masterGain.gain.value = 0;
-			this.rewind();
+        mute: function() {
+            this.masterGain.gain.value = 0;
+            var $i = $('#volume-btn i');
+            $i.removeClass('glyphicon-volume-up');
+            $i.addClass('glyphicon-volume-off');
+        },
 
-			$('#record-btn').attr('disabled', 'disabled');
-			$('#play-btn').attr('disabled', 'disabled');
-			$('#pause-btn').removeAttr('disabled');
+        setVolume: function(gain) {
+            this.masterGain.gain.value = gain;
+            var $i = $('#volume-btn i');
+            $i.removeClass('glyphicon-volume-off');
+            $i.addClass('glyphicon-volume-up');
+        },
 
-			var self = this;
-			navigator.getUserMedia({audio: true}, function(stream) {
-				self.onAir = true;
-				self.stream = stream;
-				self.mic = self.context.createMediaStreamSource(stream);
-				self.mic.connect(self.micGain);
+        getVolume: function() {
+            return this.masterGain.gain.value;
+        },
 
-				self.recorder.onaudioprocess = function(e) {
-					var input = e.inputBuffer.getChannelData(0);
+        record: function () {
+            this.mute();
+            this.rewind();
 
-					var output = e.outputBuffer.getChannelData(0);
-					// bypass
-					output.set(input);
-					// add frame to buffer
-					self.appendFrame(output, self.recordFrameLen);
-				};
+            $('#record-btn').attr('disabled', 'disabled');
+            $('#play-btn').attr('disabled', 'disabled');
+            $('#pause-btn').removeAttr('disabled');
 
-				self.recorder.connect(self.visualiser);
-				$('#save-btn').attr('disabled', 'disabled');
-			}, function(err) {
-				$('#message').html('User media not available');
-			});
-		},
+            var self = this;
+            navigator.getUserMedia({audio: true}, function(stream) {
+                self.onAir = true;
+                self.stream = stream;
+                self.mic = self.context.createMediaStreamSource(stream);
+                self.mic.connect(self.micGain);
 
-		appendFrame: function(buff, length) {
-			var end = length * this.pos;
-			if(end + length > this.sampleBuffLen) {
-				this.pause();
-				return;
-			}
+                self.recorder.onaudioprocess = function(e) {
+                    var input = e.inputBuffer.getChannelData(0);
 
-			this.sample.set(buff, end);
-			this.pos++;
-		},
+                    var output = e.outputBuffer.getChannelData(0);
+                    // bypass
+                    output.set(input);
+                    // add frame to buffer
+                    self.appendFrame(output, self.recordFrameLen);
+                };
 
-		createProcessors: function() {
+                self.recorder.connect(self.visualiser);
+                $('#save-btn').attr('disabled', 'disabled');
+            }, function(err) {
+                self.setStatus('User media not available');
+            });
+        },
 
-			var self = this;
-			var audio = this.context;
-			var bufferLength = this.recordFrameLen;
-			this.visualiser = audio.createScriptProcessor(bufferLength, 1, 1);
+        appendFrame: function(buff, length) {
+            var end = length * this.pos;
+            if(end + length > this.sampleBuffLen) {
+                this.pause();
+                return;
+            }
 
-			// update visualiser buffer
-			this.visualiser.onaudioprocess = function(e) {
+            this.sample.set(buff, end);
+            this.pos++;
+        },
 
-				self.buffer = e.inputBuffer.getChannelData(0);
-				var output = e.outputBuffer.getChannelData(0);
-				output.set(self.buffer);
-			};
+        createProcessors: function() {
 
-			this.recorder = audio.createScriptProcessor(
-				this.recordFrameLen, 1, 1);
+            var self = this;
+            var audio = this.context;
+            var bufferLength = this.recordFrameLen;
+            this.visualiser = audio.createScriptProcessor(bufferLength, 1, 1);
 
-			this.micGain = audio.createGain();
-			this.micGain.gain.value = 0.5;
-			this.micGain.connect(this.recorder);
+            // update visualiser buffer
+            this.visualiser.onaudioprocess = function(e) {
 
-			this.masterGain = audio.createGain();
-			this.visualiser.connect(this.masterGain);
-			this.masterGain.connect(this.context.destination);
+                self.buffer = e.inputBuffer.getChannelData(0);
+                var output = e.outputBuffer.getChannelData(0);
+                output.set(self.buffer);
+            };
 
-		},
+            this.recorder = audio.createScriptProcessor(
+                this.recordFrameLen, 1, 1);
 
-		initialize: function (options) {
+            this.micGain = audio.createGain();
+            this.micGain.gain.value = 0.5;
+            this.micGain.connect(this.recorder);
 
-			var self = this;
+            this.masterGain = audio.createGain();
+            this.visualiser.connect(this.masterGain);
+            this.masterGain.connect(this.context.destination);
 
-			this.options = options || {};
+        },
 
-			var duration = options.duration || 10;
+        initialize: function (options) {
 
-			this.context = new AudioContext();
+            var self = this;
 
-			// allocate memory for track
-			this.sampleBuffLen = this.context.sampleRate * duration;
-			this.sample = new Float32Array(this.sampleBuffLen);
+            // defaults
+            // option names lower_case_with_underscores more natural
+            this.options = options || {};
+            this.duration = options.duration || this.duration;
+            this.recordFrameLen = options.buffer_size || this.recordFrameLen;
 
-			$('#record-btn').click(function(event) {
-				event.stopPropagation();
-				event.preventDefault();
-				self.record();
-			});
+            this.buffer = new Float32Array();
 
-			$('#pause-btn').click(function(event) {
-				event.stopPropagation();
-				event.preventDefault();
-				self.pause();
-			});
+            this.context = new AudioContext();
 
-			$('#play-btn').click(function(event) {
-				event.stopPropagation();
-				event.preventDefault();
-				self.play();
-			});
+            // allocate memory for recorded wave
+            this.sampleBuffLen = this.context.sampleRate * this.duration;
+            this.sample = new Float32Array(this.sampleBuffLen);
 
-			$('#volume-btn').click(function(event) {
-				event.stopPropagation();
-				event.preventDefault();
+            // decouple
+            $('#record-btn').click(function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+                self.record();
+            });
 
-				var i = $(this).find('i');
+            $('#pause-btn').click(function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+                self.pause();
+            });
 
-				if(self.masterGain.gain.value) {
-					i.removeClass('glyphicon-volume-up');
-					i.addClass('glyphicon-volume-off');
-					self.masterGain.gain.value = 0;
-				} else {
-					i.removeClass('glyphicon-volume-off');
-					i.addClass('glyphicon-volume-up');
-					self.masterGain.gain.value = 1;
-				}
-			});
+            $('#play-btn').click(function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+                self.play();
+            });
 
-			$('#save-btn').click(function(event) {
-				event.stopPropagation();
-				event.preventDefault();
-				$('#message').html('Saving...');
-				$(this).attr('disabled', 'disabled');
-				self.worker = new Worker('scripts/mp3Worker.js');
-				self.worker.postMessage('hi');
-				self.worker.addEventListener('message', function(e) {
-					switch(e.data) {
-						case 'ready':
-							self.worker.postMessage(self.sample);
-							break;
-						case 'done':
-							$('#message').html('Done');
-							$('#save-btn').attr('disabled', 'disabled');
-							self.load();
-							break;
-						default:
-							$('#message').html(e.data);
-					};
-				});
-				return false;
-			});
+            $('#volume-btn').click(function(event) {
+                event.stopPropagation();
+                event.preventDefault();
 
-			this.createProcessors();
+                if(self.getVolume()) {
+                    self.mute();
+                } else {
+                    self.setVolume(1);
+                }
+            });
 
-			window.requestAnimationFrame(function() {
-				self.redraw();
-			});
+            $('#save-btn').click(function(event) {
+                event.stopPropagation();
+                event.preventDefault();
 
-		},
+                self.upload();
+            });
 
-		redraw: function() {
-			for(var i=0;i<this.gadgets.length;i++) {
-				this.gadgets[i].redraw();
-			}
-			var self = this;
-			window.requestAnimationFrame(function() {
-				self.redraw();
-			});
-		},
+            this.createProcessors();
 
-		load: function(done) {
-			var self = this;
-			this.onload = done || this.onload || function() {
-				return false;
-			};
+            window.requestAnimationFrame(function() {
+                self.redraw();
+            });
 
-			$.getJSON('api/songs', {}, function(data) {
-				self.onload(data);
-			});
-		}
+        },
 
-	};
+        setStatus: function(msg) {
+            $('#message').html(msg);
+        },
 
-	return daw;
+        upload: function() {
+            var self = this;
+            self.setStatus('Saving...');
+
+            $('#save-btn').attr('disabled', 'disabled');
+
+            self.worker = new Worker('scripts/mp3Worker.js');
+            self.worker.postMessage('hi');
+            self.worker.addEventListener('message', function(e) {
+                switch(e.data) {
+                    case 'ready':
+                        self.worker.postMessage(self.sample);
+                        break;
+                    case 'done':
+                        self.setStatus('Done');
+                        $('#save-btn').attr('disabled', 'disabled');
+                        self.load();
+                        break;
+                    default:
+                        self.setStatus(e.data);
+                };
+            });
+        },
+
+        redraw: function() {
+            for(var i=0;i<this.gadgets.length;i++) {
+                this.gadgets[i].redraw();
+            }
+            var self = this;
+            window.requestAnimationFrame(function() {
+                self.redraw();
+            });
+        },
+
+        load: function(done) {
+            var self = this;
+            this.onload = done || this.onload || function() {
+                return false;
+            };
+
+            $.getJSON('api/songs', {}, function(data) {
+                self.onload(data);
+            });
+        }
+
+    };
+
+    return daw;
 });

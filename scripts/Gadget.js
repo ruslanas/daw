@@ -1,17 +1,18 @@
-/*
-Gadget is connected to GUI canvas. It is responsible
-for redrawing it's control surface.
-*/
+/**
+ * Gadget Base Class
+ * @author Ruslanas Balciunas
+ */
+
 define('Gadget', ['Class'], function() {
 
-	// Gadget class
 	var Gadget = Class.extend({
 
 		_width: 0,
 		_height: 0,
+		title: '',
 
+		// Constructor. No DOM operations here
 		init: function() {
-			this.title = 'Gadget';
 			this.width(256);
 			this.height(114);
 		},
@@ -26,7 +27,17 @@ define('Gadget', ['Class'], function() {
 			return this._height;
 		},
 
+		onMouseMove: function(event) {
+			// void
+		},
+
+		onClick: function(event) {
+			// void
+		},
+
 		initialize: function() {
+
+			var self = this;
 
 			this.canvas = document.createElement('canvas');
 
@@ -39,10 +50,19 @@ define('Gadget', ['Class'], function() {
 			this.baseline = (this.canvas.height + 14) / 2;
 
 			this.context.fillStyle = '#FFF';
-			this.context.font = "12px 'Open Sans'";
+			this.context.font = "12px Arial, sans-serif";
 			this.context.fillText(this.title, 5, 12);
-			this.context.fillStyle = '#FF0';
-			this.context.strokeStyle = '#FF0';
+			var color = 'rgb(119, 119, 119)';
+			this.context.fillStyle = color;
+			this.context.strokeStyle = color;
+
+            this.canvas.onmousemove = function(event) {
+            	self.onMouseMove(event);
+            };
+            this.canvas.onclick = function(event) {
+            	self.onClick(event);
+            };
+
 		},
 
 		clear: function() {
