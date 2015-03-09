@@ -47,6 +47,7 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
 			if(this.player) {
 				this.player.stop();
 				this.player.disconnect(this.visualiser);
+				this.player = null;
 			}
 
 		},
@@ -57,20 +58,23 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
 			$('#play-btn').attr('disabled', 'disabled');
 			$('#record-btn').attr('disabled', 'disabled');
 
-			this.masterGain.gain.value = 0.777;
 			this.player = this.context.createBufferSource();
 
-			this.player.buffer = this.context.createBuffer(1,
+			var buff = this.context.createBuffer(1,
 				this.sample.length,
 				this.context.sampleRate);
 
-			var ch = this.player.buffer.getChannelData(0);
+			var ch = buff.getChannelData(0);
 
 			ch.set(this.sample);
 
+			this.player.buffer = buff;
+
 			this.player.connect(this.visualiser);
 
-			this.player.start(0);
+			this.masterGain.gain.value = 0.777;
+
+			this.player.start();
 
 			var self = this;
 			this.player.onended = function() {
@@ -183,6 +187,23 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
 				event.stopPropagation();
 				event.preventDefault();
 				self.play();
+			});
+
+			$('#volume-btn').click(function(event) {
+				event.stopPropagation();
+				event.preventDefault();
+
+				var i = $(this).find('i');
+
+				if(self.masterGain.gain.value) {
+					i.removeClass('glyphicon-volume-up');
+					i.addClass('glyphicon-volume-off');
+					self.masterGain.gain.value = 0;
+				} else {
+					i.removeClass('glyphicon-volume-off');
+					i.addClass('glyphicon-volume-up');
+					self.masterGain.gain.value = 1;
+				}
 			});
 
 			$('#save-btn').click(function(event) {

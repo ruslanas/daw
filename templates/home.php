@@ -34,13 +34,17 @@
 										class="btn btn-success btn-sm">
 									<i class="glyphicon glyphicon-play"></i>
 								</button>
+								<button class="btn btn-sm btn-primary"
+										title="Upload to server"
+										disabled="disabled"
+										id="save-btn">
+									<i class="glyphicon glyphicon-cloud-upload"></i>
+								</button>
+								<button class="btn btn-sm btn-primary"
+										id="volume-btn">
+									<i class="glyphicon glyphicon-volume-up"></i>
+								</button>
 							</div>
-							<button class="btn btn-sm btn-primary"
-									title="Upload to server"
-									disabled="disabled"
-									id="save-btn">
-								<i class="glyphicon glyphicon-cloud-upload"></i>
-							</button>
 							<p id="message">Click circle to record 5 sec. sound</p>
 						</div>
 					</form>

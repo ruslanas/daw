@@ -45,6 +45,7 @@ require([
 	// load tracks
 	DAW.load(function(data) {
 		sampler.loadTracks(data, function(data) {
+			// void
 		});
 	});
 

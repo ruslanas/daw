@@ -13,6 +13,9 @@ form .btn:hover i {
 a {
     color: rgb(119, 119, 119);
 }
+.btn, .btn:hover, .btn.active, .btn.focus  {
+    outline: 0 !important;
+}
 a:hover {
     color: #FFF;
 }
