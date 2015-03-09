@@ -37,8 +37,7 @@ require([
 
 	// load tracks
 	DAW.load(function(data) {
-		sampler.loadTracks(data, function() {
-			$('#tracks div:first-child a').click();
+		sampler.loadTracks(data, function(data) {
 		});
 	});
 

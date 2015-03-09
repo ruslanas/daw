@@ -50,7 +50,7 @@ require(['lib/libmp3lame/dist/libmp3lame'], function(lame) {
         fd.append('data', blob);
 
         var req = new XMLHttpRequest();
-        req.open("POST", '../upload.php', true);
+        req.open("POST", '../api/songs', true);
 
         req.onreadystatechange = function() {
             if (req.readyState === 4) {

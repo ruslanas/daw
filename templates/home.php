@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>DAW</title>
+		<meta charset="UTF-8">
 		<link rel="stylesheet"
 			href="scripts/lib/bootstrap/dist/css/bootstrap.css">
 		<link rel="stylesheet" href="css/daw.css">
@@ -44,6 +45,13 @@
 						</div>
 					</form>
 					<div id="wide"></div>
+					<p>
+						<small>
+							© 2015 Powered by
+							<a href="http://github.com/ruslanas/daw"
+							target="_blank">daw</a>
+						</small>
+					</p>
 				</div>
 				<div class="col-sm-6">
 					<div id="tracks" class="text-left"></div>

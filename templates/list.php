@@ -17,7 +17,7 @@ $mp3 = array_filter($list, function($val) {
 $out = [];
 
 foreach($mp3 as $k => $v) {
-	$out[] = $v;
+	$out[] = 'uploads/'.$v;
 }
 
 echo json_encode($out);

@@ -4,14 +4,17 @@ canvas {
 .btn i {
     transition: transform .2s;
 }
-.btn-group .btn:hover i {
+form .btn:hover i {
     transform: scale(1.7, 1.7);
 }
 #tracks {
     width: 512px;
 }
-#tracks a {
+a {
     color: rgb(119, 119, 119);
+}
+a:hover {
+    color: #FFF;
 }
 #tracks div {
     transition: background-color 1s;

@@ -228,10 +228,10 @@ define('daw', ['jquery'], function($) {
 		load: function(done) {
 			var self = this;
 			this.onload = done || this.onload || function() {
-				throw "No callback";
+				return false;
 			};
 
-			$.getJSON('api/list', {}, function(data) {
+			$.getJSON('api/songs', {}, function(data) {
 				self.onload(data);
 			});
 		}

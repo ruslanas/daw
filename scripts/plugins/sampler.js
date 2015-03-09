@@ -22,11 +22,11 @@ define('plugins/sampler', ['Gadget', 'jquery'], function(Gadget, $) {
             for(var i=0;i<data.length;i++) {
 
                 var div = $('<div/>');
-                var a = $('<a href="#" class="btn">' +
+                var a = $('<a href="#" class="btn btn-sm">' +
                     '<i class="glyphicon glyphicon-play"></i>' + "\n" +
                     data[i] + '</a>');
-                var audio = $('<audio><source src="uploads/' +
-                    data[i]+'" type="audio/mpeg"></source></audio>');
+                var audio = $('<audio><source src="' + data[i] +
+                    '" type="audio/mpeg"></source></audio>');
 
                 div.append(a);
                 div.append(audio)
@@ -40,7 +40,7 @@ define('plugins/sampler', ['Gadget', 'jquery'], function(Gadget, $) {
 
             // may be muted after recording session
             this.rack.masterGain.gain.value = 0.777;
-            done();
+            done(data);
         },
 
         initialize: function() {
