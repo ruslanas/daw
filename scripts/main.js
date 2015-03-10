@@ -50,7 +50,7 @@ require([
 	// });
 
 	// load tracks
-	DAW.load(function(data) {
+	DAW.load('api/songs', function(data) {
 		sampler.loadTracks(data, function(data) {
 			// void
 		});

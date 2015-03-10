@@ -277,13 +277,13 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
             });
         },
 
-        load: function(done) {
+        load: function(url, done) {
             var self = this;
             this.onload = done || this.onload || function() {
                 return false;
             };
 
-            $.getJSON('api/songs', {}, function(data) {
+            $.getJSON(url, {}, function(data) {
                 self.onload(data);
             });
         }
