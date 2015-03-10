@@ -63,7 +63,7 @@ You might want to [read this](http://superuser.com/questions/74116/windows-7-low
 Changelog
 ---------
 
-Todo.
+Todo. Read [Semantic Versioning 2.0.0](http://semver.org/).
 
 License
 -------
