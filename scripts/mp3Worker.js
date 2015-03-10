@@ -46,7 +46,6 @@ require(['lib/libmp3lame/dist/libmp3lame'], function(lame) {
         });
 
         var fd = new FormData();
-        fd.append('fname', '8bit.wav');
         fd.append('data', blob);
 
         var req = new XMLHttpRequest();
