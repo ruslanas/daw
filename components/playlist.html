@@ -1,0 +1,72 @@
+<template>
+    <style>
+    a {
+        text-decoration: none;
+        color: rgb(119, 119, 119);
+    }
+    a:hover {
+        color: #FFF;
+    }
+    .playing {
+        background: #369;
+    }
+    .playing a {
+        color: #FFF;
+    }
+    </style>
+    <div id="tracks"></div>
+</template>
+
+<script>
+(function() {
+    var component = document.currentScript.ownerDocument;
+
+    var tpl = component.querySelector('template');
+
+    var PlaylistProto = Object.create(HTMLElement.prototype);
+
+    PlaylistProto.createdCallback = function() {
+        this.root = this.createShadowRoot();
+        this.root.appendChild(document.importNode(tpl.content, true));
+    };
+
+    PlaylistProto.clear = function() {
+        this.root.querySelector('#tracks').innerHTML = '';
+    };
+
+    PlaylistProto.addTrack = function(url) {
+        var self = this;
+        var div = document.createElement('div');
+        var a = document.createElement('a');
+        a.setAttribute('href', '#');
+        a.appendChild(document.createTextNode(url));
+        var audio = document.createElement('audio');
+
+        a.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var nodeList = self.root.querySelectorAll('audio');
+            for(var i=0;i<nodeList.length;i++) {
+                nodeList[i].parentNode.parentNode.className = "";
+                nodeList[i].pause();
+            }
+            div.className = "playing";
+            audio.play();
+        });
+
+        var source = document.createElement('source');
+        source.setAttribute('src', url);
+        audio.appendChild(source);
+        a.appendChild(audio);
+        div.appendChild(a);
+
+        this.root.querySelector('#tracks').appendChild(div);
+        return audio;
+    };
+
+    document.registerElement('daw-playlist', {
+        prototype: PlaylistProto
+    });
+})();
+</script>
