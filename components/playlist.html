@@ -19,54 +19,80 @@
 
 <script>
 (function() {
+
     var component = document.currentScript.ownerDocument;
 
     var tpl = component.querySelector('template');
 
-    var PlaylistProto = Object.create(HTMLElement.prototype);
+    var PlaylistProto = Object.create(HTMLElement.prototype, {
 
-    PlaylistProto.createdCallback = function() {
-        this.root = this.createShadowRoot();
-        this.root.appendChild(document.importNode(tpl.content, true));
-    };
+        createdCallback: {
+            writable: false,
+            configurable: false,
+            enumerable: true,
+            value: function() {
 
-    PlaylistProto.clear = function() {
-        this.root.querySelector('#tracks').innerHTML = '';
-    };
+                // http://caniuse.com/#feat=shadowdom
 
-    PlaylistProto.addTrack = function(url) {
-        var self = this;
-        var div = document.createElement('div');
-        var a = document.createElement('a');
-        a.setAttribute('href', '#');
-        a.appendChild(document.createTextNode(url));
-        var audio = document.createElement('audio');
-
-        a.addEventListener('click', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            var nodeList = self.root.querySelectorAll('audio');
-            for(var i=0;i<nodeList.length;i++) {
-                nodeList[i].parentNode.parentNode.className = "";
-                nodeList[i].pause();
+                this.root = this.createShadowRoot();
+                this.root.appendChild(document.importNode(tpl.content, true));
             }
-            div.className = "playing";
-            audio.play();
-        });
+        },
 
-        var source = document.createElement('source');
-        source.setAttribute('src', url);
-        audio.appendChild(source);
-        a.appendChild(audio);
-        div.appendChild(a);
+        clear: {
+            writable: false,
+            configurable: false,
+            enumerable: true,
+            value: function() {
+                this.root.querySelector('#tracks').innerHTML = '';
+            }
+        },
 
-        this.root.querySelector('#tracks').appendChild(div);
-        return audio;
-    };
+        addTrack: {
+            writable: false,
+            configurable: false,
+            enumerable: true,
+            value: function(url) {
+
+                var self = this;
+                var div = document.createElement('div');
+                var a = document.createElement('a');
+                a.setAttribute('href', '#');
+                a.appendChild(document.createTextNode(url));
+                var audio = document.createElement('audio');
+
+                a.addEventListener('click', function(event) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    var nodeList = self.root.querySelectorAll('audio');
+
+                    for(var i=0;i<nodeList.length;i++) {
+                        nodeList[i].parentNode.parentNode.className = "";
+                        nodeList[i].pause();
+                    }
+
+                    div.className = "playing";
+                    audio.play();
+                });
+
+                var source = document.createElement('source');
+                source.setAttribute('src', url);
+                audio.appendChild(source);
+                a.appendChild(audio);
+                div.appendChild(a);
+
+                this.root.querySelector('#tracks').appendChild(div);
+                return audio;
+            }
+
+        }
+    });
 
     document.registerElement('daw-playlist', {
         prototype: PlaylistProto
     });
+
 })();
 </script>

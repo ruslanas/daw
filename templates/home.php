@@ -3,9 +3,23 @@
     <head>
         <title>DAW</title>
         <meta charset="UTF-8">
+
         <link rel="stylesheet"
               href="scripts/lib/bootstrap/dist/css/bootstrap.css">
         <link rel="stylesheet" href="css/daw.css">
+
+        <!--
+        Polyfills
+        https://hacks.mozilla.org/2014/12/mozilla-and-web-components/
+        -->
+        <script src="scripts/lib/webcomponentsjs/CustomElements.js"></script>
+        <!-- FF about:config dom.webcomponents.enabled=true-->
+        <!--
+        <script src="scripts/lib/webcomponentsjs/ShadowDOM.js"></script>
+        -->
+        <script src="scripts/lib/webcomponentsjs/HTMLImports.js"></script>
+        <link rel="import" href="components/playlist.html">
+
         <script data-main="scripts/main"
                 src="scripts/lib/requirejs/require.js"></script>
     </head>
@@ -60,7 +74,7 @@
                     </p>
                 </div>
                 <div class="col-sm-6">
-                    <div id="tracks" class="text-left"></div>
+                    <daw-playlist src="api/songs"></daw-playlist>
                 </div>
             </div>
         </div>

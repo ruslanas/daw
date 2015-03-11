@@ -18,28 +18,24 @@ define('plugins/sampler', ['Gadget', 'jquery'], function(Gadget, $) {
         },
 
         loadTracks: function(data, done) {
-            var container = $('#tracks').html('');
+            done = done || function(data) {
+                // void
+            };
+
+            this.parent.clear();
+
             for(var i=0;i<data.length;i++) {
 
-                var div = $('<div/>');
-                var a = $('<a href="#" class="btn btn-sm">' +
-                    '<i class="glyphicon glyphicon-play"></i>' + "\n" +
-                    data[i] + '</a>');
-                var audio = $('<audio><source src="' + data[i] +
-                    '" type="audio/mpeg"></source></audio>');
-
-                div.append(a);
-                div.append(audio)
-                container.append(div);
+                var audio = this.parent.addTrack(data[i]);
 
                 var source = this.rack.context.createMediaElementSource(
-                    audio[0]);
+                    audio);
 
                 source.connect(this.rack.visualiser);
             }
 
             // may be muted after recording session
-            this.rack.masterGain.gain.value = 0.777;
+            this.rack.setVolume(1);
             done(data);
         },
 
