@@ -12,9 +12,10 @@
         Polyfills
         https://hacks.mozilla.org/2014/12/mozilla-and-web-components/
         -->
-        <script src="scripts/lib/webcomponentsjs/CustomElements.js"></script>
+
         <!-- FF about:config dom.webcomponents.enabled=true-->
         <!--
+        <script src="scripts/lib/webcomponentsjs/CustomElements.js"></script>
         <script src="scripts/lib/webcomponentsjs/ShadowDOM.js"></script>
         -->
         <script src="scripts/lib/webcomponentsjs/HTMLImports.js"></script>

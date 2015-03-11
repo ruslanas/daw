@@ -38,6 +38,3 @@ a:hover {
 .playing .glyphicon {
     display: inherit !important;
 }
-#wide canvas {
-    border: 1px solid rgb(119, 119, 119);
-}

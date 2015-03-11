@@ -45,7 +45,13 @@ require(['lib/libmp3lame/dist/libmp3lame'], function(lame) {
             type: 'audio/mp3'
         });
 
-        var fd = new FormData();
+        try {
+            var fd = new FormData();
+        } catch(e) {
+            postMessage('Error: ' + e.message);
+            return;
+        }
+
         fd.append('data', blob);
 
         var req = new XMLHttpRequest();
