@@ -1,0 +1,99 @@
+<template>
+    <div id="tracks"></div>
+</template>
+
+<script>
+(function() {
+
+    var component = document.currentScript.ownerDocument;
+
+    var tpl = component.querySelector('template');
+
+    var PlaylistProto = Object.create(HTMLElement.prototype, {
+
+        createdCallback: {
+            writable: false,
+            configurable: false,
+            enumerable: true,
+            value: function() {
+
+                this.root = document.createElement('div');
+                this.appendChild(this.root);
+                this.root.appendChild(document.importNode(tpl.content, true));
+            }
+        },
+
+        clear: {
+            writable: false,
+            configurable: false,
+            enumerable: true,
+            value: function() {
+                this.root.querySelector('#tracks').innerHTML = '';
+            }
+        },
+
+        addTrack: {
+            writable: false,
+            configurable: false,
+            enumerable: true,
+            value: function(url) {
+
+                var self = this;
+                var div = document.createElement('div');
+                var a = document.createElement('a');
+                a.setAttribute('href', url);
+                a.className = "btn btn-sm";
+
+                var it = document.createElement('i');
+                a.appendChild(it);
+
+                a.appendChild(document.createTextNode(' ' + url));
+                var audio = document.createElement('audio');
+
+                a.addEventListener('click', function(event) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    if(audio.paused) {
+                        it.className = "glyphicon glyphicon-pause";
+                        var nodeList = self.root.querySelectorAll('audio');
+
+                        for(var i=0;i<nodeList.length;i++) {
+                            nodeList[i].parentNode.parentNode.className = "";
+                            nodeList[i].pause();
+                        }
+
+                        div.className = "playing";
+                        audio.play();
+                    } else {
+                        it.className = "glyphicon glyphicon-play";
+                        div.className = "";
+                        audio.pause();
+                    }
+
+                    audio.onended = function() {
+                        div.className = "";
+                        div.nextSibling.querySelector('a').click();
+                    };
+                });
+
+                var source = document.createElement('source');
+                source.setAttribute('src', url);
+                audio.appendChild(source);
+                a.appendChild(audio);
+                div.appendChild(a);
+
+                this.root.querySelector('#tracks').appendChild(div);
+                return audio;
+            }
+
+        }
+    });
+
+    document.registerElement('daw-playlist', {
+        prototype: PlaylistProto
+    });
+
+})();
+</script>

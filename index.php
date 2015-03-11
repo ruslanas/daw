@@ -6,6 +6,17 @@ $app = new \Slim\Slim([
     'debug' => true
     ]);
 
+$app->hook('slim.before', function() use ($app) {
+
+    // abracadabra
+    $baseUrl = 'http://'.$_SERVER['SERVER_NAME']
+        .'/'.substr(str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath(__DIR__)), 1);
+
+    $app->view()->appendData([
+        'baseUrl' => $baseUrl
+    ]);
+});
+
 $app->config([
 	'templates.path' => 'templates'
 ]);
