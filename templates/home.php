@@ -14,6 +14,7 @@
         -->
         <!-- FF about:config dom.webcomponents.enabled=true-->
         <!--
+        <script src="scripts/lib/webcomponentsjs/CustomElements.js"></script>
         <script src="scripts/lib/webcomponentsjs/ShadowDOM.js"></script>
         -->
         <script src="scripts/lib/webcomponentsjs/CustomElements.js"></script>
