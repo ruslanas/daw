@@ -1,4 +1,5 @@
 /**
+ * Synthesizer
  * Modular Audio Application Framework Core Plugin <http://daw.wri.lt>
  * @author Ruslanas Balciunas
  */
@@ -29,7 +30,7 @@ define('plugins/synth', [
             this.bezierPoints = {
                 p0: Bezier.point(0, 0),
                 p1: Bezier.point(1, 0),
-                c0: Bezier.point(0, 3),
+                c0: Bezier.point(0, 2),
                 c1: Bezier.point(0, 0)
             };
         },
@@ -37,7 +38,6 @@ define('plugins/synth', [
         redraw: function() {
 
             this.clear();
-
 
             // draw envelope shape
             var points = this.bezierPoints;
@@ -73,7 +73,7 @@ define('plugins/synth', [
 
             var $canvas = $(this.canvas);
             this.x = event.clientX - $canvas.offset().left;
-            this.y = event.clientY - $canvas.offset().top;
+            this.y = event.clientY - $canvas.offset().top + $('body').scrollTop();
             this.note = Math.floor(this.x / ($canvas.width() / 12));
 
             var oscillator = this.rack.context.createBufferSource();
@@ -88,7 +88,6 @@ define('plugins/synth', [
                 oscillator.stop();
                 oscillator.disconnect(self.gain);
                 self.on = false;
-
             };
 
             this.oscillator.connect(this.gain);
@@ -117,7 +116,7 @@ define('plugins/synth', [
                 var freq = this.notes[i];
                 var cycle = this.getSampleRate() / freq;
 
-                var len = cycle * 50;
+                var len = cycle * 30;
 
                 var sample = this.rack.context.createBuffer(
                     1, len, this.getSampleRate());
@@ -127,7 +126,11 @@ define('plugins/synth', [
                 // fill samples
                 for(var j=0;j<len;j++) {
 
-                    buff[j] = Math.sin(2 * Math.PI * j / cycle);
+                    buff[j] = Math.sin(2 * Math.PI * j / cycle)
+                     + Math.sin( 4 * Math.PI * j / cycle) * 1.5
+                     + Math.sin(8 * Math.PI * j / cycle) * 0.8
+                     + Math.sin(32 * Math.PI * j / cycle) * 0.8
+                     ;
 
                 }
                 this.applyEnvelope(buff);
@@ -165,7 +168,7 @@ define('plugins/synth', [
             this._super();
 
             var gain = this.rack.context.createGain();
-            gain.gain.value = 0.2; // start from min
+            gain.gain.value = 0.1; // start from min
             gain.connect(this.rack.recorder);
             this.gain = gain;
 
