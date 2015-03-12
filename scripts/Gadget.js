@@ -74,6 +74,10 @@ define('Gadget', ['Class'], function() {
 			);
 		},
 
+		update: function() {
+			// void
+		},
+
 		redraw: function() {
 			// void
 		},

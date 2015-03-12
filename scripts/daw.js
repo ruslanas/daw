@@ -237,6 +237,11 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
                 self.redraw();
             });
 
+            setInterval(function() {
+                for(var i=0;i<self.gadgets.length;i++) {
+                    self.gadgets[i].update();
+                }
+            }, 1000 / 30);
         },
 
         setStatus: function(msg) {
