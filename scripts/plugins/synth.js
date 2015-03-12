@@ -65,16 +65,27 @@ define('plugins/synth', ['Gadget', 'jquery'], function(Gadget, $) {
             this.oscillator.frequency.value =
                 this.notes[this.note];
             this.oscillator.connect(this.gain);
+
+            var delay = this.rack.context.createDelay();
+            delay.delayTime.value = .3;
+
+            var feedback = this.rack.context.createGain();
+            feedback.gain.value = 0.4;
+
+            feedback.connect(delay);
+            delay.connect(feedback);
+
+            this.oscillator.connect(delay);
+            delay.connect(this.gain);
             this.oscillator.start();
 
         },
 
         initialize: function() {
             this._super();
-            // setup
 
             var gain = this.rack.context.createGain();
-            gain.gain.value = 0.1; // start from min
+            gain.gain.value = 0.2; // start from min
             gain.connect(this.rack.visualiser);
             this.gain = gain;
         }

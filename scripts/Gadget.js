@@ -10,6 +10,7 @@ define('Gadget', ['Class'], function() {
 		_width: 0,
 		_height: 0,
 		title: '',
+		titleHeight: 14,
 
 		// Constructor. No DOM operations here
 		init: function() {
@@ -39,6 +40,9 @@ define('Gadget', ['Class'], function() {
 
 			var self = this;
 
+			if(!this.title) {
+				this.titleHeight = 0;
+			}
 			this.canvas = document.createElement('canvas');
 
 			this.canvas.setAttribute('height', this.height());
@@ -47,7 +51,7 @@ define('Gadget', ['Class'], function() {
 			this.parent.appendChild(this.canvas);
 			this.context = this.canvas.getContext('2d');
 
-			this.baseline = (this.canvas.height + 14) / 2;
+			this.baseline = (this.canvas.height + this.titleHeight) / 2;
 
 			this.context.fillStyle = '#FFF';
 			this.context.font = "12px Arial, sans-serif";
@@ -68,9 +72,9 @@ define('Gadget', ['Class'], function() {
 		clear: function() {
 			this.context.clearRect(
 				0,
-				14,
+				this.titleHeight,
 				this.canvas.width,
-				this.canvas.height - 14
+				this.canvas.height - this.titleHeight
 			);
 		},
 
