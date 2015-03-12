@@ -5,7 +5,11 @@
 
 const FULL_CIRCLE = Math.PI * 2;
 
-define('plugins/synth', ['Gadget', 'jquery'], function(Gadget, $) {
+define('plugins/synth', [
+    'Gadget',
+    'jquery',
+    'bezier'
+    ], function(Gadget, $) {
 
     var Synth = Gadget.extend({
 
@@ -17,16 +21,37 @@ define('plugins/synth', ['Gadget', 'jquery'], function(Gadget, $) {
 
         init: function() {
             this._super();
-            var f = 440;
+            var f = 55;
             for(var i=0;i<12;i++) {
                 this.notes.push(f);
                 f = f * Math.pow(2, 1/12);
             }
+            this.bezierPoints = {
+                p0: Bezier.point(0, 0),
+                p1: Bezier.point(1, 0),
+                c0: Bezier.point(0, 3),
+                c1: Bezier.point(0, 0)
+            };
         },
 
         redraw: function() {
 
             this.clear();
+
+
+            // draw envelope shape
+            var points = this.bezierPoints;
+            var scaleX = this.canvas.width;
+            var scaleY = this.canvas.height;
+
+            this.context.beginPath();
+            this.context.moveTo(points.p0.x * scaleX, points.p0.y * scaleY);
+            this.context.bezierCurveTo(
+                points.c0.x * scaleX, points.c0.y * scaleY,
+                points.c1.x * scaleX, points.c1.y * scaleY,
+                this.canvas.width, 0);
+
+            this.context.stroke();
 
             if(this.on) {
                 this.context.beginPath();
@@ -35,17 +60,6 @@ define('plugins/synth', ['Gadget', 'jquery'], function(Gadget, $) {
             }
 
             this.context.fillText(this.status, 0, this.canvas.height);
-        },
-
-        update: function() {
-            /*
-            if(this.on && this.started && (Date.now() - this.started) > 100) {
-                this.oscillator.stop();
-                this.oscillator.disconnect(this.gain);
-                this.on = false;
-                this.started = null;
-            }
-            */
         },
 
         onMouseDown: function(event) {
@@ -122,12 +136,28 @@ define('plugins/synth', ['Gadget', 'jquery'], function(Gadget, $) {
             this.status = 'Ready';
         },
 
-        // fade in and fade out
         applyEnvelope: function(buff) {
             this.status = 'Applying envelope';
-            for(var i=0;i<1000;i++) {
-                buff[i] *= i/1000;
-                buff[buff.length - 1 - i] *= i/1000;
+
+            var points = this.bezierPoints;
+
+            var envelope = new Bezier(points.p0, points.p1, points.c0, points.c1);
+
+            var t = [];
+            for(var i=0;i<buff.length;i++) {
+                var coords = envelope.getCoordinates(i / buff.length);
+                if(coords.x >= 0 && coords.x <= 1) {
+                    t[Math.floor(coords.x * buff.length)] = coords.y;
+                }
+            }
+
+            // fill missing values
+            t[0] = 0;
+            for(var i=0;i<buff.length;i++) {
+                if(t[i] === undefined) {
+                    t[i] = t[i-1]; // fill missing values
+                }
+                buff[i] *= t[i];
             }
         },
 

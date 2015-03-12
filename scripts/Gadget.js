@@ -36,6 +36,10 @@ define('Gadget', ['Class'], function() {
 			// void
 		},
 
+		onMouseDown: function(event) {
+			// void
+		},
+
 		initialize: function() {
 
 			var self = this;
@@ -66,6 +70,9 @@ define('Gadget', ['Class'], function() {
             this.canvas.onclick = function(event) {
             	self.onClick(event);
             };
+            this.canvas.onmousedown = function(event) {
+            	self.onMouseDown(event);
+            }
 
 		},
 
@@ -93,6 +100,10 @@ define('Gadget', ['Class'], function() {
 			this.options = options;
 			this.rack = rack;
 			this.initialize();
+		},
+
+		getSampleRate: function() {
+			return this.rack.context.sampleRate;
 		}
 	});
 
