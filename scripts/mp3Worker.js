@@ -5,70 +5,78 @@ importScripts('lib/requirejs/require.js');
 
 require(['lib/libmp3lame/dist/libmp3lame'], function(lame) {
 
-    var mp3codec;
+    var mp3codec, blob;
 
     postMessage('ready');
 
     onmessage = function(msg) {
 
-        var size = msg.data.length;
+        if(msg.data.email !== undefined) {
 
-        mp3codec = Lame.init();
+            postMessage('Uploading to server...');
 
-        Lame.set_mode(mp3codec, Lame.MONO);
-        Lame.set_num_channels(mp3codec, 1);
-        Lame.set_num_samples(mp3codec, size);
-
-        Lame.set_in_samplerate(mp3codec, 44100);
-        Lame.set_out_samplerate(mp3codec, 44100);
-
-        Lame.set_bitrate(mp3codec, 128);
-
-        Lame.init_params(mp3codec);
-
-        postMessage('Encoding...');
-
-        var buff = new Float32Array(size);
-
-        for (var i = 0; i < size; i++) {
-            buff[i] = msg.data[i];
-        }
-
-        var mp3data = Lame.encode_buffer_ieee_float(mp3codec, buff, buff);
-
-
-        postMessage('Uploading to server...');
-
-        Lame.encode_flush(mp3codec);
-
-        var blob = new Blob([new Uint8Array(mp3data.data)], {
-            type: 'audio/mp3'
-        });
-
-        try {
-            var fd = new FormData();
-        } catch(e) {
-            postMessage('Error: ' + e.message);
-            return;
-        }
-
-        fd.append('data', blob);
-
-        var req = new XMLHttpRequest();
-        req.open("POST", '../api/songs', true);
-
-        req.onreadystatechange = function() {
-            if (req.readyState === 4) {
-                postMessage('done');
+            try {
+                var fd = new FormData();
+            } catch(e) {
+                postMessage('Error: ' + e.message);
+                return;
             }
-        };
 
-        req.send(fd);
+            fd.append('email', msg.data.email);
+            fd.append('name', msg.data.name);
+            fd.append('data', blob);
 
-        Lame.close(mp3codec);
+            var req = new XMLHttpRequest();
+            req.open("POST", '../api/songs', true);
 
-        mp3codec = null;
+            req.onreadystatechange = function() {
+                if (req.readyState === 4) {
+                    postMessage('done');
+                }
+            };
 
-        postMessage('done');
+            req.send(fd);
+            postMessage('done');
+
+        } else {
+
+            var size = msg.data.length;
+
+            mp3codec = Lame.init();
+
+            Lame.set_mode(mp3codec, Lame.MONO);
+            Lame.set_num_channels(mp3codec, 1);
+            Lame.set_num_samples(mp3codec, size);
+
+            Lame.set_in_samplerate(mp3codec, 44100);
+            Lame.set_out_samplerate(mp3codec, 44100);
+
+            Lame.set_bitrate(mp3codec, 128);
+
+            Lame.init_params(mp3codec);
+
+            postMessage('Encoding...');
+
+            var buff = new Float32Array(size);
+
+            for (var i = 0; i < size; i++) {
+                buff[i] = msg.data[i];
+            }
+
+            var mp3data = Lame.encode_buffer_ieee_float(mp3codec, buff, buff);
+
+            Lame.encode_flush(mp3codec);
+
+            blob = new Blob([new Uint8Array(mp3data.data)], {
+                type: 'audio/mp3'
+            });
+
+            Lame.close(mp3codec);
+
+            mp3codec = null;
+
+            postMessage('encoded');
+
+        }
     }
 });

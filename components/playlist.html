@@ -18,6 +18,7 @@
             value: function() {
 
                 this.root = document.createElement('div');
+                this.root.className = "playlist";
                 this.appendChild(this.root);
                 this.root.appendChild(document.importNode(tpl.content, true));
             }

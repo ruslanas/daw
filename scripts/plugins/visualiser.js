@@ -1,6 +1,8 @@
 /*
-Visualises current frame
-*/
+ * Buffer visualiser
+ * Modular Audio Application Framework Core Plugin <http://daw.wri.lt>
+ * @author Ruslanas Balciunas
+ */
 
 define('plugins/visualiser', ['Gadget'], function(Gadget) {
 
@@ -14,6 +16,7 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 			this.title = 'Visualizer';
 			this._letters = '0123456789ABCDEF'.split('');
 		},
+
 		redraw: function() {
 
 			this.clear();
@@ -22,6 +25,10 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 		    for (var i = 0; i < 6; i++ ) {
 		        color += this._letters[Math.floor(Math.random() * 16)];
 		    }
+
+		    this.context.fillStyle = 'rgb(119, 119, 119)';
+			this.context.fillText(
+				'Buffer size: ' + this.rack.recordFrameLen, 0, this.canvas.height);
 
 		    this.context.fillStyle = color;
 

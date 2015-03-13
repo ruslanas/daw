@@ -19,20 +19,36 @@ define('plugins/synth', [
         on: false,
         started: null,
         status: '',
+        bend: 0.01,
+        baseFreq: 55,
+        sequencer: null,
+        x: -1,
+        y: -1,
 
         init: function() {
             this._super();
-            var f = 55;
-            for(var i=0;i<12;i++) {
+            var f = this.baseFreq;
+
+            for(var i=0;i<24;i++) {
                 this.notes.push(f);
                 f = f * Math.pow(2, 1/12);
             }
+
             this.bezierPoints = {
                 p0: Bezier.point(0, 0),
                 p1: Bezier.point(1, 0),
                 c0: Bezier.point(0, 2),
-                c1: Bezier.point(0, 0)
+                c1: Bezier.point(-0.1, 0)
             };
+        },
+
+        update: function() {
+            if(this.sequencer && this.sequencer.on) {
+                var note = this.sequencer.next();
+                if(note >= 0) {
+                    this.playNote(note);
+                }
+            }
         },
 
         redraw: function() {
@@ -63,24 +79,36 @@ define('plugins/synth', [
         },
 
         onMouseDown: function(event) {
-            var self = this;
-            // only one note can be played at a time
-            if(this.on) {
-                return;
-            }
-            this.on = true;
-            this.started = Date.now();
 
             var $canvas = $(this.canvas);
             this.x = event.clientX - $canvas.offset().left;
             this.y = event.clientY - $canvas.offset().top + $('body').scrollTop();
             this.note = Math.floor(this.x / ($canvas.width() / 12));
+            if(this.y > (this.canvas.height / 2) ) {
+                this.note += 12;
+            }
+            this.on = true;
+            this.playNote(this.note);
+
+        },
+
+        playNote: function(note) {
+
+            var self = this;
+
+            // only one note can be played at a time
+            // if(this.on) {
+            //     return;
+            // }
+
+            // this.on = true;
+            this.started = Date.now();
 
             var oscillator = this.rack.context.createBufferSource();
 
-            this.status = '~' + Math.round(this.notes[this.note]) + 'Hz';
+            this.status = '~' + Math.round(this.notes[note]) + 'Hz';
 
-            oscillator.buffer = this.samples[this.note];
+            oscillator.buffer = this.samples[note];
 
             this.oscillator = oscillator;
 
@@ -103,6 +131,7 @@ define('plugins/synth', [
 
             this.oscillator.connect(delay);
             delay.connect(this.gain);
+            // this.oscillator.connect(this.gain);
             this.oscillator.start();
 
         },
@@ -116,22 +145,22 @@ define('plugins/synth', [
                 var freq = this.notes[i];
                 var cycle = this.getSampleRate() / freq;
 
-                var len = cycle * 30;
+                var len = cycle * 40;
 
                 var sample = this.rack.context.createBuffer(
                     1, len, this.getSampleRate());
 
                 var buff = sample.getChannelData(0);
 
+                var bend = Math.random() / 10;
+
                 // fill samples
                 for(var j=0;j<len;j++) {
-
-                    buff[j] = Math.sin(2 * Math.PI * j / cycle)
-                     + Math.sin( 4 * Math.PI * j / cycle) * 1.5
-                     + Math.sin(8 * Math.PI * j / cycle) * 0.8
-                     + Math.sin(32 * Math.PI * j / cycle) * 0.8
-                     ;
-
+                    buff[j] = Math.sin((2 * Math.PI * j) / cycle)
+                        + Math.sin( 4 * Math.PI * (j + bend) / cycle) * 0.3
+                        + Math.sin( 8 * Math.PI * (j) / cycle) * 0.2
+                        ;
+                    bend += -bend;
                 }
                 this.applyEnvelope(buff);
                 this.samples.push(sample);
@@ -144,7 +173,8 @@ define('plugins/synth', [
 
             var points = this.bezierPoints;
 
-            var envelope = new Bezier(points.p0, points.p1, points.c0, points.c1);
+            var envelope = new Bezier(
+                    points.p0, points.p1, points.c0, points.c1);
 
             var t = [];
             for(var i=0;i<buff.length;i++) {
@@ -167,8 +197,12 @@ define('plugins/synth', [
         initialize: function() {
             this._super();
 
+            if(this.options.sequencer) {
+                this.sequencer = this.options.sequencer;
+            }
+
             var gain = this.rack.context.createGain();
-            gain.gain.value = 0.1; // start from min
+            gain.gain.value = 0.2; // start from min
             gain.connect(this.rack.recorder);
             this.gain = gain;
 

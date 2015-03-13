@@ -1,7 +1,8 @@
-/*
-Gadget is connected to GUI canvas. It is responsible
-for redrawing itself.
-*/
+/**
+ * Analyser
+ * Modular Audio Application Framework Core Plugin <http://daw.wri.lt>
+ * @author Ruslanas Balciunas
+ */
 
 define('plugins/analyzer', ['Gadget'], function(Gadget) {
 
@@ -11,6 +12,7 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 			this._super();
 			this.title = 'Analyzer';
 		},
+
 		redraw: function() {
 
 			this.clear();
@@ -26,20 +28,21 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 				x += barWidth + 1;
 			}
       	},
+
       	// insert between visualiser and masterGain
 		initialize: function() {
 			this._super();
+
 			this.rack.analyzer = this.rack.context.createAnalyser();
 			this.rack.visualiser.disconnect(this.rack.masterGain);
 			this.rack.visualiser.connect(this.rack.analyzer);
 			this.rack.analyzer.connect(this.rack.masterGain);
 			this.rack.analyzer.fftSize = 128;
+
 			this.bufferLength = this.rack.analyzer.frequencyBinCount;
 			this.dataArray = new Uint8Array(this.bufferLength);
-			this.context.fillStyle = '#369'
 		}
 	});
 
 	return new Analyzer();
 });
-

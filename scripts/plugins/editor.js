@@ -18,6 +18,7 @@ define('plugins/editor', [
 
 		init: function() {
 			this._super();
+
 			this.title = 'Wave editor';
 			this.width(512);
 			this.height(150);
@@ -53,7 +54,7 @@ define('plugins/editor', [
 			for(var i=0;i<this.canvas.width;i++) {
 				var idx = this.start + i * this.zoom;
 				var amp = this.getSample(idx) * scaleY;
-				this.context.fillRect(i, this.baseline, 1, amp + 1);
+				this.context.fillRect(i, this.baseline, 0.7, amp + 1);
 			}
 
 
@@ -92,7 +93,6 @@ define('plugins/editor', [
 
 		initialize: function() {
 			this._super();
-			this.context.fillStyle = '#369';
 
 			// respond to mousewheel
 			var self = this;

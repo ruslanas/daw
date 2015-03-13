@@ -23,6 +23,7 @@ define('daw', ['jquery'], function($) {
         step: 16,
         onAir: false,
         worker: null,
+        bpm: 140,
 
         plug: function(selector, gadget, options) {
             this.gadgets.push(gadget);
@@ -242,13 +243,25 @@ define('daw', ['jquery'], function($) {
                         self.stream = stream;
                         self.mic = self.context.createMediaStreamSource(stream);
                         self.mic.connect(self.micGain);
-                        self.micGain.gain.value = 1;
+                        self.micGain.gain.value = 0.4;
 
                     }, function(err) {
                         self.setStatus('User media not available');
                     });
 
                 }
+            });
+
+            $('#save-form').submit(function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                $(this).removeClass('show');
+
+                self.worker.postMessage({
+                    name: $('input[name="name"]').val(),
+                    email: $('input[name="email"').val()
+                });
+
             });
 
             this.createProcessors();
@@ -261,7 +274,7 @@ define('daw', ['jquery'], function($) {
                 for(var i=0;i<self.gadgets.length;i++) {
                     self.gadgets[i].update();
                 }
-            }, 1000 * 60 / 120); // BPM
+            }, 1000 * 60 / this.bpm); // BPM
         },
 
         setStatus: function(msg) {
@@ -270,7 +283,7 @@ define('daw', ['jquery'], function($) {
 
         upload: function() {
             var self = this;
-            self.setStatus('Saving...');
+            self.setStatus('Preparing...');
 
             $('#save-btn').attr('disabled', 'disabled');
 
@@ -281,6 +294,13 @@ define('daw', ['jquery'], function($) {
                     case 'ready':
                         self.worker.postMessage(self.sample);
                         break;
+
+                    case 'encoded':
+                        var msg = 'Done encoding. Fill form on the right';
+                        self.setStatus(msg);
+                        $('#save-form').addClass('show');
+                        break;
+
                     case 'done':
                         self.setStatus('Done');
                         $('#save-btn').attr('disabled', 'disabled');

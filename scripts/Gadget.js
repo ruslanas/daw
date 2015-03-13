@@ -57,11 +57,10 @@ define('Gadget', ['Class'], function() {
 
 			this.baseline = (this.canvas.height + this.titleHeight) / 2;
 
-			this.context.fillStyle = '#FFF';
-			this.context.font = "12px Arial, sans-serif";
-			this.context.fillText(this.title, 5, 12);
 			var color = 'rgb(119, 119, 119)';
 			this.context.fillStyle = color;
+			this.context.font = "12px Arial, sans-serif";
+			this.context.fillText(this.title, 5, 12);
 			this.context.strokeStyle = color;
 
             this.canvas.onmousemove = function(event) {
