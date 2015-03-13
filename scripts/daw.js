@@ -3,7 +3,7 @@
  * @author Ruslanas Balciunas
  */
 
-define('daw', ['jquery', 'jquery-mousewheel'], function($) {
+define('daw', ['jquery'], function($) {
 
     var daw = {
         gadgets: [],
@@ -34,16 +34,9 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
             $('#save-btn').removeAttr('disabled');
             $('#pause-btn').attr('disabled', 'disabled');
             $('#play-btn').removeAttr('disabled');
-            $('#record-btn').removeAttr('disabled');
+            $('#record-btn').css('color', '#FFF');
 
             this.onAir = false;
-            if(this.stream) {
-                this.stream.stop();
-                this.stream = null;
-            }
-
-            this.recorder.disconnect(this.visualiser);
-            this.recorder.onaudioprocess = null;
 
             if(this.player) {
                 this.player.stop();
@@ -57,7 +50,6 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
             $('#save-btn').attr('disabled', 'disabled');
             $('#pause-btn').removeAttr('disabled');
             $('#play-btn').attr('disabled', 'disabled');
-            $('#record-btn').attr('disabled', 'disabled');
 
             this.player = this.context.createBufferSource();
 
@@ -106,39 +98,22 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
         },
 
         record: function () {
-            this.mute();
             this.rewind();
 
-            $('#record-btn').attr('disabled', 'disabled');
+            $('#record-btn').css('color', '#F00');
             $('#play-btn').attr('disabled', 'disabled');
             $('#pause-btn').removeAttr('disabled');
 
             var self = this;
-            navigator.getUserMedia({audio: true}, function(stream) {
-                self.onAir = true;
-                self.stream = stream;
-                self.mic = self.context.createMediaStreamSource(stream);
-                self.mic.connect(self.micGain);
+            this.onAir = true;
+            $('#save-btn').attr('disabled', 'disabled');
 
-                self.recorder.onaudioprocess = function(e) {
-                    var input = e.inputBuffer.getChannelData(0);
-
-                    var output = e.outputBuffer.getChannelData(0);
-                    // bypass
-                    output.set(input);
-                    // add frame to buffer
-                    self.appendFrame(output, self.recordFrameLen);
-                };
-
-                self.recorder.connect(self.visualiser);
-                $('#save-btn').attr('disabled', 'disabled');
-            }, function(err) {
-                self.setStatus('User media not available');
-            });
         },
 
-        appendFrame: function(buff, length) {
+        appendFrame: function(buff) {
+            var length = this.recordFrameLen;
             var end = length * this.pos;
+
             if(end + length > this.sampleBuffLen) {
                 this.pause();
                 return;
@@ -165,9 +140,21 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
 
             this.recorder = audio.createScriptProcessor(
                 this.recordFrameLen, 1, 1);
+            this.recorder.onaudioprocess = function(e) {
+                var input = e.inputBuffer.getChannelData(0);
+
+                var output = e.outputBuffer.getChannelData(0);
+                // bypass
+                output.set(input);
+                // add frame to buffer
+                if(self.onAir) {
+                    self.appendFrame(output);
+                }
+            };
+            self.recorder.connect(self.visualiser);
 
             this.micGain = audio.createGain();
-            this.micGain.gain.value = 0.5;
+            this.micGain.gain.value = 0;
             this.micGain.connect(this.recorder);
 
             this.masterGain = audio.createGain();
@@ -198,7 +185,11 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
             $('#record-btn').click(function(event) {
                 event.stopPropagation();
                 event.preventDefault();
-                self.record();
+                if(self.onAir) {
+                    self.pause();
+                } else {
+                    self.record();
+                }
             });
 
             $('#pause-btn').click(function(event) {
@@ -231,6 +222,35 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
                 self.upload();
             });
 
+            $('#mic-btn').click(function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                if(self.micGain.gain.value > 0) {
+                    $(this).css('color', '#FFF');
+                    self.micGain.gain.value = 0;
+
+                    if(self.stream) {
+                        self.stream.stop();
+                        self.stream = null;
+                    }
+
+                } else {
+                    $(this).css('color', '#F00');
+
+                    navigator.getUserMedia({audio: true}, function(stream) {
+                        self.stream = stream;
+                        self.mic = self.context.createMediaStreamSource(stream);
+                        self.mic.connect(self.micGain);
+                        self.micGain.gain.value = 1;
+
+                    }, function(err) {
+                        self.setStatus('User media not available');
+                    });
+
+                }
+            });
+
             this.createProcessors();
 
             window.requestAnimationFrame(function() {
@@ -241,7 +261,7 @@ define('daw', ['jquery', 'jquery-mousewheel'], function($) {
                 for(var i=0;i<self.gadgets.length;i++) {
                     self.gadgets[i].update();
                 }
-            }, 1000 / 30);
+            }, 1000 * 60 / 120); // BPM
         },
 
         setStatus: function(msg) {
