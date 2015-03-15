@@ -44,5 +44,5 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 		}
 	});
 
-	return new Analyzer();
+	return Analyzer;
 });

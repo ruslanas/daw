@@ -3,7 +3,10 @@
  * @author Ruslanas Balciunas
  */
 
-define('Gadget', ['Class'], function() {
+define('Gadget', [
+		'Class',
+		'jquery-mousewheel'
+	], function() {
 
 	var Gadget = Class.extend({
 
@@ -40,6 +43,14 @@ define('Gadget', ['Class'], function() {
 			// void
 		},
 
+		onMouseUp: function(event) {
+			// void
+		},
+
+		onMouseWheel: function(event) {
+			// void
+		},
+
 		initialize: function() {
 
 			var self = this;
@@ -71,8 +82,13 @@ define('Gadget', ['Class'], function() {
             };
             this.canvas.onmousedown = function(event) {
             	self.onMouseDown(event);
-            }
-
+            };
+            this.canvas.onmouseup = function(event) {
+            	self.onMouseUp(event);
+            };
+			$(this.canvas).on('mousewheel', function(event) {
+				self.onMouseWheel(event);
+			});
 		},
 
 		clear: function() {

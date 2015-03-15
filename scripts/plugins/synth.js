@@ -19,14 +19,18 @@ define('plugins/synth', [
         on: false,
         status: '',
         bend: 0.01,
-        baseFreq: 55,
+        baseFreq: 110,
         sequencer: null,
+        samples: [],
         x: -1,
         y: -1,
 
         init: function() {
             this._super();
             var f = this.baseFreq;
+
+            this.notes = [];
+            this.samples = [];
 
             for(var i=0;i<24;i++) {
                 this.notes.push(f);
@@ -37,17 +41,8 @@ define('plugins/synth', [
                 p0: Bezier.point(0, 0),
                 p1: Bezier.point(1, 0),
                 c0: Bezier.point(0, 2.2),
-                c1: Bezier.point(0.1, 0)
+                c1: Bezier.point(0.5, 0)
             };
-        },
-
-        update: function() {
-            if(this.sequencer && this.sequencer.on) {
-                var note = this.sequencer.next();
-                if(note >= 0) {
-                    this.playNote(note);
-                }
-            }
         },
 
         redraw: function() {
@@ -77,19 +72,18 @@ define('plugins/synth', [
             this.context.fillText(this.status, 0, this.canvas.height);
         },
 
-        onMouseDown: function(event) {
+        onMouseUp: function(event) {
 
-            var $canvas = $(this.canvas);
+            $canvas = $(this.canvas);
             this.x = event.clientX - $canvas.offset().left;
             this.y = event.clientY - $canvas.offset().top + $('body').scrollTop();
-            this.note = Math.floor(this.x / ($canvas.width() / 12));
 
-            if(this.y > (this.canvas.height / 2) ) {
-                this.note += 12;
-            }
-            this.on = true;
-            this.playNote(this.note);
+            this.bezierPoints.c0 = {
+                x: this.x / this.canvas.width,
+                y: 2 * this.y / this.canvas.height
+            };
 
+            this.generate();
         },
 
         playNote: function(note) {
@@ -118,33 +112,38 @@ define('plugins/synth', [
         // generate sample and apply envelope
         generate: function() {
             this.status = 'Generating waves...';
-            this.samples = [];
-            for(var i=0;i<this.notes.length;i++) {
+            var self = this;
+            setTimeout(function() {
+                for(var i=0;i<self.notes.length;i++) {
 
-                var freq = this.notes[i];
-                var cycle = this.getSampleRate() / freq;
 
-                var len = cycle * 30;
+                    var freq = self.notes[i];
+                    var cycle = self.getSampleRate() / freq;
 
-                var sample = this.rack.context.createBuffer(
-                    1, len, this.getSampleRate());
+                    var len = cycle * 50;
 
-                var buff = sample.getChannelData(0);
+                    var sample = self.rack.context.createBuffer(
+                        1, len, self.getSampleRate());
 
-                var bend = Math.random() / 10;
+                    var buff = sample.getChannelData(0);
 
-                // fill samples
-                for(var j=0;j<len;j++) {
-                    buff[j] = Math.sin((2 * Math.PI * j) / cycle)
-                        + Math.sin( 4 * Math.PI * (j + bend) / cycle) * 0.3
-                        + Math.sin( 8 * Math.PI * (j) / cycle) * 0.2
-                        ;
-                    bend += -this.bend;
+                    var bend = Math.random() / 10;
+
+                    // fill samples
+                    for(var j=0;j<len;j++) {
+                        buff[j] = Math.sin((2 * Math.PI * j) / cycle)
+                            + Math.sin( 4 * Math.PI * (j + bend) / cycle) * 0.3
+                            + Math.sin( 8 * Math.PI * j / cycle) * 0.2
+                            ;
+                        bend -= self.bend;
+                    }
+
+                    self.applyEnvelope(buff);
+                    self.samples[i] = sample;
                 }
-                this.applyEnvelope(buff);
-                this.samples.push(sample);
-            }
-            this.status = 'Ready';
+                self.status = 'Ready';
+            }, 0);
+
         },
 
         applyEnvelope: function(buff) {
@@ -176,10 +175,6 @@ define('plugins/synth', [
         initialize: function() {
             this._super();
 
-            if(this.options.sequencer) {
-                this.sequencer = this.options.sequencer;
-            }
-
             var gain = this.rack.context.createGain();
             gain.gain.value = 0.25; // start from min
             gain.connect(this.rack.recorder);
@@ -189,5 +184,5 @@ define('plugins/synth', [
         }
     });
 
-    return new Synth();
+    return Synth;
 });

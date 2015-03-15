@@ -47,6 +47,6 @@ define('plugins/sampler', ['Gadget', 'jquery'], function(Gadget, $) {
         }
     });
 
-    return new Sampler();
+    return Sampler;
 
 });

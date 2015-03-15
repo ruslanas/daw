@@ -6,8 +6,7 @@
 
 define('plugins/editor', [
 	'Gadget',
-	'jquery',
-	'jquery-mousewheel'
+	'jquery'
 	], function(Gadget, $) {
 
 	var Editor = Gadget.extend({
@@ -93,15 +92,9 @@ define('plugins/editor', [
 
 		initialize: function() {
 			this._super();
-
-			// respond to mousewheel
-			var self = this;
-			$(this.canvas).on('mousewheel', function(event) {
-				self.onMouseWheel(event);
-			});
 		}
 	});
 
-	return new Editor();
+	return Editor;
 });
 

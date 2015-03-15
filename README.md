@@ -50,7 +50,7 @@ define('plugins/my_cool_plugin', ['Gadget'], function(Gadget) {
         }
     });
 
-    return new MyCoolPlugin();
+    return MyCoolPlugin;
 });
 
 ```
