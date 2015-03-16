@@ -18,8 +18,8 @@ define('plugins/synth', [
         note: null,
         on: false,
         status: '',
-        bend: 0.01,
-        baseFreq: 110,
+        bend: 0.5,
+        baseFreq: 55,
         sequencer: null,
         samples: [],
         x: -1,
@@ -38,9 +38,9 @@ define('plugins/synth', [
             }
 
             this.bezierPoints = {
-                p0: Bezier.point(0, 0),
+                p0: Bezier.point(0, 1),
                 p1: Bezier.point(1, 0),
-                c0: Bezier.point(0, 2.2),
+                c0: Bezier.point(0, 0),
                 c1: Bezier.point(0.5, 0)
             };
         },
@@ -111,64 +111,18 @@ define('plugins/synth', [
 
         // generate sample and apply envelope
         generate: function() {
-            this.status = 'Generating waves...';
             var self = this;
-            setTimeout(function() {
-                for(var i=0;i<self.notes.length;i++) {
 
+            for(var i=0;i<this.notes.length;i++) {
 
-                    var freq = self.notes[i];
-                    var cycle = self.getSampleRate() / freq;
+                this.worker.postMessage({
+                    idx: i,
+                    freq: this.notes[i],
+                    sampleRate: this.getSampleRate(),
+                    len: 15000,
+                    bezier: this.bezierPoints
+                });
 
-                    var len = cycle * 50;
-
-                    var sample = self.rack.context.createBuffer(
-                        1, len, self.getSampleRate());
-
-                    var buff = sample.getChannelData(0);
-
-                    var bend = Math.random() / 10;
-
-                    // fill samples
-                    for(var j=0;j<len;j++) {
-                        buff[j] = Math.sin((2 * Math.PI * j) / cycle)
-                            + Math.sin( 4 * Math.PI * (j + bend) / cycle) * 0.3
-                            + Math.sin( 8 * Math.PI * j / cycle) * 0.2
-                            ;
-                        bend -= self.bend;
-                    }
-
-                    self.applyEnvelope(buff);
-                    self.samples[i] = sample;
-                }
-                self.status = 'Ready';
-            }, 0);
-
-        },
-
-        applyEnvelope: function(buff) {
-            this.status = 'Applying envelope';
-
-            var points = this.bezierPoints;
-
-            var envelope = new Bezier(
-                    points.p0, points.p1, points.c0, points.c1);
-
-            var t = [];
-            for(var i=0;i<buff.length;i++) {
-                var coords = envelope.getCoordinates(i / buff.length);
-                if(coords.x >= 0 && coords.x <= 1) {
-                    t[Math.floor(coords.x * buff.length)] = coords.y;
-                }
-            }
-
-            // fill missing values
-            t[0] = 0;
-            for(var i=0;i<buff.length;i++) {
-                if(t[i] === undefined) {
-                    t[i] = t[i-1]; // fill missing values
-                }
-                buff[i] *= t[i];
             }
         },
 
@@ -176,9 +130,21 @@ define('plugins/synth', [
             this._super();
 
             var gain = this.rack.context.createGain();
-            gain.gain.value = 0.25; // start from min
+            gain.gain.value = 0.5; // start from min
+
             gain.connect(this.rack.recorder);
             this.gain = gain;
+
+            this.worker = new Worker('scripts/synthWorker.js');
+            var self = this;
+            this.worker.onmessage = function(msg) {
+                var sample = self.rack.context.createBuffer(
+                    1, msg.data.len, self.getSampleRate());
+
+                var buff = sample.getChannelData(0);
+                buff.set(msg.data.buff);
+                self.samples[msg.data.idx] = sample;
+            };
 
             this.generate();
         }
