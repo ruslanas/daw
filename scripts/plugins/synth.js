@@ -20,8 +20,12 @@ define('plugins/synth', [
         status: '',
         bend: 0.5,
         baseFreq: 55,
+        len: 20000,
         sequencer: null,
         samples: [],
+        modes: [],
+        noise: 0,
+        gain: 1,
         x: -1,
         y: -1,
 
@@ -72,6 +76,10 @@ define('plugins/synth', [
             this.context.fillText(this.status, 0, this.canvas.height);
         },
 
+        onReady: function(done) {
+            done();
+        },
+
         onMouseUp: function(event) {
 
             $canvas = $(this.canvas);
@@ -117,9 +125,11 @@ define('plugins/synth', [
 
                 this.worker.postMessage({
                     idx: i,
+                    noise: this.noise,
+                    modes: this.modes,
                     freq: this.notes[i],
                     sampleRate: this.getSampleRate(),
-                    len: 15000,
+                    len: self.len,
                     bezier: this.bezierPoints
                 });
 
@@ -130,7 +140,7 @@ define('plugins/synth', [
             this._super();
 
             var gain = this.rack.context.createGain();
-            gain.gain.value = 0.5; // start from min
+            gain.gain.value = this.gain; // start from min
 
             gain.connect(this.rack.recorder);
             this.gain = gain;
@@ -144,6 +154,9 @@ define('plugins/synth', [
                 var buff = sample.getChannelData(0);
                 buff.set(msg.data.buff);
                 self.samples[msg.data.idx] = sample;
+                if(msg.data.idx === self.notes.length) {
+                    self.onReady();
+                }
             };
 
             this.generate();

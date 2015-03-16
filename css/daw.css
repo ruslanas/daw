@@ -1,11 +1,12 @@
 canvas {
 	background-color: #000;
+    border: 1px solid rgb(119, 119, 119);
 }
 .btn i {
     transition: transform .2s;
 }
 form .btn:hover i {
-    transform: scale(1.7, 1.7);
+    transform: scale(1.6, 1.6);
 }
 #tracks {
     width: 512px;
@@ -37,4 +38,21 @@ a:hover {
 
 .playing .glyphicon {
     display: inherit !important;
+}
+
+#save-form {
+    transition: opacity .5s, height .5s;
+    opacity: 0;
+    height: 0;
+    visibility: hidden;
+}
+
+#save-form.show {
+    visibility: visible;
+    opacity: 1;
+    height: 200px;
+}
+.playlist {
+    height: 500px;
+    overflow: hidden;
 }

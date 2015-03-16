@@ -10,11 +10,15 @@ onmessage = function(msg) {
 
     // fill samples
     for(var j=0;j<len;j++) {
-        buff[j] = Math.sin(2 * Math.PI * j / cycle)
-            + Math.sin(2.3 * 2 * Math.PI * j / cycle)
-            + Math.sin(3.6 * 2 * Math.PI * j / cycle)
-            + Math.random() * 0.1 // noise
-            ;
+        buff[j] = Math.sin(2 * Math.PI * j / cycle);
+        var c = 1;
+        for(var k=0;k<msg.data.modes.length;k++) {
+            buff[j] += Math.sin(msg.data.modes[k] * 2 * Math.PI * j / cycle) * c;
+            c *= 0.5;
+        }
+        if(msg.data.noise) {
+            buff[j] += Math.random() * msg.data.noise;
+        }
     }
 
     var points = msg.data.bezier;

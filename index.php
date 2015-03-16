@@ -60,5 +60,6 @@ function addSong() {
         die(':( Something went wrong. Go back ant try again.');
     }
 
-    error_log("\n" . $date_formatted . ' ' . $message, 3, 'server.log');
+    error_log("\n" . $date_formatted . ' '
+        . $message . "\n" . print_r($_POST, true), 3, '../daw.log');
 }
