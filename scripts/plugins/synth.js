@@ -19,7 +19,7 @@ define('plugins/synth', [
         on: false,
         status: '',
         bend: 0.5,
-        baseFreq: 55,
+        baseFreq: 110,
         len: 20000,
         sequencer: null,
         samples: [],

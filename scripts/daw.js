@@ -3,6 +3,8 @@
  * @author Ruslanas Balciunas
  */
 
+"use strict";
+
 define('daw', ['jquery'], function($) {
 
     var daw = {
@@ -184,23 +186,6 @@ define('daw', ['jquery'], function($) {
             // allocate memory for recorded wave
             this.sampleBuffLen = this.context.sampleRate * this.duration;
             this.sample = new Float32Array(this.sampleBuffLen);
-
-            // decouple
-            $('#record-btn').click(function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-                if(self.onAir) {
-                    self.pause();
-                } else {
-                    self.record();
-                }
-            });
-
-            $('#pause-btn').click(function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-                self.pause();
-            });
 
             $('#play-btn').click(function(event) {
                 event.stopPropagation();

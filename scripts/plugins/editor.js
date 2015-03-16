@@ -4,6 +4,8 @@
  * @author Ruslanas Balciunas
  */
 
+"use strict";
+
 define('plugins/editor', [
 	'Gadget',
 	'jquery'
@@ -11,14 +13,14 @@ define('plugins/editor', [
 
 	var Editor = Gadget.extend({
 
-		markerPos: -1,
+		markerPos: 10,
 		start: 0,
 		zoom: 128,
 
 		init: function() {
 			this._super();
 
-			this.title = 'Wave editor';
+			this.title = 'Recorder';
 			this.width(512);
 			this.height(150);
 		},
@@ -47,8 +49,11 @@ define('plugins/editor', [
 
 			this.start = Math.min(this.start,
 				this.rack.sample.length - this.canvas.width * this.zoom);
+
+			this.start = Math.round(this.start);
+
 			var len = this.canvas.width * this.zoom;
-			var scaleY = -(this.height() - 14 / 2);
+			var scaleY = this.height() / 2;
 
 			for(var i=0;i<this.canvas.width;i++) {
 				var idx = this.start + i * this.zoom;
@@ -56,26 +61,32 @@ define('plugins/editor', [
 				this.context.fillRect(i, this.baseline, 0.7, amp + 1);
 			}
 
+			this.context.fillStyle = '#FFF';
 
 			this.context.fillRect(
-				this.markerPos, this.titleHeight, 1, this.height());
+				(this.markerPos - this.start) / this.zoom,
+				0, 0.5, this.height());
 
 			// frame number
 			this.context.fillText(
-				'Pos: ' + this.start + ' Zoom: ' + this.zoom,
+				'Pos: ' + this.start + ' Zoom: ' + this.zoom + ' Val: '
+					+ this.getSample(this.markerPos),
 				0, this.canvas.height);
 
 		},
 
 		onMouseDown: function(event) {
-			this.markerPos = event.clientX - $(this.canvas).offset().left - 1;
+			var x = event.clientX - $(this.canvas).offset().left - 1;
+				// - getComputedStyle(this.canvas, null)
+				// 	.getPropertyValue('border-left-width').replace('px', '');
+			this.markerPos = Math.round(this.start + x * this.zoom);
 		},
 
 		onMouseWheel: function(event) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			var delta = event.deltaY;
+			var delta = -event.deltaY;
 
 			if(event.ctrlKey) {
 				// zoom
@@ -92,6 +103,57 @@ define('plugins/editor', [
 
 		initialize: function() {
 			this._super();
+			var self = this;
+			this.addButton('glyphicon glyphicon-record', function(on) {
+				if(self.rack.onAir) {
+					self.rack.pause();
+				} else {
+					self.rack.record();
+				}
+			});
+
+			this.addButton('fa fa-microphone', function(on) {
+
+                if(self.rack.micGain.gain.value > 0) {
+                    self.rack.micGain.gain.value = 0;
+
+                    if(self.rack.stream) {
+                        self.rack.stream.stop();
+                        self.rack.stream = null;
+                    }
+
+                } else {
+
+                    navigator.getUserMedia({audio: true}, function(stream) {
+                        self.rack.stream = stream;
+                        self.rack.mic =
+                        	self.rack.context.createMediaStreamSource(stream);
+                        self.rack.mic.connect(self.rack.micGain);
+                        self.rack.micGain.gain.value = 0.4;
+
+                    }, function(err) {
+                        self.rack.setStatus('User media not available');
+                    });
+
+                }
+			});
+
+			this.addButton('glyphicon glyphicon-stop', function(on) {
+				self.rack.pause();
+			});
+			this.addButton('glyphicon glyphicon-play', function(on) {
+				self.rack.play();
+			});
+			this.addButton('glyphicon glyphicon-cloud-upload', function(on) {
+                self.rack.upload();
+			});
+			this.addButton('glyphicon glyphicon-volume-up', function(on) {
+                if(self.rack.getVolume()) {
+                    self.rack.mute();
+                } else {
+                    self.rack.setVolume(1);
+                }
+			});
 		}
 	});
 

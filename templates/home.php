@@ -27,54 +27,28 @@
                 src="scripts/lib/requirejs/require.js"></script>
     </head>
     <body>
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="<?php echo $baseUrl;?>">Digital Audio Workstation
+                        <sup><small>Beta 0.2.0</small></sup>
+                    </a>
+                </div>
+            </div>
+        </nav>
         <div class="container">
-            <h1>Digital Audio Workstation
-                <sup><small>Beta 0.2.0</small></sup></h1>
             <div class="row">
                 <div class="col-sm-6">
-                    <div id="narrow"></div>
-                    <form class="form-inline">
-                        <div class="form-group">
-                            <div class="btn-group">
-                                <button id="record-btn"
-                                        title="Record a sound"
-                                        class="btn btn-primary">
-                                    <i class="fa fa-circle"></i>
-                                </button>
-                                <button class="btn btn-primary"
-                                        title="Turn microphone on/off"
-                                        id="mic-btn">
-                                    <i class="fa fa-microphone"></i>
-                                </button>
-                                <button id="pause-btn"
-                                        disabled="disabled"
-                                        title="Pause playback"
-                                        class="btn btn-success">
-                                    <i class="glyphicon glyphicon-stop"></i>
-                                </button>
-                                <button id="play-btn"
-                                        disabled="disabled"
-                                        title="Play recorded sound"
-                                        class="btn btn-success">
-                                    <i class="glyphicon glyphicon-play"></i>
-                                </button>
-                                <button class="btn btn-primary"
-                                        title="Upload to server"
-                                        disabled="disabled"
-                                        id="save-btn">
-                                    <i class="glyphicon glyphicon-cloud-upload"></i>
-                                </button>
-                                </button>
-                                <button class="btn btn-primary"
-                                        title="Speakers on/off"
-                                        id="volume-btn">
-                                    <i class="glyphicon glyphicon-volume-up"></i>
-                                </button>
-                            </div>
-                            <p id="message">Click the circle to record</p>
-                        </div>
-                    </form>
+                    <div id="narrow" class="row">
+                        <div class="col-sm-6" id="buffer"></div>
+                        <div class="col-sm-6" id="analyser"></div>
+                    </div>
                     <div id="wide"></div>
+                    <p id="message">Click the circle to record</p>
+                    <div class="row">
+                        <div class="col-sm-6" id="drums"></div>
+                        <div class="col-sm-6" id="strings"></div>
+                    </div>
                     <p>
                         At the moment only latest
                         <a href="http://www.google.com/chrome/">Chrome</a> browsers support all the features.
@@ -89,6 +63,7 @@
                     </p>
                 </div>
                 <div class="col-sm-6">
+
                     <div id="save-form">
                         <form>
                             <div class="form-group">

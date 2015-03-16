@@ -3,6 +3,8 @@
  * @author Ruslanas Balciunas
  */
 
+"use strict";
+
 // polyfill
 navigator.getUserMedia = navigator.getUserMedia
 	|| navigator.webkitGetUserMedia
@@ -34,15 +36,15 @@ require([
 	DAW.initialize({
 		duration: 30,
 		buffer_size: 2048,
-		bpm: 140
+		bpm: 120
 	});
 
-	DAW.plug('#narrow', new Visualiser(), {
+	DAW.plug('#buffer', new Visualiser(), {
 		title: 'Buffer'
 	});
 
-	DAW.plug('#narrow', new Analyzer(), {
-		title: ' '
+	DAW.plug('#analyser', new Analyzer(), {
+		title: 'Analyser'
 	});
 
 	var sampler = new Sampler();
@@ -57,18 +59,16 @@ require([
 		sampler.loadTracks(data);
 	});
 
-	DAW.plug('#wide', new Editor(), {
-		title: ''
-	});
+	DAW.plug('#wide', new Editor());
 
 	var drum = new Synth();
 	var sequencer = new Sequencer();
 
 	//drum.modes = [2.3, 3.6];
 	drum.modes = [1.59, 1.35, 1.67, 1.99, 2.3, 2.61];
-	drum.len = 25000;
-	//drum.noise = 0.1;
-
+	drum.len = 30000;
+	//drum.noise = 0.05;
+	drum.gain = 0.4;
 	sequencer.pattern = [
 		1, -1, -1, -1,
 		1, -1, -1, -1,
@@ -78,13 +78,15 @@ require([
 
 	sequencer.synth = drum;
 
-	DAW.plug('#wide', sequencer);
-	DAW.plug('#wide', drum);
+	DAW.plug('#drums', sequencer);
+	DAW.plug('#drums', drum, {
+		title: 'Rythm'
+	});
 
 	var synth2 = new Synth();
 
 	synth2.modes = [2, 3, 4, 5, 6];
-	synth2.len = 12000;
+	synth2.len = 17000;
 	synth2.gain = 0.3;
 	synth2.bezierPoints = {
         p0: Bezier.point(0, 0),
@@ -95,13 +97,11 @@ require([
 
 	var sequencer2 = new Sequencer();
 
-	synth2.onReady(function() {
-		sequencer2.on = true;
-	});
-
 	sequencer2.synth = synth2;
 
-	DAW.plug('#wide', sequencer2);
-	DAW.plug('#wide', synth2);
+	DAW.plug('#strings', sequencer2);
+	DAW.plug('#strings', synth2, {
+		title: 'Melody'
+	});
 
 });

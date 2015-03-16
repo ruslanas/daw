@@ -1,11 +1,7 @@
-canvas {
-	background-color: #000;
-    border: 1px solid rgb(119, 119, 119);
-}
 .btn i {
     transition: transform .2s;
 }
-form .btn:hover i {
+.btn:hover i {
     transform: scale(1.6, 1.6);
 }
 #tracks {
@@ -55,4 +51,9 @@ a:hover {
 .playlist {
     height: 500px;
     overflow: hidden;
+}
+canvas {
+    border: 1px solid;
+    -webkit-user-select: none;
+    user-select: none;
 }

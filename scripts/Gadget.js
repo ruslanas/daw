@@ -58,22 +58,36 @@ define('Gadget', [
 			if(!this.title) {
 				this.titleHeight = 0;
 			}
+
 			this.canvas = document.createElement('canvas');
 
-			this.canvas.setAttribute('height', this.height());
-			this.canvas.setAttribute('width', this.width());
+			var container = document.createElement('div');
+			var titleBar = document.createElement('h4');
 
-			this.parent.appendChild(this.canvas);
+			this.container = container;
+			container.className = 'gadget';
+			titleBar.className = 'titlebar';
+
+			container.appendChild(titleBar);
+			container.appendChild(this.canvas);
+
+			var title = document.createTextNode(this.title);
+			titleBar.appendChild(title);
+			this.parent.appendChild(container);
+
+			this.canvas.setAttribute('height', this.height());
+			this.canvas.setAttribute('width', this.container.offsetWidth);
+
 			this.context = this.canvas.getContext('2d');
 
-			this.baseline = (this.canvas.height + this.titleHeight) / 2;
+			this.baseline = this.canvas.height / 2;
 
 			var color = 'rgb(119, 119, 119)';
 			this.context.fillStyle = color;
 			this.context.font = "12px Arial, sans-serif";
-			this.context.fillText(this.title, 5, 12);
 			this.context.strokeStyle = color;
 
+			// events
             this.canvas.onmousemove = function(event) {
             	self.onMouseMove(event);
             };
@@ -91,13 +105,37 @@ define('Gadget', [
 			});
 		},
 
+		addButton: function(icon, handler, options) {
+			var options = options || {
+				type: 'checkbox'
+			};
+
+			var titleBar = this.container.querySelector('.titlebar');
+			var iconElement = document.createElement('i');
+			iconElement.className = icon;
+
+			var button = document.createElement('button');
+			button.className = 'btn btn-sm btn-primary';
+			button.appendChild(iconElement);
+			titleBar.appendChild(button);
+
+			button.onclick = function() {
+
+				if(iconElement.className.match(/\btext-danger\b/)) {
+					iconElement.className =
+						iconElement.className.replace(/\btext-danger\b/, '');
+					handler(false);
+				} else {
+					iconElement.className += ' text-danger';
+					handler(true);
+				}
+			}
+		},
+
 		clear: function() {
 			this.context.clearRect(
-				0,
-				this.titleHeight,
-				this.canvas.width,
-				this.canvas.height - this.titleHeight
-			);
+				0, 0, this.canvas.width, this.canvas.height);
+			this.context.fillStyle = 'rgb(119, 119, 119)';
 		},
 
 		update: function() {

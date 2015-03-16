@@ -4,6 +4,8 @@
  * @author Ruslanas Balciunas
  */
 
+"use strict";
+
 define('plugins/sequencer', [
     'Gadget',
     'jquery'
@@ -28,15 +30,10 @@ define('plugins/sequencer', [
         onClick: function(event) {
 
             var dx = this.canvas.width / 16;
-            var dy = (this.canvas.height - this.titleHeight) / 24;
+            var dy = this.canvas.height / 24;
 
             var x = event.clientX - $(this.canvas).offset().left;
             var y = this.canvas.height - (event.clientY - $(this.canvas).offset().top + $('body').scrollTop());
-
-            if(y > this.canvas.height - this.titleHeight && x > this.canvas.width - 12) {
-                this.on = !this.on;
-                return;
-            }
 
             var note = Math.floor(y/dy);
             var pos = Math.floor(x/dx);
@@ -61,18 +58,12 @@ define('plugins/sequencer', [
         redraw: function() {
             this.clear();
             var dx = this.canvas.width / 16;
-            var dy = (this.canvas.height - this.titleHeight) / 24;
+            var dy = this.canvas.height / 24;
 
-            this.context.clearRect(this.canvas.width - 12, 0, this.canvas.width, 12);
-            if(this.on) {
-                this.context.fillRect(this.canvas.width - 10, 2, 8, 8);
-            } else {
-                this.context.strokeRect(this.canvas.width - 10, 2, 8, 8);
-            }
             for(var i=0;i<this.pattern.length;i++) {
                 this.context.fillRect(dx * i, this.canvas.height - dy * (this.pattern[i] + 1), dx, dy);
             }
-            this.context.fillRect((this.idx % this.pattern.length) * dx, this.titleHeight, 0.5, this.canvas.height);
+            this.context.fillRect((this.idx % this.pattern.length) * dx, 0, 0.5, this.canvas.height);
         },
 
         next: function() {
@@ -83,7 +74,12 @@ define('plugins/sequencer', [
 
         initialize: function() {
             this._super();
+
+            var self = this;
             this.context.font = '9px Arial';
+            this.addButton('glyphicon glyphicon-play', function(on) {
+                self.on = on;
+            });
         }
     });
 
