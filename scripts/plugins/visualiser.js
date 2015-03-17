@@ -24,7 +24,7 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 
 			var scale = (this.canvas.height - this.titleHeight) / 2;
 
-			for(var i=0;i<this.canvas.length;i++) {
+			for(var i=0;i<this.canvas.width;i++) {
 				var amp = this.rack.buffer[i];
 				var height = this.baseline + amp * scale;
 				this.context.fillRect(i, height, 1, 1);
