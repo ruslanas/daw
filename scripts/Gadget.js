@@ -107,7 +107,8 @@ define('Gadget', [
 
 		addButton: function(icon, handler, options) {
 			var options = options || {
-				type: 'checkbox'
+				type: 'radio',
+				group: 'group'
 			};
 
 			var titleBar = this.container.querySelector('.titlebar');
@@ -119,14 +120,46 @@ define('Gadget', [
 			button.appendChild(iconElement);
 			titleBar.appendChild(button);
 
+			if(options.type === 'radio') {
+				button.setAttribute('data-group', options.group);
+			}
+
+			if(options.type === 'checkbox') {
+				button.setAttribute('data-class', options.checked || '');
+			}
+
 			button.onclick = function() {
 
-				if(iconElement.className.match(/\btext-danger\b/)) {
-					iconElement.className =
-						iconElement.className.replace(/\btext-danger\b/, '');
+				var icn = this.querySelector('i');
+
+				// radio?
+				if(this.hasAttribute('data-group')) {
+					var selector = 'button[data-group="'
+						+ this.getAttribute('data-group') + '"]';
+					var buttons =
+						this.parentNode.querySelectorAll(selector);
+
+					for(var i=0;i<buttons.length;i++) {
+						buttons[i].removeAttribute('disabled');
+					}
+
+					this.setAttribute('disabled', 'disabled');
+					handler(true);
+
+				} else if(this.hasAttribute('data-checked')) {
+
+					var currState = icn.className;
+					icn.className = this.getAttribute('data-class');
+					this.setAttribute('data-class', currState);
+
+					this.removeAttribute('data-checked');
 					handler(false);
 				} else {
-					iconElement.className += ' text-danger';
+					var currState = icn.className;
+					icn.className = this.getAttribute('data-class');
+					this.setAttribute('data-class', currState);
+
+					this.setAttribute('data-checked', 'checked');
 					handler(true);
 				}
 			}

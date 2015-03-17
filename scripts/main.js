@@ -67,18 +67,19 @@ require([
 	//drum.modes = [2.3, 3.6];
 	drum.modes = [1.59, 1.35, 1.67, 1.99, 2.3, 2.61];
 	drum.len = 30000;
-	//drum.noise = 0.05;
+	drum.baseFreq = 55;
+	drum.noise = 0.1;
 	drum.gain = 0.4;
+
+	sequencer.control(drum);
+
+	DAW.plug('#drums', sequencer);
 	sequencer.pattern = [
 		1, -1, -1, -1,
 		1, -1, -1, -1,
 		1, -1, -1, -1,
 		1, -1, -1, -1
 	];
-
-	sequencer.synth = drum;
-
-	DAW.plug('#drums', sequencer);
 	DAW.plug('#drums', drum, {
 		title: 'Rythm'
 	});
@@ -97,7 +98,8 @@ require([
 
 	var sequencer2 = new Sequencer();
 
-	sequencer2.synth = synth2;
+	sequencer2.len = 32;
+	sequencer2.control(synth2);
 
 	DAW.plug('#strings', sequencer2);
 	DAW.plug('#strings', synth2, {

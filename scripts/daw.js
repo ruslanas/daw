@@ -50,9 +50,6 @@ define('daw', ['jquery'], function($) {
         },
 
         play: function () {
-            $('#save-btn').attr('disabled', 'disabled');
-            $('#pause-btn').removeAttr('disabled');
-            $('#play-btn').attr('disabled', 'disabled');
 
             this.player = this.context.createBufferSource();
 
@@ -69,6 +66,8 @@ define('daw', ['jquery'], function($) {
             this.player.connect(this.visualiser);
 
             this.setVolume(1);
+
+            this.player.loop = true;
 
             this.player.start();
 

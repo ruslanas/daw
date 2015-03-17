@@ -112,7 +112,7 @@ define('plugins/editor', [
 				}
 			});
 
-			this.addButton('fa fa-microphone', function(on) {
+			this.addButton('fa fa-microphone-slash', function(on) {
 
                 if(self.rack.micGain.gain.value > 0) {
                     self.rack.micGain.gain.value = 0;
@@ -136,9 +136,13 @@ define('plugins/editor', [
                     });
 
                 }
+			}, {
+				type: 'checkbox',
+				checked: 'fa fa-microphone'
 			});
 
 			this.addButton('glyphicon glyphicon-stop', function(on) {
+
 				self.rack.pause();
 			});
 			this.addButton('glyphicon glyphicon-play', function(on) {
@@ -153,6 +157,9 @@ define('plugins/editor', [
                 } else {
                     self.rack.setVolume(1);
                 }
+			}, {
+				type: 'checkbox',
+				checked: 'glyphicon glyphicon-volume-off'
 			});
 		}
 	});

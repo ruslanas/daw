@@ -4,9 +4,10 @@
  * @author Ruslanas Balciunas
  */
 
+"use strict";
+
 define('plugins/visualiser', ['Gadget'], function(Gadget) {
 
-	// Gadget class
 	var Visualiser = Gadget.extend({
 
 		init: function() {
@@ -18,13 +19,12 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 
 			this.clear();
 
-		    this.context.fillStyle = 'rgb(119, 119, 119)';
 			this.context.fillText(
 				'Buffer size: ' + this.rack.recordFrameLen, 0, this.canvas.height);
 
 			var scale = (this.canvas.height - this.titleHeight) / 2;
 
-			for(var i=0;i<this.rack.buffer.length;i++) {
+			for(var i=0;i<this.canvas.length;i++) {
 				var amp = this.rack.buffer[i];
 				var height = this.baseline + amp * scale;
 				this.context.fillRect(i, height, 1, 1);

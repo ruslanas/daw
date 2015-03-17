@@ -15,21 +15,20 @@ define('plugins/sequencer', [
 
         pattern: null,
         idx: 0,
+        len: 16,
         on: false,
         synth: null,
 
         init: function() {
             this._super();
             this.pattern = [];
-            for(var i=0;i<16;i++) {
-                this.pattern[i] = -1;
-            }
+            this.synth = [];
             this.title = 'Sequencer';
         },
 
         onClick: function(event) {
 
-            var dx = this.canvas.width / 16;
+            var dx = this.canvas.width / this.len;
             var dy = this.canvas.height / 24;
 
             var x = event.clientX - $(this.canvas).offset().left;
@@ -50,20 +49,26 @@ define('plugins/sequencer', [
             var note = this.next();
             if(this.on) {
                 if(note >= 0) {
-                    this.synth.playNote(note);
+                    for(var i=0;i<this.synth.length;i++) {
+                        this.synth[i].playNote(note);
+                    }
                 }
             }
         },
 
         redraw: function() {
             this.clear();
-            var dx = this.canvas.width / 16;
+            var dx = this.canvas.width / this.len;
             var dy = this.canvas.height / 24;
 
             for(var i=0;i<this.pattern.length;i++) {
                 this.context.fillRect(dx * i, this.canvas.height - dy * (this.pattern[i] + 1), dx, dy);
             }
             this.context.fillRect((this.idx % this.pattern.length) * dx, 0, 0.5, this.canvas.height);
+        },
+
+        control: function(synth) {
+            this.synth.push(synth);
         },
 
         next: function() {
@@ -75,10 +80,16 @@ define('plugins/sequencer', [
         initialize: function() {
             this._super();
 
+            for(var i=0;i<this.len;i++) {
+                this.pattern[i] = -1;
+            }
+
             var self = this;
-            this.context.font = '9px Arial';
             this.addButton('glyphicon glyphicon-play', function(on) {
                 self.on = on;
+            }, {
+                type: 'checkbox',
+                checked: 'glyphicon glyphicon-pause'
             });
         }
     });

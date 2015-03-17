@@ -31,15 +31,9 @@ define('plugins/synth', [
 
         init: function() {
             this._super();
-            var f = this.baseFreq;
 
             this.notes = [];
             this.samples = [];
-
-            for(var i=0;i<24;i++) {
-                this.notes.push(f);
-                f = f * Math.pow(2, 1/12);
-            }
 
             this.bezierPoints = {
                 p0: Bezier.point(0, 1),
@@ -158,6 +152,12 @@ define('plugins/synth', [
                     self.onReady();
                 }
             };
+
+            var f = this.baseFreq;
+            for(var i=0;i<24;i++) {
+                this.notes.push(f);
+                f = f * Math.pow(2, 1/12);
+            }
 
             this.generate();
         }
