@@ -27,23 +27,18 @@ define('daw', ['jquery'], function($) {
         worker: null,
         bpm: 180,
 
-        plug: function(selector, gadget, options) {
+        insert: function(selector, gadget, options) {
             this.gadgets.push(gadget);
-            gadget.connect(selector, this, options || {});
+            gadget.attach(selector, this, options || {});
         },
 
         pause: function() {
-            // Update GUI
-            $('#save-btn').removeAttr('disabled');
-            $('#pause-btn').attr('disabled', 'disabled');
-            $('#play-btn').removeAttr('disabled');
-            $('#record-btn').css('color', '#FFF');
 
             this.onAir = false;
 
             if(this.player) {
                 this.player.stop();
-                this.player.disconnect(this.visualiser);
+                this.player.disconnect(this.masterGain);
                 this.player = null;
             }
 
@@ -63,7 +58,7 @@ define('daw', ['jquery'], function($) {
 
             this.player.buffer = buff;
 
-            this.player.connect(this.visualiser);
+            this.player.connect(this.masterGain);
 
             this.setVolume(1);
 
@@ -90,9 +85,6 @@ define('daw', ['jquery'], function($) {
 
         setVolume: function(gain) {
             this.masterGain.gain.value = gain;
-            var $i = $('#volume-btn i');
-            $i.removeClass('glyphicon-volume-off');
-            $i.addClass('glyphicon-volume-up');
         },
 
         getVolume: function() {
@@ -101,15 +93,7 @@ define('daw', ['jquery'], function($) {
 
         record: function () {
             this.rewind();
-
-            $('#record-btn').css('color', '#F00');
-            $('#play-btn').attr('disabled', 'disabled');
-            $('#pause-btn').removeAttr('disabled');
-
-            var self = this;
             this.onAir = true;
-            $('#save-btn').attr('disabled', 'disabled');
-
         },
 
         appendFrame: function(buff) {
@@ -142,26 +126,28 @@ define('daw', ['jquery'], function($) {
 
             this.recorder = audio.createScriptProcessor(
                 this.recordFrameLen, 1, 1);
+
             this.recorder.onaudioprocess = function(e) {
                 var input = e.inputBuffer.getChannelData(0);
 
                 var output = e.outputBuffer.getChannelData(0);
-                // bypass
+
                 output.set(input);
                 // add frame to buffer
                 if(self.onAir) {
                     self.appendFrame(output);
                 }
             };
-            self.recorder.connect(self.visualiser);
+
+            this.masterGain = audio.createGain();
 
             this.micGain = audio.createGain();
             this.micGain.gain.value = 0;
             this.micGain.connect(this.recorder);
 
-            this.masterGain = audio.createGain();
-            this.visualiser.connect(this.masterGain);
-            this.masterGain.connect(this.context.destination);
+            this.masterGain.connect(this.recorder);
+            this.recorder.connect(this.visualiser);
+            this.visualiser.connect(audio.destination);
 
         },
 
@@ -173,7 +159,7 @@ define('daw', ['jquery'], function($) {
             // option names lower_case_with_underscores more natural
             this.options = options || {};
 
-            this.bpm = this.options.bpm || 120;
+            this.bpm = this.options.bpm || this.bmp;
 
             this.duration = options.duration || this.duration;
             this.recordFrameLen = options.buffer_size || this.recordFrameLen;
@@ -185,59 +171,6 @@ define('daw', ['jquery'], function($) {
             // allocate memory for recorded wave
             this.sampleBuffLen = this.context.sampleRate * this.duration;
             this.sample = new Float32Array(this.sampleBuffLen);
-
-            $('#play-btn').click(function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-                self.play();
-            });
-
-            $('#volume-btn').click(function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-
-                if(self.getVolume()) {
-                    self.mute();
-                } else {
-                    self.setVolume(1);
-                }
-            });
-
-            $('#save-btn').click(function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-
-                self.upload();
-            });
-
-            $('#mic-btn').click(function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                if(self.micGain.gain.value > 0) {
-                    $(this).css('color', '#FFF');
-                    self.micGain.gain.value = 0;
-
-                    if(self.stream) {
-                        self.stream.stop();
-                        self.stream = null;
-                    }
-
-                } else {
-                    $(this).css('color', '#F00');
-
-                    navigator.getUserMedia({audio: true}, function(stream) {
-                        self.stream = stream;
-                        self.mic = self.context.createMediaStreamSource(stream);
-                        self.mic.connect(self.micGain);
-                        self.micGain.gain.value = 0.4;
-
-                    }, function(err) {
-                        self.setStatus('User media not available');
-                    });
-
-                }
-            });
 
             $('#save-form').submit(function(event) {
                 event.preventDefault();

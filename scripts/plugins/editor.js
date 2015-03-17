@@ -22,7 +22,7 @@ define('plugins/editor', [
 
 			this.title = 'Recorder';
 			this.width(512);
-			this.height(150);
+			this.height(100);
 		},
 
 		getSample: function(idx) {

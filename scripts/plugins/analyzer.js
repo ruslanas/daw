@@ -4,9 +4,10 @@
  * @author Ruslanas Balciunas
  */
 
+"use strict";
+
 define('plugins/analyzer', ['Gadget'], function(Gadget) {
 
-	// Gadget class
 	var Analyzer = Gadget.extend({
 		init: function() {
 			this._super();
@@ -29,14 +30,14 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 			}
       	},
 
-      	// insert between visualiser and masterGain
+      	// insert between masterGain and visualiser
 		initialize: function() {
 			this._super();
 
 			this.rack.analyzer = this.rack.context.createAnalyser();
-			this.rack.visualiser.disconnect(this.rack.masterGain);
+			this.rack.visualiser.disconnect(this.rack.context.destination);
 			this.rack.visualiser.connect(this.rack.analyzer);
-			this.rack.analyzer.connect(this.rack.masterGain);
+			this.rack.analyzer.connect(this.rack.context.destination);
 			this.rack.analyzer.fftSize = 128;
 
 			this.bufferLength = this.rack.analyzer.frequencyBinCount;

@@ -26,6 +26,7 @@ define('plugins/synth', [
         modes: [],
         noise: 0,
         gain: 1,
+        out: null,
         x: -1,
         y: -1,
 
@@ -98,12 +99,12 @@ define('plugins/synth', [
 
             oscillator.buffer = this.samples[note];
 
-            oscillator.connect(this.gain);
+            oscillator.connect(this.out);
 
             oscillator.onended = function() {
                 self.on = false;
                 oscillator.stop();
-                oscillator.disconnect(self.gain);
+                oscillator.disconnect(self.out);
                 oscillator = null;
             };
 
@@ -130,14 +131,20 @@ define('plugins/synth', [
             }
         },
 
+        // gadget inserted and attached
         initialize: function() {
             this._super();
 
-            var gain = this.rack.context.createGain();
-            gain.gain.value = this.gain; // start from min
+            var f = this.baseFreq;
+            for(var i=0;i<24;i++) {
+                this.notes.push(f);
+                f = f * Math.pow(2, 1 / 12);
+            }
 
-            gain.connect(this.rack.recorder);
-            this.gain = gain;
+            var amp = this.rack.context.createGain();
+            amp.gain.value = this.gain;
+
+            this.out = amp;
 
             this.worker = new Worker('scripts/synthWorker.js');
             var self = this;
@@ -152,12 +159,6 @@ define('plugins/synth', [
                     self.onReady();
                 }
             };
-
-            var f = this.baseFreq;
-            for(var i=0;i<24;i++) {
-                this.notes.push(f);
-                f = f * Math.pow(2, 1/12);
-            }
 
             this.generate();
         }

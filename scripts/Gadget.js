@@ -18,7 +18,7 @@ define('Gadget', [
 		// Constructor. No DOM operations here
 		init: function() {
 			this.width(256);
-			this.height(114);
+			this.height(100);
 		},
 
 		width: function(val) {
@@ -62,7 +62,7 @@ define('Gadget', [
 			this.canvas = document.createElement('canvas');
 
 			var container = document.createElement('div');
-			var titleBar = document.createElement('h4');
+			var titleBar = document.createElement('h5');
 
 			this.container = container;
 			container.className = 'gadget';
@@ -84,7 +84,6 @@ define('Gadget', [
 
 			var color = 'rgb(119, 119, 119)';
 			this.context.fillStyle = color;
-			this.context.font = "12px Arial, sans-serif";
 			this.context.strokeStyle = color;
 
 			// events
@@ -180,7 +179,7 @@ define('Gadget', [
 		},
 
 		// do not call from plugins
-		connect: function(container, rack, options) {
+		attach: function(container, rack, options) {
 			this.title = options.title || this.title;
 			this.parent = document.querySelector(container);
 			this.options = options;
