@@ -43,8 +43,8 @@
                         <div class="col-sm-6" id="buffer"></div>
                         <div class="col-sm-6" id="analyser"></div>
                     </div>
-                    <div id="wide"></div>
                     <p id="message">Click the circle to record</p>
+                    <div id="wide"></div>
                     <div class="row">
                         <div class="col-sm-6" id="drums"></div>
                         <div class="col-sm-6" id="strings"></div>

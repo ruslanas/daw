@@ -30,14 +30,15 @@ require([
     'plugins/analyzer',
     'plugins/synth',
     'plugins/sequencer',
-    'plugins/mixer'
+    'plugins/mixer',
+    'plugins/delay'
 
     ], function(
-        DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer, Mixer) {
+        DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer, Mixer, Delay) {
 
     DAW.initialize({
         duration: 10,
-        buffer_size: 1024,
+        buffer_size: 512,
         bpm: 140
     });
 
@@ -63,15 +64,15 @@ require([
 
     var mixer = new Mixer();
 
-    DAW.insert('#wide', mixer);
     DAW.insert('#wide', new Editor());
+    DAW.insert('#wide', mixer);
 
     var drum = new Synth();
     var sequencer = new Sequencer();
 
     //drum.modes = [2.3, 3.6];
     drum.modes = [1.59, 1.35, 1.67, 1.99, 2.3, 2.61];
-    drum.len = 30000;
+    drum.len = 20000;
     drum.baseFreq = 55;
     drum.noise = 0.1;
 
@@ -109,6 +110,10 @@ require([
         title: 'Melody'
     });
 
+    var delay = new Delay();
+    DAW.insert('#strings', delay);
+    delay.connect(synth2);
+
     mixer.connect(drum, 0);
-    mixer.connect(synth2, 1);
+    mixer.connect(delay, 1);
 });

@@ -104,14 +104,6 @@ define('plugins/editor', [
 		initialize: function() {
 			this._super();
 			var self = this;
-			this.addButton('glyphicon glyphicon-record', function(on) {
-				if(self.rack.onAir) {
-					self.rack.pause();
-				} else {
-					self.rack.record();
-				}
-			});
-
 			this.addButton('fa fa-microphone-slash', function(on) {
 
                 if(self.rack.micGain.gain.value > 0) {
@@ -141,6 +133,14 @@ define('plugins/editor', [
 				checked: 'fa fa-microphone'
 			});
 
+			this.addButton('glyphicon glyphicon-record', function(on) {
+				if(self.rack.onAir) {
+					self.rack.pause();
+				} else {
+					self.rack.record();
+				}
+			});
+
 			this.addButton('glyphicon glyphicon-stop', function(on) {
 
 				self.rack.pause();
@@ -150,16 +150,6 @@ define('plugins/editor', [
 			});
 			this.addButton('glyphicon glyphicon-cloud-upload', function(on) {
                 self.rack.upload();
-			});
-			this.addButton('glyphicon glyphicon-volume-up', function(on) {
-                if(self.rack.getVolume()) {
-                    self.rack.mute();
-                } else {
-                    self.rack.setVolume(1);
-                }
-			}, {
-				type: 'checkbox',
-				checked: 'glyphicon glyphicon-volume-off'
 			});
 		}
 	});

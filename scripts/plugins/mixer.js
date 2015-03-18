@@ -32,11 +32,6 @@ define('plugins/mixer', [
 
             for(var i=0;i<this.sliders.length;i++) {
                 var x = i * width + width / 2;
-                /*
-                this.context.fillText("0 dB", x + 5, this.padding + 5);
-                this.context.fillText(
-                    "-98 dB", x + 5, this.canvas.height - this.padding + 5);
-                */
                 this.context.strokeRect(
                     x - 2,
                     this.padding,
@@ -48,6 +43,15 @@ define('plugins/mixer', [
                     x - 6,
                     this.canvas.height - this.padding - this.sliders[i] * height,
                     12, 2);
+
+                this.context.textAlign = 'center';
+                if(i === 0) {
+                    var title = "Master";
+                } else {
+                    var title = this.channels[i - 1].title;
+                }
+                    this.context.fillText(
+                        title, x, this.canvas.height - 5);
             }
         },
 
@@ -71,7 +75,7 @@ define('plugins/mixer', [
             this.sliders[idx] = val;
 
             if(idx > 0) {
-                this.channels[idx - 1].gain.value = val;
+                this.channels[idx - 1].input.gain.value = val;
             }
 
         },
@@ -84,8 +88,8 @@ define('plugins/mixer', [
             if(!gadget.out) {
                 throw 'No out node';
             }
-
-            gadget.out.connect(this.channels[channel]);
+            this.channels[channel].title = gadget.title;
+            gadget.out.connect(this.channels[channel].input);
         },
 
         initialize: function() {
@@ -94,10 +98,25 @@ define('plugins/mixer', [
 
             for(var i=0;i<this.channels.length;i++) {
                 var fader = this.rack.context.createGain();
-                this.channels[i] = fader;
+                this.channels[i] = {
+                    input: fader,
+                    title: "Not connected"
+                };
                 fader.gain.value = 0.5;
                 fader.connect(this.rack.masterGain);
             }
+
+            var self = this;
+            this.addButton('glyphicon glyphicon-volume-up', function(on) {
+                if(self.sliders[0] > 0) {
+                    self.sliders[0] = 0;
+                } else {
+                    self.sliders[0] = 0.3;
+                }
+            }, {
+                type: 'checkbox',
+                checked: 'glyphicon glyphicon-volume-off'
+            });
         }
     });
 
