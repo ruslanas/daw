@@ -2,14 +2,14 @@ Digital Audio Workstation
 =========================
 
 About
-=====
+-----
 
 See [demo](http://daw.wri.lt/).
 
 Installation
 ------------
 
-Clone repository in your servers public directory.
+Fork and/or clone repository in your servers public directory.
 
 ```git clone https://github.com/ruslanas/daw.git```
 
@@ -54,6 +54,8 @@ define('plugins/my_cool_plugin', ['Gadget'], function(Gadget) {
 });
 
 ```
+
+__Warning:__ interface may change anytime.
 
 Notes
 -----
