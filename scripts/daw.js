@@ -179,7 +179,7 @@ define('daw', ['jquery'], function($) {
 
                 self.worker.postMessage({
                     name: $('input[name="name"]').val(),
-                    email: $('input[name="email"').val()
+                    email: $('input[name="email"]').val()
                 });
 
             });
