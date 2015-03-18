@@ -56,4 +56,5 @@ canvas {
     border: 1px solid;
     -webkit-user-select: none;
     user-select: none;
+    cursor: default;
 }

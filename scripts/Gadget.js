@@ -99,6 +99,9 @@ define('Gadget', [
             this.canvas.onmouseup = function(event) {
             	self.onMouseUp(event);
             };
+            this.canvas.onmousemove = function(event) {
+            	self.onMouseMove(event);
+            };
 			$(this.canvas).on('mousewheel', function(event) {
 				self.onMouseWheel(event);
 			});

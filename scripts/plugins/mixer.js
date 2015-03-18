@@ -16,11 +16,12 @@ define('plugins/mixer', [
         sliders: null,
         padding: 20,
         channels: null,
+        down: false,
 
         init: function() {
             this._super();
-            this.sliders = [0.5, 0.5, 0.5, 0.5];
-            this.channels = new Array(3);
+            this.sliders = [0.2];
+            this.channels = [];
             this.height(150);
             this.title = 'Mixer';
         },
@@ -41,8 +42,8 @@ define('plugins/mixer', [
                 var height = this.canvas.height - 2 * this.padding;
                 this.context.fillRect(
                     x - 6,
-                    this.canvas.height - this.padding - this.sliders[i] * height,
-                    12, 2);
+                    this.canvas.height - this.padding - this.sliders[i] * height - 2,
+                    12, 4);
 
                 this.context.textAlign = 'center';
                 if(i === 0) {
@@ -59,11 +60,7 @@ define('plugins/mixer', [
             this.rack.setVolume(this.sliders[0]);
         },
 
-        onMouseDown: function(event) {
-            var $canvas = $(this.canvas);
-            var x = event.clientX - $canvas.offset().left;
-            var y = event.clientY - $canvas.offset().top + $('body').scrollTop();
-
+        updateSlider: function(x, y) {
             var height = this.canvas.height - 2 * this.padding;
 
             var idx = Math.floor(
@@ -80,31 +77,47 @@ define('plugins/mixer', [
 
         },
 
-        onMouseMove: function(event) {
-            // void
+        onMouseUp: function(event) {
+            this.down = false;
         },
 
-        connect: function(gadget, channel) {
+        onMouseDown: function(event) {
+            var $canvas = $(this.canvas);
+            var x = event.clientX - $canvas.offset().left;
+            var y = event.clientY - $canvas.offset().top + $('body').scrollTop();
+            this.updateSlider(x, y);
+            this.down = true;
+        },
+
+        onMouseMove: function(event) {
+            if(this.down) {
+                var $canvas = $(this.canvas);
+                var x = event.clientX - $canvas.offset().left;
+                var y = event.clientY - $canvas.offset().top + $('body').scrollTop();
+                this.updateSlider(x, y);
+            }
+        },
+
+        connect: function(gadget) {
             if(!gadget.out) {
                 throw 'No out node';
             }
-            this.channels[channel].title = gadget.title;
-            gadget.out.connect(this.channels[channel].input);
+
+            var fader = this.rack.context.createGain();
+            this.sliders.push(0.6);
+            this.channels.push({
+                input: fader,
+                title: gadget.title
+            });
+            fader.gain.value = 0.5;
+            fader.connect(this.rack.masterGain);
+
+            gadget.out.connect(fader);
         },
 
         initialize: function() {
 
             this._super();
-
-            for(var i=0;i<this.channels.length;i++) {
-                var fader = this.rack.context.createGain();
-                this.channels[i] = {
-                    input: fader,
-                    title: "Not connected"
-                };
-                fader.gain.value = 0.5;
-                fader.connect(this.rack.masterGain);
-            }
 
             var self = this;
             this.addButton('glyphicon glyphicon-volume-up', function(on) {
