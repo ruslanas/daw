@@ -43,7 +43,7 @@ define('plugins/keyboard', [
 
         onMouseMove: function(event) {
             var note = this.getNote(event);
-            if(this.key && this.key !== note) {
+            if(this.key !== false && this.key !== note) {
                 this.play(note);
             }
         },
