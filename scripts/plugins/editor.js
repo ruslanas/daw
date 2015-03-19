@@ -8,14 +8,15 @@
 
 define('plugins/editor', [
 	'Gadget',
-	'jquery'
-	], function(Gadget, $) {
+	], function(Gadget) {
 
 	var Editor = Gadget.extend({
 
-		markerPos: 10,
+		markerPos: 0,
+		markerEnd: 0,
 		start: 0,
 		zoom: 128,
+		select: false,
 
 		init: function() {
 			this._super();
@@ -61,23 +62,53 @@ define('plugins/editor', [
 				this.context.fillRect(i, this.baseline, 0.7, amp + 1);
 			}
 
-			this.context.fillRect(
-				(this.markerPos - this.start) / this.zoom,
-				0, 0.5, this.height());
-
 			// frame number
 			this.context.fillText(
 				'Pos: ' + this.start + ' Zoom: ' + this.zoom + ' Val: '
 					+ this.getSample(this.markerPos),
 				2, this.canvas.height - 2);
 
+			this.context.fillStyle = '#F00';
+			var from = (this.markerPos - this.start) / this.zoom;
+			this.context.fillRect(from, 0, 1, this.height());
+
+			this.context.fillStyle = '#00F';
+			var to = (this.markerEnd - this.start) / this.zoom;
+			this.context.fillRect(to, 0, 1, this.height());
+
+			this.context.globalAlpha = 0.1;
+			this.context.fillRect(from,
+				0, to - from, this.height());
+
+
 		},
 
 		onMouseDown: function(event) {
-			var x = event.clientX - $(this.canvas).offset().left - 1;
-				// - getComputedStyle(this.canvas, null)
-				// 	.getPropertyValue('border-left-width').replace('px', '');
+			var x = this.getX(event);
+			this.select = true;
 			this.markerPos = Math.round(this.start + x * this.zoom);
+		},
+
+		onMouseMove: function(event) {
+			if(this.select) {
+				this.markerEnd = Math.round(this.start + this.getX(event) * this.zoom);
+			}
+		},
+
+		onMouseUp: function(event) {
+			if(!this.select) {
+				return;
+			}
+			var x = this.getX(event);
+			this.select = false;
+			this.markerEnd = Math.round(this.start + x * this.zoom);
+
+			// swap
+			if(this.markerPos > this.markerEnd) {
+				var tmp = this.markerEnd;
+				this.markerEnd = this.markerPos;
+				this.markerPos = tmp;
+			}
 		},
 
 		onMouseWheel: function(event) {
@@ -102,6 +133,7 @@ define('plugins/editor', [
 		initialize: function() {
 			this._super();
 			var self = this;
+			this.markerEnd = this.rack.sample.length;
 			this.addButton('fa fa-microphone-slash', function(on) {
 
                 if(self.rack.micGain.gain.value > 0) {
@@ -144,7 +176,9 @@ define('plugins/editor', [
 				self.rack.pause();
 			});
 			this.addButton('glyphicon glyphicon-play', function(on) {
-				self.rack.play();
+				var from = self.markerPos / self.rack.context.sampleRate;
+				var duration = (self.markerEnd - self.markerPos) / self.rack.context.sampleRate;
+				self.rack.play(from, duration);
 			});
 			this.addButton('glyphicon glyphicon-cloud-upload', function(on) {
                 self.rack.upload();

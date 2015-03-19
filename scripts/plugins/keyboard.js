@@ -8,8 +8,7 @@
 
 define('plugins/keyboard', [
     'plugins/sequencer',
-    'jquery'
-    ], function(Gadget, $) {
+    ], function(Gadget) {
 
     var Keyboard = Gadget.extend({
 

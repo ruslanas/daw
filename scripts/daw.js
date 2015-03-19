@@ -44,7 +44,7 @@ define('daw', ['jquery'], function($) {
 
         },
 
-        play: function () {
+        play: function (from, duration) {
 
             this.player = this.context.createBufferSource();
 
@@ -63,8 +63,10 @@ define('daw', ['jquery'], function($) {
             this.setVolume(1);
 
             this.player.loop = true;
+            this.player.loopStart = from;
+            this.player.loopEnd = from + duration;
 
-            this.player.start();
+            this.player.start(0, from);
 
             var self = this;
             this.player.onended = function() {

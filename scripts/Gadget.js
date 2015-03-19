@@ -176,6 +176,7 @@ define('Gadget', [
 		},
 
 		clear: function() {
+			this.context.globalAlpha = 1;
 			this.context.clearRect(
 				0, 0, this.canvas.width, this.canvas.height);
 			this.context.fillStyle = 'rgb(119, 119, 119)';
