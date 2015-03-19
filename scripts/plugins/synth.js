@@ -8,9 +8,8 @@ const FULL_CIRCLE = Math.PI * 2;
 
 define('plugins/synth', [
     'Gadget',
-    'jquery',
     'bezier'
-    ], function(Gadget, $) {
+    ], function(Gadget) {
 
     var Synth = Gadget.extend({
 
@@ -27,6 +26,8 @@ define('plugins/synth', [
         noise: 0,
         gain: 1,
         out: null,
+        bezierPoints: null,
+        down: false,
         x: -1,
         y: -1,
 
@@ -62,29 +63,55 @@ define('plugins/synth', [
 
             this.context.stroke();
 
-            if(this.on) {
-                this.context.beginPath();
-                this.context.arc(this.x, this.y, 10, 0, FULL_CIRCLE);
-                this.context.fill();
-            }
-
             this.context.fillText(this.status, 2, this.canvas.height - 2);
+
+            this.context.fillStyle = '#FF0';
+            this.context.fillRect(
+                points.c0.x * scaleX - 2, points.c0.y * scaleY - 2, 4, 4);
+            this.context.fillRect(
+                points.c1.x * scaleX - 2, points.c1.y * scaleY - 2, 4, 4);
         },
 
         onReady: function(done) {
             done();
         },
 
+        onMouseDown: function(event) {
+            var x = this.getX(event);
+            var y = this.getY(event);
+
+            var dx0 = x - this.bezierPoints.c0.x * this.canvas.width;
+            var dy0 = y - (1 - this.bezierPoints.c0.y) * this.canvas.height;
+            var dx1 = x - this.bezierPoints.c1.x * this.canvas.width;
+            var dy1 = y - (1 - this.bezierPoints.c1.y) * this.canvas.height;
+
+            if(dx0 * dx0 + dy0 * dy0 < dx1 * dx1 + dy1 * dy1) {
+                this.down = this.bezierPoints.c0;
+            } else {
+                this.down = this.bezierPoints.c1;
+            }
+
+        },
+
+        onMouseMove: function(event) {
+            if(!this.down) {
+                return;
+            }
+            this.x = this.getX(event);
+            this.y = this.getY(event);
+
+            this.down.x = this.x / this.canvas.width;
+            this.down.y = 1 - this.y / this.canvas.height;
+
+        },
+
         onMouseUp: function(event) {
+            this.down = false;
+            this.x = this.getX(event);
+            this.y = this.getY(event);
 
-            $canvas = $(this.canvas);
-            this.x = event.clientX - $canvas.offset().left;
-            this.y = event.clientY - $canvas.offset().top + $('body').scrollTop();
-
-            this.bezierPoints.c0 = {
-                x: this.x / this.canvas.width,
-                y: 2 * this.y / this.canvas.height
-            };
+            this.down.x = this.x / this.canvas.width;
+            this.down.y = 1 - this.y / this.canvas.height;
 
             this.generate();
         },
