@@ -107,6 +107,14 @@ define('Gadget', [
 			});
 		},
 
+        getX: function(event) {
+            return event.clientX - $(this.canvas).offset().left;
+        },
+
+        getY: function(event) {
+            return this.canvas.height - (event.clientY - $(this.canvas).offset().top + $('body').scrollTop());
+        },
+
 		addButton: function(icon, handler, options) {
 			var options = options || {
 				type: 'radio',
