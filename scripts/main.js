@@ -31,10 +31,11 @@ require([
     'plugins/synth',
     'plugins/sequencer',
     'plugins/mixer',
-    'plugins/delay'
+    'plugins/delay',
+    'plugins/keyboard'
 
     ], function(
-        DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer, Mixer, Delay) {
+        DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer, Mixer, Delay, Keyboard) {
 
     DAW.initialize({
         duration: 10,
@@ -100,20 +101,24 @@ require([
         c1: Bezier.point(0, 0.2)
     };
 
-    var sequencer2 = new Sequencer();
+    // var sequencer2 = new Sequencer();
 
-    sequencer2.len = 32;
-    sequencer2.control(synth2);
+    // sequencer2.len = 32;
+    // sequencer2.control(synth2);
 
-    DAW.insert('#strings', sequencer2);
+    // DAW.insert('#strings', sequencer2);
+    var keyboard = new Keyboard();
+    keyboard.control(synth2);
+    DAW.insert('#strings', keyboard);
+
     DAW.insert('#strings', synth2, {
         title: 'Melody'
     });
 
-    var delay = new Delay();
-    DAW.insert('#strings', delay);
-    delay.connect(synth2);
+    // var delay = new Delay();
+    // DAW.insert('#strings', delay);
+    // delay.connect(synth2);
 
-    mixer.connect(drum, 0);
-    mixer.connect(delay, 1);
+    mixer.connect(drum);
+    mixer.connect(synth2);
 });

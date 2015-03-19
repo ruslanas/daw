@@ -61,8 +61,6 @@ define('plugins/editor', [
 				this.context.fillRect(i, this.baseline, 0.7, amp + 1);
 			}
 
-			this.context.fillStyle = '#FFF';
-
 			this.context.fillRect(
 				(this.markerPos - this.start) / this.zoom,
 				0, 0.5, this.height());
@@ -71,7 +69,7 @@ define('plugins/editor', [
 			this.context.fillText(
 				'Pos: ' + this.start + ' Zoom: ' + this.zoom + ' Val: '
 					+ this.getSample(this.markerPos),
-				0, this.canvas.height);
+				2, this.canvas.height - 2);
 
 		},
 

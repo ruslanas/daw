@@ -20,7 +20,7 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 			this.clear();
 
 			this.context.fillText(
-				'Buffer size: ' + this.rack.recordFrameLen, 0, this.canvas.height);
+				'Buffer size: ' + this.rack.recordFrameLen, 2, this.canvas.height - 2);
 
 			var scale = (this.canvas.height - this.titleHeight) / 2;
 

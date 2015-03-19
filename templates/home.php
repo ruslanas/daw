@@ -44,26 +44,6 @@
                         <div class="col-sm-6" id="analyser"></div>
                     </div>
                     <p id="message">Click the circle to record</p>
-                    <div id="wide"></div>
-                    <div class="row">
-                        <div class="col-sm-6" id="drums"></div>
-                        <div class="col-sm-6" id="strings"></div>
-                    </div>
-                    <p>
-                        At the moment only latest
-                        <a href="http://www.google.com/chrome/">Chrome</a> browsers support all the features.
-                    </p>
-                    <p>
-                        <small>
-                            © 2015 Powered by
-                            <a href="http://github.com/ruslanas/daw"
-                            target="_blank">daw</a>.
-                            Report <a href="https://github.com/ruslanas/daw/issues">issues</a>.
-                        </small>
-                    </p>
-                </div>
-                <div class="col-sm-6">
-
                     <div id="save-form">
                         <form>
                             <div class="form-group">
@@ -85,6 +65,25 @@
                             <button class="btn btn-default">Save</button>
                         </form>
                     </div>
+                    <div id="wide"></div>
+                    <div class="row">
+                        <div class="col-sm-6" id="drums"></div>
+                        <div class="col-sm-6" id="strings"></div>
+                    </div>
+                    <p>
+                        At the moment only latest
+                        <a href="http://www.google.com/chrome/">Chrome</a> browsers support all the features.
+                    </p>
+                    <p>
+                        <small>
+                            © 2015 Powered by
+                            <a href="http://github.com/ruslanas/daw"
+                            target="_blank">daw</a>.
+                            Report <a href="https://github.com/ruslanas/daw/issues">issues</a>.
+                        </small>
+                    </p>
+                </div>
+                <div class="col-sm-6">
                     <daw-playlist src="api/songs"></daw-playlist>
                 </div>
             </div>

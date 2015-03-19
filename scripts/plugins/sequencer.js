@@ -6,10 +6,7 @@
 
 "use strict";
 
-define('plugins/sequencer', [
-    'Gadget',
-    'jquery'
-    ], function(Gadget) {
+define('plugins/sequencer', ['Gadget'], function(Gadget) {
 
     var Sequencer = Gadget.extend({
 
@@ -31,8 +28,8 @@ define('plugins/sequencer', [
             var dx = this.canvas.width / this.len;
             var dy = this.canvas.height / 24;
 
-            var x = event.clientX - $(this.canvas).offset().left;
-            var y = this.canvas.height - (event.clientY - $(this.canvas).offset().top + $('body').scrollTop());
+            var x = this.getX(event);
+            var y = this.getY(event);
 
             var note = Math.floor(y/dy);
             var pos = Math.floor(x/dx);
@@ -47,11 +44,9 @@ define('plugins/sequencer', [
 
         update: function() {
             var note = this.next();
-            if(this.on) {
-                if(note >= 0) {
-                    for(var i=0;i<this.synth.length;i++) {
-                        this.synth[i].playNote(note);
-                    }
+            if(this.on && note >= 0) {
+                for(var i=0;i<this.synth.length;i++) {
+                    this.synth[i].playNote(note);
                 }
             }
         },
