@@ -68,7 +68,7 @@ define('plugins/synth', [
                 this.context.fill();
             }
 
-            this.context.fillText(this.status, 0, this.canvas.height);
+            this.context.fillText(this.status, 2, this.canvas.height - 2);
         },
 
         onReady: function(done) {
@@ -93,7 +93,7 @@ define('plugins/synth', [
 
             var self = this;
 
-            this.status = ['~', Math.round(this.notes[note]), 'Hz'].join();
+            this.status = ['~', Math.round(this.notes[note]), 'Hz'].join('');
 
             var oscillator = this.rack.context.createBufferSource();
 

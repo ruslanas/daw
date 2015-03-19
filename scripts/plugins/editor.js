@@ -17,6 +17,7 @@ define('plugins/editor', [
 		start: 0,
 		zoom: 128,
 		select: false,
+		stopButton: null,
 
 		init: function() {
 			this._super();
@@ -84,6 +85,7 @@ define('plugins/editor', [
 		},
 
 		onMouseDown: function(event) {
+			this.stopButton.click();
 			var x = this.getX(event);
 			this.select = true;
 			this.markerPos = Math.round(this.start + x * this.zoom);
@@ -171,7 +173,7 @@ define('plugins/editor', [
 				}
 			});
 
-			this.addButton('glyphicon glyphicon-stop', function(on) {
+			this.stopButton = this.addButton('glyphicon glyphicon-stop', function(on) {
 
 				self.rack.pause();
 			});

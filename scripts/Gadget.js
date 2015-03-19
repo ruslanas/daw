@@ -173,6 +173,8 @@ define('Gadget', [
 					handler(true);
 				}
 			}
+
+			return button;
 		},
 
 		clear: function() {
