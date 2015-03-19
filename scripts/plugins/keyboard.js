@@ -41,6 +41,10 @@ define('plugins/keyboard', [
             return note;
         },
 
+        onClick: function(event) {
+            // void
+        },
+
         onMouseMove: function(event) {
             var note = this.getNote(event);
             if(this.key !== false && this.key !== note) {
