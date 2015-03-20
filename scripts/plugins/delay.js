@@ -13,6 +13,9 @@ define('plugins/delay', [
     var Delay = Gadget.extend({
 
         gain: 0.5,
+        delay: null,
+        feedback: null,
+        down: false,
 
         init: function() {
             this._super();
@@ -20,7 +23,11 @@ define('plugins/delay', [
         },
 
         redraw: function() {
-            // draw to this.context
+            this.clear();
+            this.context.fillStyle = '#FF0';
+            this.context.fillRect(
+                this.feedback.gain.value * this.canvas.width - 2,
+                (1 - this.delay.delayTime.value) * this.canvas.height - 2, 4, 4);
         },
 
         connect: function(gadget, channel) {
@@ -31,19 +38,41 @@ define('plugins/delay', [
             gadget.out.connect(this.out);
         },
 
+        onMouseDown: function(event) {
+            this.down = true;
+            var x = this.getX(event);
+            var y = this.getY(event);
+            this.feedback.gain.value = x / this.canvas.width;
+            this.delay.delayTime.value = y / this.canvas.height;
+        },
+
+        onMouseUp: function(event) {
+            this.down = false;
+        },
+
+        onMouseMove: function(event) {
+            if(!this.down) {
+                return;
+            }
+            var x = this.getX(event);
+            var y = this.getY(event);
+            this.feedback.gain.value = x / this.canvas.width;
+            this.delay.delayTime.value = y / this.canvas.height;
+        },
+
         initialize: function() {
             this._super();
 
-            var delay = this.rack.context.createDelay(1.0);
-            var feedback = this.rack.context.createGain();
-            feedback.gain.value = this.gain;
+            this.delay = this.rack.context.createDelay(1.0);
+            this.feedback = this.rack.context.createGain();
+            this.feedback.gain.value = this.gain;
 
-            delay.connect(feedback);
-            feedback.connect(delay);
+            this.delay.connect(this.feedback);
+            this.feedback.connect(this.delay);
 
-            delay.delayTime.value = 60 / this.rack.bpm;
-            this.input = delay;
-            this.out = feedback;
+            this.delay.delayTime.value = 60 / this.rack.bpm;
+            this.input = this.delay;
+            this.out = this.feedback;
         }
     });
 

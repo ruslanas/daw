@@ -38,8 +38,8 @@ require([
         DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer, Mixer, Delay, Keyboard) {
 
     DAW.initialize({
-        duration: 10,
-        buffer_size: 512,
+        duration: 180,
+        buffer_size: 1024,
         bpm: 140
     });
 
@@ -115,10 +115,10 @@ require([
         title: 'Melody'
     });
 
-    // var delay = new Delay();
-    // DAW.insert('#strings', delay);
-    // delay.connect(synth2);
+    var delay = new Delay();
+    DAW.insert('#strings', delay);
+    delay.connect(synth2);
 
     mixer.connect(drum);
-    mixer.connect(synth2);
+    mixer.connect(delay);
 });
