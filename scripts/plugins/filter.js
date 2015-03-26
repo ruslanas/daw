@@ -13,6 +13,7 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
         input: null,
         out: null,
         type: 'lowshelf',
+        down: false,
 
         init: function() {
             this._super();
@@ -32,9 +33,26 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
         },
 
         onMouseDown: function(event) {
+            this.down = true;
             this.x = this.getX(event);
             this.y = this.canvas.height - this.getY(event);
+            this.reset();
+        },
 
+        onMouseUp: function(event) {
+            this.down = false;
+        },
+
+        onMouseMove: function(event) {
+            if(!this.down) {
+                return;
+            }
+            this.x = this.getX(event);
+            this.y = this.canvas.height - this.getY(event);
+            this.reset();
+        },
+
+        reset: function() {
             this.out.frequency.value = (this.rack.context.sampleRate / 2) * this.x / this.canvas.width;
             // [-40; 40] dB
             this.out.gain.value = 80 * this.y / this.canvas.height - 40;
