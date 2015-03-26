@@ -198,6 +198,7 @@ define('Gadget', [
 			this.parent = document.querySelector(container);
 			this.options = options;
 			this.rack = rack;
+			this.audio = this.rack.context;
 			this.initialize();
 		},
 
