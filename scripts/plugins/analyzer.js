@@ -38,7 +38,7 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 			this.rack.visualiser.disconnect(this.rack.context.destination);
 			this.rack.visualiser.connect(this.rack.analyzer);
 			this.rack.analyzer.connect(this.rack.context.destination);
-			this.rack.analyzer.fftSize = 128;
+			this.rack.analyzer.fftSize = this.options.fft_size || 128;
 
 			this.bufferLength = this.rack.analyzer.frequencyBinCount;
 			this.dataArray = new Uint8Array(this.bufferLength);

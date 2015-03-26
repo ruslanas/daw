@@ -48,7 +48,8 @@ require([
     });
 
     DAW.insert('#analyser', new Analyzer(), {
-        title: 'Analyser'
+        title: 'Analyser',
+        fft_size: 512
     });
 
     var sampler = new Sampler();
