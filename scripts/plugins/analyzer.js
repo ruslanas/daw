@@ -25,7 +25,7 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 
 			for(var i = 0; i < this.bufferLength; i++) {
 				barHeight = this.dataArray[i] / 2;
-				this.context.fillRect(x, this.canvas.height - barHeight / 2, barWidth, barHeight);
+				this.context.fillRect(x, this.canvas.height - barHeight, barWidth, barHeight);
 				x += barWidth + 1;
 			}
       	},

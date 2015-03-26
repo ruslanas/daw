@@ -54,22 +54,38 @@ define('plugins/synth', [
             var scaleX = this.canvas.width;
             var scaleY = this.canvas.height;
 
+            var x1 = points.p0.x * scaleX;
+            var y1 = points.p0.y * scaleY;
+            var cx1 = points.c0.x * scaleX;
+            var cy1 = points.c0.y * scaleY;
+            var x2 = points.p1.x * scaleX;
+            var y2 = points.p1.y * scaleY;
+            var cx2 = points.c1.x * scaleX;
+            var cy2 = points.c1.y * scaleY;
+
+            this.context.strokeStyle = '#F00';
             this.context.beginPath();
-            this.context.moveTo(points.p0.x * scaleX, points.p0.y * scaleY);
-            this.context.bezierCurveTo(
-                points.c0.x * scaleX, points.c0.y * scaleY,
-                points.c1.x * scaleX, points.c1.y * scaleY,
-                this.canvas.width, 0);
+            this.context.moveTo(x1, y1);
+            this.context.bezierCurveTo(cx1, cy1, cx2, cy2, this.canvas.width, 0);
 
             this.context.stroke();
 
             this.context.fillText(this.status, 2, this.canvas.height - 2);
 
+            this.context.strokeStyle = '#FF0';
+            this.context.beginPath();
+            this.context.moveTo(x1, y1);
+            this.context.lineTo(cx1, cy1);
+            this.context.stroke();
+
+            this.context.beginPath();
+            this.context.moveTo(x2, y2);
+            this.context.lineTo(cx2, cy2);
+            this.context.stroke();
+
             this.context.fillStyle = '#FF0';
-            this.context.fillRect(
-                points.c0.x * scaleX - 2, points.c0.y * scaleY - 2, 4, 4);
-            this.context.fillRect(
-                points.c1.x * scaleX - 2, points.c1.y * scaleY - 2, 4, 4);
+            this.context.fillRect(cx1 - 2, cy1 - 2, 4, 4);
+            this.context.fillRect(cx2 - 2, cy2 - 2, 4, 4);
         },
 
         onReady: function(done) {

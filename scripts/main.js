@@ -32,15 +32,18 @@ require([
     'plugins/sequencer',
     'plugins/mixer',
     'plugins/delay',
-    'plugins/keyboard'
+    'plugins/keyboard',
+    'plugins/filter',
+    'plugins/noise',
 
     ], function(
-        DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer, Mixer, Delay, Keyboard) {
+        DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer,
+        Mixer, Delay, Keyboard, Filter, Noise) {
 
     DAW.initialize({
-        duration: 180,
+        duration: 60,
         buffer_size: 1024,
-        bpm: 140
+        bpm: 120
     });
 
     DAW.insert('#buffer', new Visualiser(), {
@@ -91,35 +94,19 @@ require([
         title: 'Rythm'
     });
 
-    var synth2 = new Synth();
+    var lowShelf = new Filter();
+    var noise = new Noise();
 
-    synth2.modes = [2, 3, 4, 5, 6];
-    synth2.len = 17000;
-    synth2.bezierPoints = {
-        p0: Bezier.point(0, 0),
-        p1: Bezier.point(1, 0),
-        c0: Bezier.point(0, 1),
-        c1: Bezier.point(0, 0.2)
-    };
+    DAW.insert('#strings', lowShelf);
+    DAW.insert('#strings', noise);
 
-    // var sequencer2 = new Sequencer();
-
-    // sequencer2.len = 32;
-    // sequencer2.control(synth2);
-
-    // DAW.insert('#strings', sequencer2);
-    var keyboard = new Keyboard();
-    keyboard.control(synth2);
-    DAW.insert('#strings', keyboard);
-
-    DAW.insert('#strings', synth2, {
-        title: 'Melody'
-    });
+    lowShelf.connect(noise);
 
     var delay = new Delay();
-    DAW.insert('#strings', delay);
-    delay.connect(synth2);
+    DAW.insert('#drums', delay);
+    delay.connect(drum);
 
-    mixer.connect(drum);
+    mixer.connect(lowShelf);
     mixer.connect(delay);
+
 });
