@@ -12,35 +12,53 @@ define('plugins/noise', ['Gadget'], function(Gadget) {
 
         out: null,
         input: null,
+        on: false,
+        source: null,
+        arrayBuffer: null,
 
         init: function() {
             this._super();
             this.title = 'Noise Generator';
         },
 
+        onClick: function(event) {
+            this.on = !this.on;
+            if(this.on) {
+                this.source = this.audio.createBufferSource();
+
+                this.source.buffer = this.arrayBuffer;
+                this.source.loop = true;
+                this.source.connect(this.out);
+                this.source.start();
+
+            } else {
+                this.source.stop();
+                this.source.disconnect(this.out);
+            }
+        },
+
         redraw: function() {
-            // draw to this.context
+            this.clear();
+            var msg = 'off';
+            if(this.on) {
+                msg = 'on';
+            }
+            this.context.fillText(msg, 2, this.canvas.height - 2);
         },
 
         initialize: function() {
             this._super();
 
-            var source = this.audio.createBufferSource();
-
             var len = this.audio.sampleRate * 5.0;
-            var arrayBuffer = this.audio.createBuffer(
+            this.arrayBuffer = this.audio.createBuffer(
                 1, len, this.audio.sampleRate);
 
-            var chData = arrayBuffer.getChannelData(0);
+            var chData = this.arrayBuffer.getChannelData(0);
             for(var i=0;i<len;i++) {
                 chData[i] = Math.random() * 2 - 1;
             }
 
-            source.buffer = arrayBuffer;
-            source.loop = true;
-            source.start();
-
-            this.out = source;
+            this.out = this.audio.createGain();
 
         }
     });

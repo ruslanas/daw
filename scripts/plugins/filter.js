@@ -53,14 +53,14 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
         },
 
         reset: function() {
-            this.out.frequency.value = (this.rack.context.sampleRate / 2) * this.x / this.canvas.width;
+            this.out.frequency.value = (this.audio.sampleRate / 2) * this.x / this.canvas.width;
             // [-40; 40] dB
             this.out.gain.value = 80 * this.y / this.canvas.height - 40;
         },
 
         initialize: function() {
             this._super();
-            var filter = this.rack.context.createBiquadFilter();
+            var filter = this.audio.createBiquadFilter();
 
             filter.type = this.type;
             filter.frequency.value = 1000;
