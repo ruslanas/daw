@@ -17,12 +17,25 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
 
         init: function() {
             this._super();
-            this.title = 'Low Shelf Filter';
+            this.title = 'Filter';
         },
 
         redraw: function() {
             this.clear();
+            this.context.fillStyle = '#FF0';
             this.context.fillRect(this.x - 2, this.y - 2, 4, 4);
+            this.context.fillStyle = '#00F';
+            this.context.fillRect(this.x - 2, this.height() / 2, 4, 4);
+            this.context.fillStyle = this.color;
+            var status = this.out.gain.value + ' ' + Math.round(this.out.frequency.value) + 'Hz';
+            this.context.fillText(status, 2, this.canvas.height - 2);
+
+            for(var i=0;i<this.magResponse.length;i++) {
+                var x = this.width() * this.frequencyArray[i]/(this.audio.sampleRate / 2);
+                var dbResponse = 20.0 * Math.log(this.magResponse[i]) / Math.LN10;
+                this.context.fillRect(x, dbResponse + this.height() / 2, 1, 1);
+            }
+
         },
 
         connect: function(gadget) {
@@ -34,8 +47,10 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
 
         onMouseDown: function(event) {
             this.down = true;
+
             this.x = this.getX(event);
             this.y = this.canvas.height - this.getY(event);
+
             this.reset();
         },
 
@@ -56,6 +71,7 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
             this.out.frequency.value = (this.audio.sampleRate / 2) * this.x / this.canvas.width;
             // [-40; 40] dB
             this.out.gain.value = 80 * this.y / this.canvas.height - 40;
+            this.out.getFrequencyResponse(this.frequencyArray, this.magResponse, this.phaseResponse);
         },
 
         initialize: function() {
@@ -64,10 +80,22 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
 
             filter.type = this.type;
             filter.frequency.value = 1000;
+            filter.Q.value = 1;
             filter.gain.value = 0;
 
             this.input = filter;
             this.out = filter;
+
+            var width = this.width();
+
+            this.frequencyArray = new Float32Array(width);
+
+            for(var i=0;i<width;i++) {
+                this.frequencyArray[i] = i * (this.audio.sampleRate / 2) / width;
+            }
+
+            this.magResponse = new Float32Array(width);
+            this.phaseResponse = new Float32Array(width);
 
         }
     });

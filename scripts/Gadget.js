@@ -14,6 +14,7 @@ define('Gadget', [
 		_height: 0,
 		title: '',
 		titleHeight: 14,
+		color: 'rgb(119, 119, 119)',
 
 		// Constructor. No DOM operations here
 		init: function() {
@@ -82,9 +83,8 @@ define('Gadget', [
 
 			this.baseline = this.canvas.height / 2;
 
-			var color = 'rgb(119, 119, 119)';
-			this.context.fillStyle = color;
-			this.context.strokeStyle = color;
+			this.context.fillStyle = this.color;
+			this.context.strokeStyle = this.color;
 
 			// events
             this.canvas.onmousemove = function(event) {
@@ -181,7 +181,7 @@ define('Gadget', [
 			this.context.globalAlpha = 1;
 			this.context.clearRect(
 				0, 0, this.canvas.width, this.canvas.height);
-			this.context.fillStyle = 'rgb(119, 119, 119)';
+			this.context.fillStyle = this.color;
 		},
 
 		update: function() {
