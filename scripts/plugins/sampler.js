@@ -3,7 +3,10 @@
  * @author Ruslanas Balciunas
  */
 
-define('plugins/sampler', ['Gadget', 'jquery'], function(Gadget, $) {
+define('plugins/sampler', [
+    'Gadget',
+    'jquery'
+    ], function(Gadget, $) {
 
     var Sampler = Gadget.extend({
 

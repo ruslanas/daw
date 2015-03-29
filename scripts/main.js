@@ -43,7 +43,7 @@ require([
     DAW.initialize({
         duration: 60,
         buffer_size: 1024,
-        bpm: 120
+        bpm: 180
     });
 
     DAW.insert('#buffer', new Visualiser(), {
@@ -52,34 +52,28 @@ require([
 
     DAW.insert('#analyser', new Analyzer(), {
         title: 'Analyser',
-        fft_size: 512
+        fft_size: 256
     });
 
     var sampler = new Sampler();
 
-    // DAW.insert('daw-playlist', sampler, {
-    //     hidden: true
-    // });
+    DAW.insert('daw-playlist', sampler, {
+        hidden: true
+    });
 
-    // load tracks
-    // var url = document.querySelector('daw-playlist').getAttribute('src');
-    // DAW.load(url, function(data) {
-    //     sampler.loadTracks(data);
-    // });
+    //load tracks
+    var url = document.querySelector('daw-playlist').getAttribute('src');
+    DAW.load(url, function(data) {
+        sampler.loadTracks(data);
+    });
 
     var mixer = new Mixer();
 
     DAW.insert('#wide', new Editor());
-    DAW.insert('#wide', mixer);
+    DAW.insert('#effects', mixer);
 
     var drum = new Synth();
     var sequencer = new Sequencer();
-
-    //drum.modes = [2.3, 3.6];
-    drum.modes = [1.59, 1.35, 1.67, 1.99, 2.3, 2.61];
-    drum.len = 20000;
-    drum.baseFreq = 55;
-    drum.noise = 0.1;
 
     sequencer.control(drum);
 
@@ -90,8 +84,13 @@ require([
         1, -1, -1, -1,
         1, -1, -1, -1
     ];
+
     DAW.insert('#drums', drum, {
-        title: 'Rythm'
+        title: 'Rythm',
+        modes: [1.59, 1.35, 1.67, 1.99, 2.3, 2.61],
+        base_frequency: 110,
+        noise: 0.1,
+        len: 20000
     });
 
     var lowShelf = new Filter();
@@ -102,11 +101,40 @@ require([
 
     lowShelf.connect(noise);
 
-    var delay = new Delay();
-    DAW.insert('#drums', delay);
-    delay.connect(drum);
-
     mixer.connect(lowShelf);
+    mixer.connect(drum);
+
+    var bass = new Synth();
+    var bassSeq = new Sequencer();
+    bassSeq.control(bass);
+    DAW.insert('#drums', bassSeq, {
+        len: 32
+    });
+
+    DAW.insert('#drums', bass, {
+        title: 'Bass',
+        modes: [2, 3, 4, 5, 6, 7, 8],
+        base_frequency: 55
+    });
+    mixer.connect(bass);
+
+    var kbd = new Keyboard();
+    var melodySynth = new Synth();
+
+    DAW.insert('#keyboard', kbd);
+    DAW.insert('#keyboard', melodySynth, {
+        title: 'Melody',
+        base_frequency: 110,
+        modes: [2, 4, 6],
+        len: 40000
+    });
+
+    var delay = new Delay();
+    DAW.insert('#effects', delay, {
+        title: 'Melody'
+    });
+    delay.connect(melodySynth)
+    kbd.control(melodySynth);
     mixer.connect(delay);
 
 });

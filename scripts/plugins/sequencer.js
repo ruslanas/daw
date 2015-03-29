@@ -11,10 +11,10 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
     var Sequencer = Gadget.extend({
 
         pattern: null,
-        idx: 0,
         len: 16,
         on: false,
         synth: null,
+        duration: 0,
 
         init: function() {
             this._super();
@@ -29,7 +29,7 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             var dy = this.canvas.height / 24;
 
             var x = this.getX(event);
-            var y = this.getY(event);
+            var y = this.height() - this.getY(event);
 
             var note = Math.floor(y/dy);
             var pos = Math.floor(x/dx);
@@ -43,41 +43,55 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
         },
 
         update: function() {
-            var note = this.next();
-            if(this.on && note >= 0) {
-                for(var i=0;i<this.synth.length;i++) {
-                    this.synth[i].playNote(note);
+            if(this.on) {
+
+                var offset = this.audio.currentTime % this.duration;
+                var beat = Math.floor(this.len / 4 * offset / this.duration);
+
+                var beatStart = this.audio.currentTime - offset + (beat + 1) * this.step;
+
+                for(var i=0;i<4;i++) {
+
+                    var note = this.pattern[4 * beat + i];
+                    var time = beatStart + i * this.duration / this.len;
+
+                    if(note >= 0) {
+                        this.synth[0].playNote(note, time);
+                    }
                 }
             }
         },
 
         redraw: function() {
             this.clear();
-            var dx = this.canvas.width / this.len;
-            var dy = this.canvas.height / 24;
 
             for(var i=0;i<this.pattern.length;i++) {
-                this.context.fillRect(dx * i, this.canvas.height - dy * (this.pattern[i] + 1), dx, dy);
+                this.context.fillRect(this.dx * i, this.height() - this.dy * (this.pattern[i] + 1), this.dx, this.dy);
             }
-            this.context.fillRect((this.idx % this.pattern.length) * dx, 0, 0.5, this.canvas.height);
+
+            var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
+
+            this.context.fillRect(x, 0, 0.5, this.height());
+
         },
 
         control: function(synth) {
             this.synth.push(synth);
         },
 
-        next: function() {
-            this.idx++
-            var note = this.pattern[this.idx % this.pattern.length];
-            return note;
-        },
-
         initialize: function() {
             this._super();
+
+            this.len = this.options.len || this.len;
 
             for(var i=0;i<this.len;i++) {
                 this.pattern[i] = -1;
             }
+
+            this.duration = 60 * this.len / 4 / this.rack.bpm;
+            this.step = this.duration / (this.len / 4);
+            this.dx = this.width() / this.len;
+            this.dy = this.height() / 24;
 
             var self = this;
             this.addButton('glyphicon glyphicon-play', function(on) {

@@ -38,12 +38,17 @@ define('plugins/delay', [
             gadget.out.connect(this.out);
         },
 
-        onMouseDown: function(event) {
-            this.down = true;
+        onChange: function(event) {
+
             var x = this.getX(event);
-            var y = this.getY(event);
+            var y = this.height() - this.getY(event);
             this.feedback.gain.value = x / this.canvas.width;
             this.delay.delayTime.value = y / this.canvas.height;
+        },
+
+        onMouseDown: function(event) {
+            this.down = true;
+            this.onChange(event);
         },
 
         onMouseUp: function(event) {
@@ -54,10 +59,7 @@ define('plugins/delay', [
             if(!this.down) {
                 return;
             }
-            var x = this.getX(event);
-            var y = this.getY(event);
-            this.feedback.gain.value = x / this.canvas.width;
-            this.delay.delayTime.value = y / this.canvas.height;
+            this.onChange(event);
         },
 
         initialize: function() {

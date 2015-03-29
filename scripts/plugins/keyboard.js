@@ -28,9 +28,9 @@ define('plugins/keyboard', [
 
         getNote: function(event) {
             var x = this.getX(event);
-            var y = this.getY(event);
+            var y = this.height() - this.getY(event);
 
-            if(y < this.canvas.height / 2) {
+            if(y < this.baseline) {
                 var k = Math.floor(x / this.canvas.width * 14);
                 var note = this.row1[k];
             } else {

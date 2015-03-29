@@ -78,6 +78,7 @@ define('Gadget', [
 
 			this.canvas.setAttribute('height', this.height());
 			this.canvas.setAttribute('width', this.container.offsetWidth);
+			this.width(this.container.offsetWidth);
 
 			this.context = this.canvas.getContext('2d');
 
@@ -112,7 +113,7 @@ define('Gadget', [
         },
 
         getY: function(event) {
-            return this.canvas.height - (event.clientY - $(this.canvas).offset().top + $('body').scrollTop());
+            return event.clientY - $(this.canvas).offset().top + $('body').scrollTop();
         },
 
 		addButton: function(icon, handler, options) {
@@ -126,7 +127,7 @@ define('Gadget', [
 			iconElement.className = icon;
 
 			var button = document.createElement('button');
-			button.className = 'btn btn-sm btn-primary';
+			button.className = 'btn btn-sm btn-default';
 			button.appendChild(iconElement);
 			titleBar.appendChild(button);
 

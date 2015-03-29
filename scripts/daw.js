@@ -196,7 +196,7 @@ define('daw', ['jquery'], function($) {
                 for(var i=0;i<self.gadgets.length;i++) {
                     self.gadgets[i].update();
                 }
-            }, 1000 * 60 / (this.bpm * 4)); // BPM
+            }, 1000 * 60 / this.bpm); // BPM
         },
 
         setStatus: function(msg) {

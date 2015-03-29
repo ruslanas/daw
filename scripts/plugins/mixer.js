@@ -34,16 +34,22 @@ define('plugins/mixer', [
             for(var i=0;i<this.sliders.length;i++) {
                 var x = i * width + width / 2;
                 this.context.strokeRect(
-                    x - 2,
+                    x - 3,
                     this.padding,
-                    4,
+                    6,
                     this.canvas.height - this.padding * 2);
 
                 var height = this.canvas.height - 2 * this.padding;
-                this.context.fillRect(
-                    x - 6,
-                    this.canvas.height - this.padding - this.sliders[i] * height - 2,
-                    12, 4);
+
+                var y = this.canvas.height - this.padding - this.sliders[i] * height;
+
+                this.context.beginPath();
+                this.context.moveTo(x + 3, y);
+                this.context.lineTo(x + 10, y - 5);
+                this.context.lineTo(x + 10, y + 5);
+                this.context.fill();
+
+                this.context.fillRect(x - 3, y, 6, this.height() - y - this.padding);
 
                 this.context.textAlign = 'center';
                 if(i === 0) {
@@ -51,8 +57,7 @@ define('plugins/mixer', [
                 } else {
                     var title = this.channels[i - 1].title;
                 }
-                    this.context.fillText(
-                        title, x, this.canvas.height - 5);
+                this.context.fillText(title, x, this.canvas.height - 5);
             }
         },
 
@@ -91,10 +96,7 @@ define('plugins/mixer', [
 
         onMouseMove: function(event) {
             if(this.down) {
-                var $canvas = $(this.canvas);
-                var x = event.clientX - $canvas.offset().left;
-                var y = event.clientY - $canvas.offset().top + $('body').scrollTop();
-                this.updateSlider(x, y);
+                this.updateSlider(this.getX(event), this.getY(event));
             }
         },
 

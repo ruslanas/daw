@@ -45,13 +45,17 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
             gadget.out.connect(this.input);
         },
 
-        onMouseDown: function(event) {
-            this.down = true;
+        onChange: function(event) {
 
             this.x = this.getX(event);
-            this.y = this.canvas.height - this.getY(event);
+            this.y = this.getY(event);
 
             this.reset();
+        },
+
+        onMouseDown: function(event) {
+            this.down = true;
+            this.onChange(event);
         },
 
         onMouseUp: function(event) {
@@ -62,9 +66,7 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
             if(!this.down) {
                 return;
             }
-            this.x = this.getX(event);
-            this.y = this.canvas.height - this.getY(event);
-            this.reset();
+            this.onChange(event);
         },
 
         reset: function() {

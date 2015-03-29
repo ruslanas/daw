@@ -23,7 +23,6 @@ define('plugins/editor', [
 			this._super();
 
 			this.title = 'Recorder';
-			this.width(512);
 			this.height(100);
 		},
 

@@ -4,6 +4,8 @@
  * @author Ruslanas Balciunas
  */
 
+"use strict";
+
 const FULL_CIRCLE = Math.PI * 2;
 
 define('plugins/synth', [
@@ -34,6 +36,7 @@ define('plugins/synth', [
         init: function() {
             this._super();
 
+            this.title = 'Synthesizer';
             this.notes = [];
             this.samples = [];
 
@@ -92,14 +95,24 @@ define('plugins/synth', [
             done();
         },
 
+        onChange: function(event) {
+            this.x = this.getX(event);
+            this.y = this.height() - this.getY(event);
+
+            if(this.down) {
+                this.down.x = this.x / this.width();
+                this.down.y = 1 - this.y / this.height();
+            }
+        },
+
         onMouseDown: function(event) {
             var x = this.getX(event);
-            var y = this.getY(event);
+            var y = this.height() - this.getY(event);
 
-            var dx0 = x - this.bezierPoints.c0.x * this.canvas.width;
-            var dy0 = y - (1 - this.bezierPoints.c0.y) * this.canvas.height;
-            var dx1 = x - this.bezierPoints.c1.x * this.canvas.width;
-            var dy1 = y - (1 - this.bezierPoints.c1.y) * this.canvas.height;
+            var dx0 = x - this.bezierPoints.c0.x * this.width();
+            var dy0 = y - (1 - this.bezierPoints.c0.y) * this.height();
+            var dx1 = x - this.bezierPoints.c1.x * this.width();
+            var dy1 = y - (1 - this.bezierPoints.c1.y) * this.height();
 
             if(dx0 * dx0 + dy0 * dy0 < dx1 * dx1 + dy1 * dy1) {
                 this.down = this.bezierPoints.c0;
@@ -107,38 +120,33 @@ define('plugins/synth', [
                 this.down = this.bezierPoints.c1;
             }
 
+            this.onChange(event);
         },
 
         onMouseMove: function(event) {
             if(!this.down) {
                 return;
             }
-            this.x = this.getX(event);
-            this.y = this.getY(event);
 
-            this.down.x = this.x / this.canvas.width;
-            this.down.y = 1 - this.y / this.canvas.height;
-
+            this.onChange(event);
         },
 
         onMouseUp: function(event) {
             this.down = false;
-            this.x = this.getX(event);
-            this.y = this.getY(event);
 
-            this.down.x = this.x / this.canvas.width;
-            this.down.y = 1 - this.y / this.canvas.height;
-
+            this.onChange(event);
             this.generate();
         },
 
-        playNote: function(note) {
+        playNote: function(note, time) {
+
+            time = time || 0;
 
             var self = this;
 
             this.status = ['~', Math.round(this.notes[note]), 'Hz'].join('');
 
-            var oscillator = this.rack.context.createBufferSource();
+            var oscillator = this.audio.createBufferSource();
 
             oscillator.buffer = this.samples[note];
 
@@ -151,7 +159,7 @@ define('plugins/synth', [
                 oscillator = null;
             };
 
-            oscillator.start();
+            oscillator.start(time);
 
         },
 
@@ -178,13 +186,18 @@ define('plugins/synth', [
         initialize: function() {
             this._super();
 
-            var f = this.baseFreq;
+            var f = this.options.base_frequency || this.baseFreq;
+
+            this.modes = this.options.modes || [];
+            this.len = this.options.len || this.len;
+            this.noise = this.options.noise || this.noise;
+
             for(var i=0;i<24;i++) {
                 this.notes.push(f);
                 f = f * Math.pow(2, 1 / 12);
             }
 
-            var amp = this.rack.context.createGain();
+            var amp = this.audio.createGain();
             amp.gain.value = this.gain;
 
             this.out = amp;
@@ -192,7 +205,7 @@ define('plugins/synth', [
             this.worker = new Worker('scripts/synthWorker.js');
             var self = this;
             this.worker.onmessage = function(msg) {
-                var sample = self.rack.context.createBuffer(
+                var sample = self.audio.createBuffer(
                     1, msg.data.len, self.getSampleRate());
 
                 var buff = sample.getChannelData(0);

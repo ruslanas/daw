@@ -4,8 +4,9 @@
         <title>DAW</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet"
-              href="scripts/lib/bootstrap/dist/css/bootstrap.css">
+
+        <link rel="stylesheet" href="css/styles.css">
+
         <link rel="stylesheet"
               href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="css/daw.css">
@@ -67,8 +68,8 @@
                     </div>
                     <div id="wide"></div>
                     <div class="row">
-                        <div class="col-sm-6" id="drums"></div>
-                        <div class="col-sm-6" id="strings"></div>
+                        <div class="col-sm-6" id="keyboard"></div>
+                        <div class="col-sm-6" id="effects"></div>
                     </div>
                     <p>
                         At the moment only latest
@@ -84,7 +85,12 @@
                     </p>
                 </div>
                 <div class="col-sm-6">
-                    <daw-playlist src="api/songs"></daw-playlist>
+                    <div class="row">
+                        <div class="col-sm-6" id="drums"></div>
+                        <div class="col-sm-6" id="strings">
+                            <daw-playlist src="api/songs"></daw-playlist>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
