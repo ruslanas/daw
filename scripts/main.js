@@ -55,6 +55,7 @@ require([
         fft_size: 256
     });
 
+    var mixer = new Mixer();
     var sampler = new Sampler();
 
     DAW.insert('daw-playlist', sampler, {
@@ -67,10 +68,10 @@ require([
         sampler.loadTracks(data);
     });
 
-    var mixer = new Mixer();
-
     DAW.insert('#wide', new Editor());
-    DAW.insert('#effects', mixer);
+    DAW.insert('#wide', mixer);
+
+    mixer.connect(sampler);
 
     var drum = new Synth();
     var sequencer = new Sequencer();

@@ -4,9 +4,8 @@
  */
 
 define('plugins/sampler', [
-    'Gadget',
-    'jquery'
-    ], function(Gadget, $) {
+    'Gadget'
+    ], function(Gadget) {
 
     var Sampler = Gadget.extend({
 
@@ -34,16 +33,15 @@ define('plugins/sampler', [
                 var source = this.rack.context.createMediaElementSource(
                     audio);
 
-                source.connect(this.rack.visualiser);
+                source.connect(this.out);
             }
 
-            // may be muted after recording session
-            this.rack.setVolume(1);
             done(data);
         },
 
         initialize: function() {
             this.options.hidden = this.options.hidden || false;
+            this.out = this.audio.createGain();
             if(!this.options.hidden) {
                 this._super();
             }
