@@ -113,7 +113,7 @@ define('Gadget', [
         },
 
         getY: function(event) {
-            return event.clientY - $(this.canvas).offset().top + $('body').scrollTop();
+            return event.clientY - $(this.canvas).offset().top + $(window).scrollTop();
         },
 
 		addButton: function(icon, handler, options) {

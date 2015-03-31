@@ -88,9 +88,7 @@ define('plugins/mixer', [
 
         onMouseDown: function(event) {
             var $canvas = $(this.canvas);
-            var x = event.clientX - $canvas.offset().left;
-            var y = event.clientY - $canvas.offset().top + $('body').scrollTop();
-            this.updateSlider(x, y);
+            this.updateSlider(this.getX(event), this.getY(event));
             this.down = true;
         },
 
