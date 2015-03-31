@@ -22,15 +22,18 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 			this.context.fillText(
 				'Buffer size: ' + this.rack.recordFrameLen, 2, this.canvas.height - 2);
 
-			var scale = (this.canvas.height - this.titleHeight) / 2;
-
 			for(var i=0;i<this.canvas.width;i++) {
 				var amp = this.rack.buffer[i];
-				var height = this.baseline + amp * scale;
+				var height = this.baseline + amp * this.scale;
 				this.context.fillRect(i, height, 1, 1);
 			}
 
 		},
+
+		initialize: function() {
+			this._super();
+			this.scale = this.height() / 2;
+		}
 	});
 
 	return Visualiser;

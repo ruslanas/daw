@@ -15,6 +15,7 @@ define('plugins/editor', [
 		markerPos: 0,
 		markerEnd: 0,
 		start: 0,
+		scaleY: 0,
 		zoom: 128,
 		select: false,
 		stopButton: null,
@@ -37,28 +38,16 @@ define('plugins/editor', [
 
 			this.clear();
 
-			this.zoom = Math.min(this.zoom,
-				Math.pow(2,
-					Math.floor(
-						Math.log2(
-							this.rack.sample.length / this.canvas.width))));
-
 			if(this.rack.onAir) {
 				this.start = Math.max(0,
 					this.rack.pos * this.rack.recordFrameLen - this.canvas.width * this.zoom);
 			}
 
-			this.start = Math.min(this.start,
-				this.rack.sample.length - this.canvas.width * this.zoom);
-
-			this.start = Math.round(this.start);
-
 			var len = this.canvas.width * this.zoom;
-			var scaleY = this.height() / 2;
 
 			for(var i=0;i<this.canvas.width;i++) {
 				var idx = this.start + i * this.zoom;
-				var amp = this.getSample(idx) * scaleY;
+				var amp = this.getSample(idx) * this.scaleY;
 				this.context.fillRect(i, this.baseline, 0.7, amp + 1);
 			}
 
@@ -122,18 +111,30 @@ define('plugins/editor', [
 				// zoom
 				var mult = (delta < 0) ? 0.5 : 2;
 				this.zoom = Math.max(1, this.zoom * mult);
+				this.zoom = Math.min(this.zoom,
+					Math.pow(2,
+						Math.floor(
+							Math.log2(
+								this.rack.sample.length / this.canvas.width))));
+
 
 			} else {
 				// scroll
 				this.start = Math.max(
 					0,
 					this.start + this.zoom * delta * this.canvas.width / 4);
+				this.start = Math.min(this.start,
+					this.rack.sample.length - this.canvas.width * this.zoom);
+
+				this.start = Math.round(this.start);
+
 			}
 		},
 
 		initialize: function() {
 			this._super();
 			var self = this;
+			this.scaleY = this.height() / 2;
 			this.markerEnd = this.rack.sample.length;
 			this.addButton('fa fa-microphone-slash', function(on) {
 
