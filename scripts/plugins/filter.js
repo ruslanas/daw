@@ -31,11 +31,11 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
             this.context.fillText(status, 2, this.canvas.height - 2);
 
             for(var i=0;i<this.magResponse.length;i++) {
-                var x = this.width() * this.frequencyArray[i]/(this.audio.sampleRate / 2);
+                var x = this.width() * this.frequencyArray[i]/this.nyquist;
                 var dbResponse = 20.0 * Math.log(this.magResponse[i]) / Math.LN10;
                 this.context.fillRect(x, dbResponse + this.height() / 2, 1, 1);
             }
-
+            this.updated = false;
         },
 
         connect: function(gadget) {
@@ -51,6 +51,7 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
             this.y = this.getY(event);
 
             this.reset();
+            this.updated = true;
         },
 
         onMouseDown: function(event) {
@@ -60,6 +61,7 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
 
         onMouseUp: function(event) {
             this.down = false;
+            this.onChange(event);
         },
 
         onMouseMove: function(event) {
@@ -98,6 +100,8 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
 
             this.magResponse = new Float32Array(width);
             this.phaseResponse = new Float32Array(width);
+            // nyquist frequency
+            this.nyquist = this.audio.sampleRate / 2;
 
         }
     });

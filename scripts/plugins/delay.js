@@ -28,6 +28,7 @@ define('plugins/delay', [
             this.context.fillRect(
                 this.feedback.gain.value * this.canvas.width - 2,
                 (1 - this.delay.delayTime.value) * this.canvas.height - 2, 4, 4);
+            this.updated = false;
         },
 
         connect: function(gadget, channel) {
@@ -44,6 +45,7 @@ define('plugins/delay', [
             var y = this.height() - this.getY(event);
             this.feedback.gain.value = x / this.canvas.width;
             this.delay.delayTime.value = y / this.canvas.height;
+            this.updated = true;
         },
 
         onMouseDown: function(event) {
@@ -53,6 +55,7 @@ define('plugins/delay', [
 
         onMouseUp: function(event) {
             this.down = false;
+            this.onChange(event);
         },
 
         onMouseMove: function(event) {

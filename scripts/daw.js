@@ -236,7 +236,9 @@ define('daw', ['jquery'], function($) {
 
         redraw: function() {
             for(var i=0;i<this.gadgets.length;i++) {
-                this.gadgets[i].redraw();
+                if(this.gadgets[i].updated) {
+                    this.gadgets[i].redraw();
+                }
             }
             var self = this;
             window.requestAnimationFrame(function() {

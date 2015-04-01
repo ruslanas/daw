@@ -77,6 +77,7 @@ define('plugins/keyboard', [
                 }
                 this.context.fillRect(i * kw - kw / 4, 0, kw / 2, this.canvas.height / 2);
             }
+            this.updated = false;
         },
 
         initialize: function() {

@@ -32,16 +32,17 @@ define('plugins/editor', [
 		},
 
 		update: function() {
+			if(this.rack.onAir) {
+				this.start = Math.max(0,
+					this.rack.pos * this.rack.recordFrameLen - this.canvas.width * this.zoom);
+				this.updateStatus();
+				this.updated = true;
+			}
 		},
 
 		redraw: function() {
 
 			this.clear();
-
-			if(this.rack.onAir) {
-				this.start = Math.max(0,
-					this.rack.pos * this.rack.recordFrameLen - this.canvas.width * this.zoom);
-			}
 
 			var len = this.canvas.width * this.zoom;
 
@@ -52,10 +53,7 @@ define('plugins/editor', [
 			}
 
 			// frame number
-			this.context.fillText(
-				'Pos: ' + this.start + ' Zoom: ' + this.zoom + ' Val: '
-					+ this.getSample(this.markerPos),
-				2, this.canvas.height - 2);
+			this.context.fillText(this.status, 2, this.canvas.height - 2);
 
 			this.context.fillStyle = '#F00';
 			var from = (this.markerPos - this.start) / this.zoom;
@@ -69,7 +67,7 @@ define('plugins/editor', [
 			this.context.fillRect(from,
 				0, to - from, this.height());
 
-
+			this.updated = false;
 		},
 
 		onMouseDown: function(event) {
@@ -77,12 +75,16 @@ define('plugins/editor', [
 			var x = this.getX(event);
 			this.select = true;
 			this.markerPos = Math.round(this.start + x * this.zoom);
+			this.updateStatus();
+			this.updated = true;
 		},
 
 		onMouseMove: function(event) {
 			if(this.select) {
 				this.markerEnd = Math.round(this.start + this.getX(event) * this.zoom);
 			}
+			this.updateStatus();
+			this.updated = true;
 		},
 
 		onMouseUp: function(event) {
@@ -99,6 +101,15 @@ define('plugins/editor', [
 				this.markerEnd = this.markerPos;
 				this.markerPos = tmp;
 			}
+
+			this.updateStatus();
+			this.updated = true;
+		},
+
+		updateStatus: function() {
+			this.setStatus(
+				'Pos: ' + this.start + ' Zoom: ' + this.zoom + ' Val: '
+				+ this.getSample(this.markerPos));
 		},
 
 		onMouseWheel: function(event) {
@@ -129,6 +140,8 @@ define('plugins/editor', [
 				this.start = Math.round(this.start);
 
 			}
+			this.updateStatus();
+			this.updated = true;
 		},
 
 		initialize: function() {
@@ -185,6 +198,8 @@ define('plugins/editor', [
 			this.addButton('glyphicon glyphicon-cloud-upload', function(on) {
                 self.rack.upload();
 			});
+
+			this.updateStatus();
 		}
 	});
 

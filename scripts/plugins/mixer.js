@@ -59,6 +59,7 @@ define('plugins/mixer', [
                 }
                 this.context.fillText(title, x, this.canvas.height - 5);
             }
+            this.updated = false;
         },
 
         update: function() {
@@ -79,7 +80,7 @@ define('plugins/mixer', [
             if(idx > 0) {
                 this.channels[idx - 1].input.gain.value = val;
             }
-
+            this.updated = true;
         },
 
         onMouseUp: function(event) {

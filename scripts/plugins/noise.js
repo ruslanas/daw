@@ -35,6 +35,7 @@ define('plugins/noise', ['Gadget'], function(Gadget) {
                 this.source.stop();
                 this.source.disconnect(this.out);
             }
+            this.updated = true;
         },
 
         redraw: function() {
@@ -44,6 +45,7 @@ define('plugins/noise', ['Gadget'], function(Gadget) {
                 msg = 'on';
             }
             this.context.fillText(msg, 2, this.canvas.height - 2);
+            this.updated = false;
         },
 
         initialize: function() {

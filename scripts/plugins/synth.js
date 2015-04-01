@@ -89,6 +89,7 @@ define('plugins/synth', [
             this.context.fillStyle = '#FF0';
             this.context.fillRect(cx1 - 2, cy1 - 2, 4, 4);
             this.context.fillRect(cx2 - 2, cy2 - 2, 4, 4);
+            this.updated = false;
         },
 
         onReady: function(done) {
@@ -103,6 +104,7 @@ define('plugins/synth', [
                 this.down.x = this.x / this.width();
                 this.down.y = 1 - this.y / this.height();
             }
+            this.updated = true;
         },
 
         onMouseDown: function(event) {
@@ -146,20 +148,19 @@ define('plugins/synth', [
 
             this.status = ['~', Math.round(this.notes[note]), 'Hz'].join('');
 
-            var oscillator = this.audio.createBufferSource();
+            var buffSrc = this.audio.createBufferSource();
 
-            oscillator.buffer = this.samples[note];
+            buffSrc.buffer = this.samples[note];
 
-            oscillator.connect(this.out);
+            buffSrc.connect(this.out);
 
-            oscillator.onended = function() {
-                self.on = false;
-                oscillator.stop();
-                oscillator.disconnect(self.out);
-                oscillator = null;
-            };
+            buffSrc.onended = function() {
+                buffSrc.disconnect(self.out);
+                buffSrc.onended = null;
+                buffSrc = null;
+            }
 
-            oscillator.start(time);
+            buffSrc.start(time);
 
         },
 

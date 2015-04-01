@@ -28,6 +28,7 @@ define('plugins/compressor', ['Gadget'], function(Gadget) {
                 ;
 
             this.context.fillText(status, 2, this.height() - 2);
+            this.updated = false;
         },
 
         initialize: function() {

@@ -15,6 +15,8 @@ define('Gadget', [
 		title: '',
 		titleHeight: 14,
 		color: 'rgb(119, 119, 119)',
+		status: '',
+		updated: false,
 
 		// Constructor. No DOM operations here
 		init: function() {
@@ -106,6 +108,8 @@ define('Gadget', [
 			$(this.canvas).on('mousewheel', function(event) {
 				self.onMouseWheel(event);
 			});
+
+			this.updated = true;
 		},
 
         getX: function(event) {
@@ -193,6 +197,10 @@ define('Gadget', [
 			// void
 		},
 
+		setStatus: function(msg) {
+			this.status = msg;
+		},
+
 		// do not call from plugins
 		attach: function(container, rack, options) {
 			this.title = options.title || this.title;
@@ -204,7 +212,7 @@ define('Gadget', [
 		},
 
 		getSampleRate: function() {
-			return this.rack.context.sampleRate;
+			return this.audio.sampleRate;
 		}
 	});
 

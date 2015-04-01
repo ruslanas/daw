@@ -19,20 +19,17 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 
 			this.clear();
 
-			this.context.fillText(
-				'Buffer size: ' + this.rack.recordFrameLen, 2, this.canvas.height - 2);
-
 			for(var i=0;i<this.canvas.width;i++) {
 				var amp = this.rack.buffer[i];
 				var height = this.baseline + amp * this.scale;
 				this.context.fillRect(i, height, 1, 1);
 			}
-
 		},
 
 		initialize: function() {
 			this._super();
 			this.scale = this.height() / 2;
+			this.parent.querySelector('.titlebar').innerHTML += ' (' + this.rack.recordFrameLen + ')';
 		}
 	});
 

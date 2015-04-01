@@ -23,7 +23,7 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             this.title = 'Sequencer';
         },
 
-        onClick: function(event) {
+        onMouseDown: function(event) {
 
             var dx = this.canvas.width / this.len;
             var dy = this.canvas.height / 24;
@@ -35,7 +35,7 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             var pos = Math.floor(x/dx);
 
             this.pattern[pos] = (this.pattern[pos] !== note) ? note : -1;
-
+            this.updated = true;
         },
 
         loadPattern: function(data) {
@@ -72,7 +72,6 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
 
             this.context.fillRect(x, 0, 0.5, this.height());
-
         },
 
         control: function(synth) {
@@ -96,6 +95,7 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             var self = this;
             this.addButton('glyphicon glyphicon-play', function(on) {
                 self.on = on;
+                self.updated = on;
             }, {
                 type: 'checkbox',
                 checked: 'glyphicon glyphicon-pause'
