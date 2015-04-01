@@ -15,6 +15,7 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
         on: false,
         synth: null,
         duration: 0,
+        range: 24,
 
         init: function() {
             this._super();
@@ -86,6 +87,7 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             this._super();
 
             this.len = this.options.len || this.len;
+            this.range = this.options.range || this.range;
 
             for(var i=0;i<this.len;i++) {
                 this.pattern[i] = [];
@@ -94,7 +96,7 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             this.duration = 60 * this.len / 4 / this.rack.bpm;
             this.step = this.duration / (this.len / 4);
             this.dx = this.width() / this.len;
-            this.dy = this.height() / 24;
+            this.dy = this.height() / this.range;
 
             var self = this;
             this.addButton('glyphicon glyphicon-play', function(on) {

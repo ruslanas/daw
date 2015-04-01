@@ -186,8 +186,6 @@ define('daw', ['jquery'], function($) {
 
             });
 
-            this.synthWorker = new Worker('scripts/synthWorker.js');
-
             this.createProcessors();
 
             window.requestAnimationFrame(function() {

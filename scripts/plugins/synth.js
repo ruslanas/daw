@@ -6,7 +6,7 @@
 
 "use strict";
 
-const FULL_CIRCLE = Math.PI * 2;
+var FULL_CIRCLE = Math.PI * 2;
 
 define('plugins/synth', [
     'Gadget',
@@ -196,7 +196,7 @@ define('plugins/synth', [
 
             this.out = amp;
 
-            this.worker = this.rack.synthWorker;
+            this.worker = new Worker('scripts/synthWorker.js');
             var self = this;
             this.worker.onmessage = function(msg) {
                 var sample = self.audio.createBuffer(
