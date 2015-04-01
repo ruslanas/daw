@@ -196,7 +196,7 @@ define('plugins/synth', [
 
             this.out = amp;
 
-            this.worker = new Worker('scripts/synthWorker.js');
+            this.worker = this.rack.synthWorker;
             var self = this;
             this.worker.onmessage = function(msg) {
                 var sample = self.audio.createBuffer(
