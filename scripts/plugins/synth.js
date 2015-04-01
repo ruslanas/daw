@@ -70,10 +70,7 @@ define('plugins/synth', [
             this.context.beginPath();
             this.context.moveTo(x1, y1);
             this.context.bezierCurveTo(cx1, cy1, cx2, cy2, this.canvas.width, 0);
-
             this.context.stroke();
-
-            this.context.fillText(this.status, 2, this.canvas.height - 2);
 
             this.context.strokeStyle = '#FF0';
             this.context.beginPath();
@@ -141,17 +138,13 @@ define('plugins/synth', [
         },
 
         playNote: function(note, time) {
-
             time = time || 0;
 
             var self = this;
 
-            this.status = ['~', Math.round(this.notes[note]), 'Hz'].join('');
-
             var buffSrc = this.audio.createBufferSource();
 
             buffSrc.buffer = this.samples[note];
-
             buffSrc.connect(this.out);
 
             buffSrc.onended = function() {

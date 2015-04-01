@@ -25,16 +25,13 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
 
         onMouseDown: function(event) {
 
-            var dx = this.canvas.width / this.len;
-            var dy = this.canvas.height / 24;
-
             var x = this.getX(event);
             var y = this.height() - this.getY(event);
 
-            var note = Math.floor(y/dy);
-            var pos = Math.floor(x/dx);
+            var note = Math.floor(y / this.dy);
+            var pos = Math.floor(x / this.dx);
 
-            this.pattern[pos] = (this.pattern[pos] !== note) ? note : -1;
+            this.pattern[pos][note] = !this.pattern[pos][note] ? 1 : 0;
             this.updated = true;
         },
 
@@ -52,11 +49,12 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
 
                 for(var i=0;i<4;i++) {
 
-                    var note = this.pattern[4 * beat + i];
-                    var time = beatStart + i * this.duration / this.len;
+                    for(var j=0;j<this.pattern[4 * beat + i].length;j++) {
 
-                    if(note >= 0) {
-                        this.synth[0].playNote(note, time);
+                        if(this.pattern[4 * beat + i][j] > 0) {
+                            var time = beatStart + i * this.duration / this.len;
+                            this.synth[0].playNote(j, time);
+                        }
                     }
                 }
             }
@@ -66,12 +64,18 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             this.clear();
 
             for(var i=0;i<this.pattern.length;i++) {
-                this.context.fillRect(this.dx * i, this.height() - this.dy * (this.pattern[i] + 1), this.dx, this.dy);
+                for(var j=0;j<this.pattern[i].length;j++) {
+                    if(this.pattern[i][j] > 0) {
+                        var y = this.height() - this.dy * (j + 1);
+                        this.context.fillRect(this.dx * i, y, this.dx, this.dy);
+                    }
+                }
             }
 
             var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
 
-            this.context.fillRect(x, 0, 0.5, this.height());
+            this.context.fillStyle = '#FF0';
+            this.context.fillRect(x, 0, 1, this.height());
         },
 
         control: function(synth) {
@@ -84,7 +88,7 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             this.len = this.options.len || this.len;
 
             for(var i=0;i<this.len;i++) {
-                this.pattern[i] = -1;
+                this.pattern[i] = [];
             }
 
             this.duration = 60 * this.len / 4 / this.rack.bpm;
