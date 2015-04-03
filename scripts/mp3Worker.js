@@ -5,38 +5,47 @@ importScripts('lib/requirejs/require.js');
 
 require(['lib/libmp3lame/dist/libmp3lame'], function(lame) {
 
-    var mp3codec, blob;
+    var mp3codec, blob, stage1 = false, stage2 = false;
 
-    postMessage('ready');
+    try {
+        var formData = new FormData();
+        postMessage('ready');
+    } catch(e) {
+        postMessage('Error: ' + e.message);
+        return;
+    }
+
+    var upload = function() {
+
+        if(!stage1 || !stage2) {
+            return;
+        }
+
+        postMessage('Uploading to server...');
+        var req = new XMLHttpRequest();
+        req.open("POST", '../api/songs', true);
+
+        req.onreadystatechange = function() {
+            if (req.readyState === 4) {
+                postMessage('done');
+            }
+        };
+
+        req.send(formData);
+    };
 
     onmessage = function(msg) {
 
         if(msg.data.email !== undefined) {
 
-            postMessage('Uploading to server...');
 
-            try {
-                var fd = new FormData();
-            } catch(e) {
-                postMessage('Error: ' + e.message);
-                return;
-            }
+            formData.append('email', msg.data.email);
+            formData.append('name', msg.data.name);
 
-            fd.append('email', msg.data.email);
-            fd.append('name', msg.data.name);
-            fd.append('data', blob);
+            stage1 = true;
 
-            var req = new XMLHttpRequest();
-            req.open("POST", '../api/songs', true);
+            upload();
 
-            req.onreadystatechange = function() {
-                if (req.readyState === 4) {
-                    postMessage('done');
-                }
-            };
-
-            req.send(fd);
-            postMessage('done');
 
         } else {
 
@@ -70,12 +79,15 @@ require(['lib/libmp3lame/dist/libmp3lame'], function(lame) {
             blob = new Blob([new Uint8Array(mp3data.data)], {
                 type: 'audio/mp3'
             });
+            formData.append('data', blob);
 
             Lame.close(mp3codec);
 
             mp3codec = null;
 
             postMessage('encoded');
+            stage2 = true;
+            upload();
 
         }
     }

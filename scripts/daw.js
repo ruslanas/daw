@@ -39,6 +39,7 @@ define('daw', ['jquery'], function($) {
             if(this.player) {
                 this.player.stop();
                 this.player.disconnect(this.masterGain);
+                this.player.onended = false;
                 this.player = null;
             }
 
@@ -79,7 +80,7 @@ define('daw', ['jquery'], function($) {
         },
 
         mute: function() {
-            this.masterGain.gain.value = 0;
+            this.setVolume(0);
             var $i = $('#volume-btn i');
             $i.removeClass('glyphicon-volume-up');
             $i.addClass('glyphicon-volume-off');
@@ -206,6 +207,7 @@ define('daw', ['jquery'], function($) {
         upload: function() {
             var self = this;
             self.setStatus('Preparing...');
+            $('#save-form').addClass('show');
 
             $('#save-btn').attr('disabled', 'disabled');
 
@@ -218,9 +220,8 @@ define('daw', ['jquery'], function($) {
                         break;
 
                     case 'encoded':
-                        var msg = 'Done encoding. Fill form on the right';
+                        var msg = 'Done encoding';
                         self.setStatus(msg);
-                        $('#save-form').addClass('show');
                         break;
 
                     case 'done':

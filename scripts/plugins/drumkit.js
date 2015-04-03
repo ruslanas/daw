@@ -17,10 +17,6 @@ define('plugins/drumkit', [
             this.title = 'Drumkit';
         },
 
-        redraw: function() {
-            // draw to this.context
-        },
-
         loadBuffer: function(idx, url) {
             var request = new XMLHttpRequest();
             request.open('GET', url, true);
@@ -42,10 +38,13 @@ define('plugins/drumkit', [
 
             this.loadBuffer(0, 'waves/base.wav');
             this.loadBuffer(1, 'waves/tom.wav');
-            this.loadBuffer(2, 'waves/snare.wav');
+            this.loadBuffer(2, 'waves/snare2.wav');
             this.loadBuffer(3, 'waves/crash.wav');
             this.loadBuffer(4, 'waves/hihat.wav');
             this.loadBuffer(5, 'waves/hihat2.wav');
+            this.loadBuffer(6, 'waves/kick.ogg');
+            this.loadBuffer(7, 'waves/kick2.wav');
+            this.loadBuffer(8, 'waves/kick3.wav');
         }
     });
 
