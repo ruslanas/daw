@@ -17,6 +17,7 @@ define('Gadget', [
 		color: 'rgb(119, 119, 119)',
 		status: '',
 		updated: false,
+        knobs: [],
 
 		// Constructor. No DOM operations here
 		init: function() {
@@ -52,6 +53,10 @@ define('Gadget', [
 
 		onMouseWheel: function(event) {
 			// void
+		},
+
+		onMouseOut: function(event) {
+			this.down = false;
 		},
 
 		initialize: function() {
@@ -105,6 +110,10 @@ define('Gadget', [
             this.canvas.onmousemove = function(event) {
             	self.onMouseMove(event);
             };
+            this.canvas.onmouseout = function(event) {
+            	self.onMouseOut(event);
+            },
+
 			$(this.canvas).on('mousewheel', function(event) {
 				self.onMouseWheel(event);
 			});
@@ -118,6 +127,22 @@ define('Gadget', [
 
         getY: function(event) {
             return event.clientY - $(this.canvas).offset().top + $(window).scrollTop();
+        },
+
+        drawKnob: function(x, y, val) {
+            this.context.beginPath();
+            this.context.lineWidth = 1.5;
+            this.context.arc(x, y, 10, 0, Math.PI * 2, false);
+            this.context.stroke();
+            this.context.beginPath();
+
+            this.context.save();
+            this.context.translate(x, y);
+            this.context.rotate(val * Math.PI);
+            this.context.moveTo(-2, 0);
+            this.context.lineTo(-10, 0);
+            this.context.stroke();
+            this.context.restore();
         },
 
 		addButton: function(icon, handler, options) {

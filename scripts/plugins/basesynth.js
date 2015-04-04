@@ -13,6 +13,7 @@ define('plugins/basesynth', [
     var BaseSynth = Gadget.extend({
 
         notes: [],
+        gains: [],
         note: null,
         on: false,
         status: '',
@@ -49,7 +50,7 @@ define('plugins/basesynth', [
             var buffSrc = this.audio.createBufferSource();
 
             buffSrc.buffer = this.samples[note];
-            buffSrc.connect(this.out);
+            buffSrc.connect(this.gains[note]);
 
             buffSrc.onended = function() {
                 buffSrc.disconnect(self.out);
@@ -69,7 +70,6 @@ define('plugins/basesynth', [
             amp.gain.value = this.gain;
 
             this.out = amp;
-
         }
     });
 
