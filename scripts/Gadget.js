@@ -214,10 +214,6 @@ define('Gadget', [
 			this.context.fillStyle = this.color;
 		},
 
-		// update: function() {
-		// 	// void
-		// },
-
 		redraw: function() {
 			// void
 		},

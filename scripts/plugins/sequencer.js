@@ -19,6 +19,8 @@ define('plugins/sequencer', [
         synth: null,
         duration: 0,
         range: 24,
+        dx: 0,
+        dy: 0,
 
         init: function() {
             this._super();
@@ -40,7 +42,11 @@ define('plugins/sequencer', [
         },
 
         loadPattern: function(data) {
-            this.pattern = data;
+            for(var i=0;i<data.length;i++) {
+                for(var j=0;j<data[i].length;j++) {
+                    this.pattern[i][j] = parseInt(data[i][j]);
+                }
+            }
         },
 
         update: function() {
@@ -96,12 +102,12 @@ define('plugins/sequencer', [
             this.len = this.options.len || this.len;
             this.range = this.options.range || this.range;
 
+            this.pattern = [];
             for(var i=0;i<this.len;i++) {
-                var arr = [];
+                this.pattern[i] = [];
                 for(var j=0;j<this.range;j++) {
-                    arr[j] = 0;
+                    this.pattern[i][j] = 0;
                 }
-                this.pattern[i] = arr;
             }
 
             this.duration = 60 * this.len / 4 / this.rack.bpm;

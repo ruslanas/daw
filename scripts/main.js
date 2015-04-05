@@ -80,6 +80,9 @@ require([
 
     var drum = new Drumkit();
     var sequencer = new Sequencer();
+    DAW.insert('#drums', sequencer, {
+        range: 10
+    });
 
     sequencer.control(drum);
 
@@ -87,16 +90,7 @@ require([
         sequencer.loadPattern(data);
     });
 
-    DAW.insert('#drums', sequencer, {
-        range: 10
-    });
-
-    DAW.insert('#drums', drum, {
-        modes: [1.59, 1.35, 1.67, 1.99, 2.3, 2.61],
-        base_frequency: 110,
-        noise: 0,
-        len: 20000
-    });
+    DAW.insert('#drums', drum);
 
     var lowShelf = new Filter();
     var noise = new Noise();
