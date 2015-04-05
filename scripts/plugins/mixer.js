@@ -32,6 +32,7 @@ define('plugins/mixer', [
             var width = this.canvas.width / this.sliders.length;
 
             for(var i=0;i<this.sliders.length;i++) {
+
                 var x = i * width + width / 2;
                 this.context.strokeRect(
                     x - 3,

@@ -40,12 +40,13 @@ define('plugins/noise', ['Gadget'], function(Gadget) {
 
         redraw: function() {
             this.clear();
-            var msg = 'off';
             if(this.on) {
-                msg = 'on';
+                for(var i=0;i<200;i++) {
+                    this.context.fillRect(Math.random() * this.width(), Math.random() * this.height(), 1, 1);
+                }
+            } else {
+                this.updated = false;
             }
-            this.context.fillText(msg, 2, this.canvas.height - 2);
-            this.updated = false;
         },
 
         initialize: function() {
