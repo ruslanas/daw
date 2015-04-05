@@ -6,7 +6,10 @@
 
 "use strict";
 
-define('plugins/sequencer', ['Gadget'], function(Gadget) {
+define('plugins/sequencer', [
+    'Gadget',
+    'jquery'
+    ], function(Gadget, $) {
 
     var Sequencer = Gadget.extend({
 
@@ -64,6 +67,12 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
         redraw: function() {
             this.clear();
 
+            var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
+
+            for(var i=0;i<this.pattern.length/4;i++) {
+                this.context.fillRect(this.dx * 4 * i, 0, 0.3, this.height());
+            }
+
             for(var i=0;i<this.pattern.length;i++) {
                 for(var j=0;j<this.pattern[i].length;j++) {
                     if(this.pattern[i][j] > 0) {
@@ -72,8 +81,6 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
                     }
                 }
             }
-
-            var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
 
             this.context.fillStyle = '#FF0';
             this.context.fillRect(x, 0, 1, this.height());
@@ -90,7 +97,11 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             this.range = this.options.range || this.range;
 
             for(var i=0;i<this.len;i++) {
-                this.pattern[i] = [];
+                var arr = [];
+                for(var j=0;j<this.range;j++) {
+                    arr[j] = 0;
+                }
+                this.pattern[i] = arr;
             }
 
             this.duration = 60 * this.len / 4 / this.rack.bpm;
@@ -99,12 +110,24 @@ define('plugins/sequencer', ['Gadget'], function(Gadget) {
             this.dy = this.height() / this.range;
 
             var self = this;
+
             this.addButton('glyphicon glyphicon-play', function(on) {
                 self.on = on;
                 self.updated = on;
             }, {
                 type: 'checkbox',
                 checked: 'glyphicon glyphicon-pause'
+            });
+            this.addButton('fa fa-floppy-o', function(on) {
+                $.post('api/pattern', {
+                    pattern: self.pattern
+                }, function(response) {
+                    self.rack.setStatus('Pattern saved');
+                    self.pattern = response.pattern;
+                }, 'json');
+            }, {
+                type: 'checkbox',
+                checked: 'fa fa-floppy-o'
             });
         }
     });

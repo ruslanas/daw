@@ -26,6 +26,7 @@ define('plugins/drumkit', [
                 }
             }
             this.context.fillText(this.status, 2, this.height() - 2);
+            this.updated = false;
         },
 
         onMouseDown: function(event) {
@@ -33,11 +34,13 @@ define('plugins/drumkit', [
             this.y = this.getY(event);
             this.down = this.gains[idx];
             this.setStatus(this.knobs[idx].name);
+            this.updated = true;
         },
 
         onMouseUp: function(event) {
             this.down = false;
             this.setStatus('');
+            this.updated = true;
         },
 
         onMouseMove: function(event) {
@@ -48,6 +51,7 @@ define('plugins/drumkit', [
             var val = this.down.gain.value + 0.1 * dy / this.height();
             // clamp
             this.down.gain.value = Math.min(1, Math.max(0, val));
+            this.updated = true;
         },
 
         loadBuffer: function(idx, url) {
@@ -68,6 +72,7 @@ define('plugins/drumkit', [
                         val: 1,
                         name: url
                     };
+                    self.updated = true;
                 }, function(e) {
                     console.log(e);
                 });
@@ -78,8 +83,8 @@ define('plugins/drumkit', [
         initialize: function() {
             this._super();
 
-            this.knobs = new Array(9);
-            this.gains = new Array(9);
+            this.knobs = new Array(10);
+            this.gains = new Array(10);
 
             this.loadBuffer(0, 'waves/base.wav');
             this.loadBuffer(1, 'waves/tom.wav');
@@ -89,7 +94,8 @@ define('plugins/drumkit', [
             this.loadBuffer(5, 'waves/hihat2.wav');
             this.loadBuffer(6, 'waves/kick.ogg');
             this.loadBuffer(7, 'waves/kick2.wav');
-            this.loadBuffer(8, 'waves/kick3.wav');
+            this.loadBuffer(8, 'waves/weird.wav');
+            this.loadBuffer(9, 'waves/weird2.wav');
         }
     });
 

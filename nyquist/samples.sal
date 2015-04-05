@@ -1,6 +1,7 @@
-set s = fmosc(c2, pwl(0.4, step-to-hz(b2), 0.5, step-to-hz(c2), 0.55), *tri-table*) * kick()
-;set s = fmosc(c2, 10 * lfo(6.0), *tri-table*) * kick()
-set s2 = fmosc(c3, pwl(0.4, step-to-hz(b3), 0.5, step-to-hz(c3), 0.55), *tri-table*) * kick()
+;set s = fmosc(c2, pwl(0.4, step-to-hz(b2), 0.5, step-to-hz(d2), 0.55), *tri-table*) * kick()
+set s = fmosc(c2, 10 * lfo(6.0), *tri-table*) * kick()
+;set s2 = fmosc(g2, pwl(0.4, step-to-hz(f2), 0.5, step-to-hz(g2), 0.55), *tri-table*) * kick()
+set s2 = fmosc(g2, 10 * lfo(6.0), *tri-table*) * kick()
 exec s-save(s, ny:all, "../waves/weird.wav")
 exec s-save(s2, ny:all, "../waves/weird2.wav")
 

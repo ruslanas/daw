@@ -28,7 +28,7 @@
                 src="scripts/lib/requirejs/require.js"></script>
     </head>
     <body>
-        <nav class="navbar navbar-default">
+        <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="<?php echo $baseUrl;?>">Digital Audio Workstation
@@ -71,18 +71,6 @@
                         <div class="col-sm-6" id="keyboard"></div>
                         <div class="col-sm-6" id="effects"></div>
                     </div>
-                    <p>
-                        At the moment only latest
-                        <a href="http://www.google.com/chrome/">Chrome</a> browsers support all the features.
-                    </p>
-                    <p>
-                        <small>
-                            © 2015 Powered by
-                            <a href="http://github.com/ruslanas/daw"
-                            target="_blank">daw</a>.
-                            Report <a href="https://github.com/ruslanas/daw/issues">issues</a>.
-                        </small>
-                    </p>
                 </div>
                 <div class="col-sm-6">
                     <div class="row">
@@ -94,5 +82,21 @@
                 </div>
             </div>
         </div>
+        <nav class="navbar navbar-default navbar-fixed-bottom">
+            <div class="container">
+                <div class="col-sm-6">
+                    At the moment only latest
+                    <a href="http://www.google.com/chrome/">Chrome</a> browsers support all the features.
+                </div>
+                <div class="col-sm-6">
+                    <small>
+                        © 2015 Powered by
+                        <a href="http://github.com/ruslanas/daw"
+                        target="_blank">daw</a>.
+                        Report <a href="https://github.com/ruslanas/daw/issues">issues</a>.
+                    </small>
+                </div>
+            </div>
+        </nav>
     </body>
 </html>

@@ -35,13 +35,15 @@ require([
     'plugins/keyboard',
     'plugins/filter',
     'plugins/noise',
+    'plugins/compressor',
+    'plugins/drumkit'
 
     ], function(
         DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer,
-        Mixer, Delay, Keyboard, Filter, Noise) {
+        Mixer, Delay, Keyboard, Filter, Noise, Compressor, Drumkit) {
 
     DAW.initialize({
-        duration: 60,
+        duration: 10,
         buffer_size: 1024,
         bpm: 180
     });
@@ -50,9 +52,12 @@ require([
         title: 'Buffer'
     });
 
+    var compressor = new Compressor();
+    DAW.insert('#buffer', compressor);
+
     DAW.insert('#analyser', new Analyzer(), {
         title: 'Analyser',
-        fft_size: 256
+        fft_size: 128
     });
 
     var mixer = new Mixer();
@@ -68,29 +73,28 @@ require([
         sampler.loadTracks(data);
     });
 
-    DAW.insert('#wide', new Editor());
+    DAW.insert('#analyser', new Editor());
     DAW.insert('#wide', mixer);
 
     mixer.connect(sampler);
 
-    var drum = new Synth();
+    var drum = new Drumkit();
     var sequencer = new Sequencer();
 
     sequencer.control(drum);
 
-    DAW.insert('#drums', sequencer);
-    sequencer.pattern = [
-        1, -1, -1, -1,
-        1, -1, -1, -1,
-        1, -1, -1, -1,
-        1, -1, -1, -1
-    ];
+    DAW.load('api/pattern/1', function(data) {
+        sequencer.loadPattern(data);
+    });
+
+    DAW.insert('#drums', sequencer, {
+        range: 10
+    });
 
     DAW.insert('#drums', drum, {
-        title: 'Rythm',
         modes: [1.59, 1.35, 1.67, 1.99, 2.3, 2.61],
         base_frequency: 110,
-        noise: 0.1,
+        noise: 0,
         len: 20000
     });
 
@@ -100,7 +104,7 @@ require([
     DAW.insert('#strings', lowShelf);
     DAW.insert('#strings', noise);
 
-    lowShelf.connect(noise);
+    lowShelf.connect(drum);
 
     mixer.connect(lowShelf);
     mixer.connect(drum);
@@ -114,9 +118,11 @@ require([
 
     DAW.insert('#drums', bass, {
         title: 'Bass',
-        modes: [2, 3, 4, 5, 6, 7, 8],
+        modes: [2, 3, 4, 5],
+        len: 30000,
         base_frequency: 55
     });
+
     mixer.connect(bass);
 
     var kbd = new Keyboard();
@@ -132,10 +138,13 @@ require([
 
     var delay = new Delay();
     DAW.insert('#effects', delay, {
-        title: 'Melody'
+        title: 'Noise delay'
     });
-    delay.connect(melodySynth)
+    mixer.connect(melodySynth);
     kbd.control(melodySynth);
+
+    delay.connect(noise);
     mixer.connect(delay);
 
+    DAW.start();
 });

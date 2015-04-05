@@ -31,6 +31,16 @@ $app->get('/api/songs', function() use ($app) {
 
 $app->post('/api/songs', 'addSong');
 
+$app->get('/api/pattern/:id', function($id) {
+    echo file_get_contents('pattern.json');
+});
+
+$app->post('/api/pattern', function() use ($app) {
+    $req = $app->request();
+    file_put_contents('pattern.json', json_encode($req->post('pattern')));
+    echo json_encode($req->post());
+});
+
 $app->run();
 
 function addSong() {

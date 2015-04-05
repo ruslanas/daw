@@ -131,7 +131,7 @@ define('Gadget', [
 
         drawKnob: function(x, y, val) {
             this.context.beginPath();
-            this.context.lineWidth = 1.5;
+            this.context.lineWidth = 3;
             this.context.arc(x, y, 10, 0, Math.PI * 2, false);
             this.context.stroke();
             this.context.beginPath();
@@ -214,9 +214,9 @@ define('Gadget', [
 			this.context.fillStyle = this.color;
 		},
 
-		update: function() {
-			// void
-		},
+		// update: function() {
+		// 	// void
+		// },
 
 		redraw: function() {
 			// void

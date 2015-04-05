@@ -22,6 +22,7 @@ define('daw', ['jquery'], function($) {
         pos: 0,
         duration: 5,           // seconds
         recordFrameLen: 256,   // samples
+        updateListeners: [],
         step: 16,
         onAir: false,
         worker: null,
@@ -30,6 +31,9 @@ define('daw', ['jquery'], function($) {
         insert: function(selector, gadget, options) {
             this.gadgets.push(gadget);
             gadget.attach(selector, this, options || {});
+            if(gadget.update !== undefined) {
+                this.updateListeners.push(gadget);
+            }
         },
 
         pause: function() {
@@ -193,9 +197,13 @@ define('daw', ['jquery'], function($) {
                 self.redraw();
             });
 
+        },
+
+        start: function() {
+            var self = this;
             setInterval(function() {
-                for(var i=0;i<self.gadgets.length;i++) {
-                    self.gadgets[i].update();
+                for(var i=0;i<self.updateListeners.length;i++) {
+                    self.updateListeners[i].update();
                 }
             }, 1000 * 60 / this.bpm); // BPM
         },
@@ -248,13 +256,9 @@ define('daw', ['jquery'], function($) {
         },
 
         load: function(url, done) {
-            var self = this;
-            this.onload = done || this.onload || function() {
-                return false;
-            };
 
             $.getJSON(url, {}, function(data) {
-                self.onload(data);
+                done(data);
             });
         }
 
