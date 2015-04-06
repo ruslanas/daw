@@ -44,7 +44,6 @@
                         <div class="col-sm-6" id="buffer"></div>
                         <div class="col-sm-6" id="analyser"></div>
                     </div>
-                    <p id="message">Click the circle to record</p>
                     <div id="save-form">
                         <form>
                             <div class="form-group">
@@ -85,10 +84,10 @@
         <nav class="navbar navbar-default navbar-fixed-bottom">
             <div class="container">
                 <div class="col-sm-6">
-                    At the moment only latest
-                    <a href="http://www.google.com/chrome/">Chrome</a> browsers support all the features.
+                    <button class="btn btn-default btn-lg" id="main-play"><i class="fa fa-play"></i></button>
                 </div>
                 <div class="col-sm-6">
+                    <p id="message">Click the circle to record</p>
                     <small>
                         © 2015 Powered by
                         <a href="http://github.com/ruslanas/daw"

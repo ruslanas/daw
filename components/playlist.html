@@ -37,18 +37,18 @@
             writable: false,
             configurable: false,
             enumerable: true,
-            value: function(url) {
+            value: function(item) {
 
                 var self = this;
                 var div = document.createElement('div');
                 var a = document.createElement('a');
-                a.setAttribute('href', url);
+                a.setAttribute('href', item.file);
                 a.className = "btn btn-sm";
 
                 var it = document.createElement('i');
                 a.appendChild(it);
 
-                a.appendChild(document.createTextNode(' ' + url));
+                a.appendChild(document.createTextNode(' ' + item.title));
                 var audio = document.createElement('audio');
 
                 a.addEventListener('click', function(event) {
@@ -75,12 +75,15 @@
 
                     audio.onended = function() {
                         div.className = "";
-                        div.nextSibling.querySelector('a').click();
+                        var next = div.nextSibling;
+                        if(next) {
+                            next.querySelector('a').click();
+                        }
                     };
                 });
 
                 var source = document.createElement('source');
-                source.setAttribute('src', url);
+                source.setAttribute('src', item.file);
                 audio.appendChild(source);
                 a.appendChild(audio);
                 div.appendChild(a);

@@ -107,9 +107,11 @@ define('daw', ['jquery'], function($) {
             var length = this.recordFrameLen;
             var end = length * this.pos;
 
-            if(end + length > this.sampleBuffLen) {
-                this.pause();
-                return;
+            if(end + length > this.sample.length) {
+                // add one second
+                var grow = new Float32Array(this.sample.length + this.context.sampleRate);
+                grow.set(this.sample);
+                this.sample = grow;
             }
 
             this.sample.set(buff, end);
@@ -201,11 +203,21 @@ define('daw', ['jquery'], function($) {
 
         start: function() {
             var self = this;
-            setInterval(function() {
+            this.interval = setInterval(function() {
                 for(var i=0;i<self.updateListeners.length;i++) {
                     self.updateListeners[i].update();
                 }
             }, 1000 * 60 / this.bpm); // BPM
+            for(var i=0;i<this.gadgets.length;i++) {
+                this.gadgets[i].on = true;
+            }
+        },
+
+        stop: function() {
+            clearInterval(this.interval);
+            for(var i=0;i<this.gadgets.length;i++) {
+                this.gadgets[i].on = false;
+            }
         },
 
         setStatus: function(msg) {
