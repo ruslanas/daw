@@ -50,10 +50,12 @@ define('plugins/basesynth', [
             var buffSrc = this.audio.createBufferSource();
 
             buffSrc.buffer = this.samples[note];
-            buffSrc.connect(this.gains[note]);
+            var gain = this.gains[note];
+            buffSrc.connect(gain);
 
             buffSrc.onended = function() {
-                buffSrc.disconnect(self.out);
+                buffSrc.disconnect(gain);
+                gain = null;
                 buffSrc.onended = null;
                 buffSrc = null;
             }

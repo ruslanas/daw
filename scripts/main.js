@@ -86,7 +86,7 @@ require([
 
     sequencer.control(drum);
 
-    DAW.load('api/pattern/1', function(data) {
+    DAW.load('api/patterns/1', function(data) {
         sequencer.loadPattern(data);
     });
 
@@ -105,6 +105,10 @@ require([
 
     var bass = new Synth();
     var bassSeq = new Sequencer();
+    DAW.load('api/patterns/2', function(data) {
+        bassSeq.loadPattern(data);
+    });
+
     bassSeq.control(bass);
     DAW.insert('#drums', bassSeq, {
         len: 32
@@ -112,7 +116,7 @@ require([
 
     DAW.insert('#drums', bass, {
         title: 'Bass',
-        modes: [2, 3, 4, 5],
+        modes: [2, 4, 6],
         len: 30000,
         base_frequency: 55
     });
@@ -140,5 +144,16 @@ require([
     delay.connect(noise);
     mixer.connect(delay);
 
-    DAW.start();
+    document.getElementById('main-play').onclick = function() {
+
+        var i = this.querySelector('i');
+        if(i.className !== 'fa fa-pause') {
+            DAW.start();
+            i.className = 'fa fa-pause';
+        } else {
+            DAW.stop();
+            i.className = 'fa fa-play';
+        }
+    };
+
 });

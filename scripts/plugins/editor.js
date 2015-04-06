@@ -108,8 +108,8 @@ define('plugins/editor', [
 
 		updateStatus: function() {
 			this.setStatus(
-				'Pos: ' + this.start + ' Zoom: ' + this.zoom + ' Val: '
-				+ this.getSample(this.markerPos));
+				'Pos: ' + this.start + ' Zoom: ' + this.zoom
+				+ ' Length: ' + this.rack.sample.length / this.audio.sampleRate);
 		},
 
 		onMouseWheel: function(event) {

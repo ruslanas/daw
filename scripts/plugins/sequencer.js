@@ -96,6 +96,20 @@ define('plugins/sequencer', [
             this.synth.push(synth);
         },
 
+        play: function() {
+            this.on = true;
+            this.updated = true;
+        },
+
+        initPattern: function() {
+            for(var i=0;i<this.len;i++) {
+                this.pattern[i] = [];
+                for(var j=0;j<this.range;j++) {
+                    this.pattern[i][j] = 0;
+                }
+            }
+        },
+
         initialize: function() {
             this._super();
 
@@ -103,12 +117,7 @@ define('plugins/sequencer', [
             this.range = this.options.range || this.range;
 
             this.pattern = [];
-            for(var i=0;i<this.len;i++) {
-                this.pattern[i] = [];
-                for(var j=0;j<this.range;j++) {
-                    this.pattern[i][j] = 0;
-                }
-            }
+            this.initPattern();
 
             this.duration = 60 * this.len / 4 / this.rack.bpm;
             this.step = this.duration / (this.len / 4);
@@ -117,15 +126,8 @@ define('plugins/sequencer', [
 
             var self = this;
 
-            this.addButton('glyphicon glyphicon-play', function(on) {
-                self.on = on;
-                self.updated = on;
-            }, {
-                type: 'checkbox',
-                checked: 'glyphicon glyphicon-pause'
-            });
             this.addButton('fa fa-floppy-o', function(on) {
-                $.post('api/pattern', {
+                $.post('api/patterns', {
                     pattern: self.pattern
                 }, function(response) {
                     self.rack.setStatus('Pattern saved');
@@ -134,6 +136,14 @@ define('plugins/sequencer', [
             }, {
                 type: 'checkbox',
                 checked: 'fa fa-floppy-o'
+            });
+            this.addButton('fa fa-file-o', function(on) {
+                self.initPattern();
+            });
+            this.addButton('fa fa-coffee', function(on) {
+                self.rack.load('api/patterns/3', function(data) {
+                    self.loadPattern(data);
+                })
             });
         }
     });
