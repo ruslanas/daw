@@ -64,7 +64,7 @@ define('plugins/drumkit', [
                 self.audio.decodeAudioData(audioData, function(buffer) {
                     self.gains[idx] = self.audio.createGain();
                     self.gains[idx].connect(self.out);
-                    self.gains[idx].gain.value = 0.9;
+                    self.gains[idx].gain.value = 0.5;
                     self.samples[idx] = buffer;
                     self.knobs[idx] = {
                         x: idx * 25 + 15,
@@ -82,20 +82,16 @@ define('plugins/drumkit', [
 
         initialize: function() {
             this._super();
+            var self = this;
+            this.rack.load('api/drumkits/1', function(data) {
+                self.knobs = new Array(data.length);
+                self.gains = new Array(data.length);
 
-            this.knobs = new Array(10);
-            this.gains = new Array(10);
+                for(var i=0;i<data.length;i++) {
+                    self.loadBuffer(i, data[i]);
+                }
+            });
 
-            this.loadBuffer(0, 'waves/base.wav');
-            this.loadBuffer(1, 'waves/tom.wav');
-            this.loadBuffer(2, 'waves/snare2.wav');
-            this.loadBuffer(3, 'waves/crash.wav');
-            this.loadBuffer(4, 'waves/hihat.wav');
-            this.loadBuffer(5, 'waves/hihat2.wav');
-            this.loadBuffer(6, 'waves/kick.ogg');
-            this.loadBuffer(7, 'waves/kick2.wav');
-            this.loadBuffer(8, 'waves/weird.wav');
-            this.loadBuffer(9, 'waves/weird2.wav');
         }
     });
 

@@ -33,6 +33,35 @@ $app->get('/', function() use ($app) {
 	$app->render('home.php');
 });
 
+$app->get('/api/drumkits/:id', function($id) {
+    $data = [
+        'waves/snd-10.wav',
+        'waves/snd-11.wav',
+        'waves/snd-12.wav',
+        'waves/snd-13.wav',
+        'waves/snd-14.wav',
+        'waves/snd-15.wav',
+        'waves/snd-16.wav',
+        'waves/snd-17.wav',
+        'waves/snd-18.wav',
+        'waves/snd-19.wav',
+        'waves/snd-20.wav',
+    ];
+    // $data = [
+    //     'waves/kick-1.wav',
+    //     'waves/small-tom-1.wav',
+    //     'waves/snare-1.wav',
+    //     'waves/16-crash-1.wav',
+    //     'waves/20-ride-9.wav',
+    //     'waves/hi-closed-1.wav',
+    //     'waves/kick-9.wav',
+    //     'waves/kick2.wav',
+    //     'waves/weird.wav',
+    //     'waves/pluck.wav'
+    // ];
+    echo json_encode($data);
+});
+
 $app->get('/api/songs', function() use ($app) {
     $db = getDb();
     $stmt = $db->prepare("SELECT * FROM songs");
