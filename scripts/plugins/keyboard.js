@@ -82,7 +82,22 @@ define('plugins/keyboard', [
 
         initialize: function() {
             this._super();
-            // setup
+
+            var self = this;
+            document.onkeydown = function(event) {
+                var keyMap = {
+                    65: 4,  // a
+                    83: 6,  // s
+                    68: 8,  // d
+                    70: 9,  // f
+                    71: 11, // g
+                    72: 13, // h
+                    74: 15  // j
+                };
+                if(keyMap[event.which] !== undefined) {
+                    self.play(keyMap[event.which]);
+                }
+            }
         }
     });
 
