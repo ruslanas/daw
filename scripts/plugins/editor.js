@@ -7,7 +7,7 @@
 "use strict";
 
 define('plugins/editor', [
-	'Gadget',
+	'Gadget'
 	], function(Gadget) {
 
 	var Editor = Gadget.extend({
@@ -144,9 +144,37 @@ define('plugins/editor', [
 			this.updated = true;
 		},
 
+		onDrop: function(e) {
+			var reader = new FileReader();
+			var f = e.dataTransfer.files[0];
+			var self = this;
+			reader.onloadend = function(ev) {
+				var buffer = ev.target.result;
+				self.audio.decodeAudioData(buffer, function(buff) {
+					self.rack.sample = buff.getChannelData(0);
+				});
+
+			};
+			reader.readAsArrayBuffer(f);
+		},
+
 		initialize: function() {
 			this._super();
+
 			var self = this;
+
+			this.canvas.addEventListener('drop', function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				self.onDrop(e);
+			}, false);
+
+			this.canvas.addEventListener('dragover', function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				e.dataTransfer.dropEffect = 'copy';
+			}, false);
+
 			this.scaleY = this.height() / 2;
 			this.markerEnd = this.rack.sample.length;
 			this.addButton('fa fa-microphone-slash', function(on) {
