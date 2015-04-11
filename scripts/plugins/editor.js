@@ -55,6 +55,9 @@ define('plugins/editor', [
 			// frame number
 			this.context.fillText(this.status, 2, this.canvas.height - 2);
 
+			this.context.fillText('Loop start:' + this.markerPos / this.audio.sampleRate, 2, this.canvas.height - 22);
+			this.context.fillText('Loop end:  ' + this.markerEnd / this.audio.sampleRate, 2, this.canvas.height - 12);
+
 			this.context.fillStyle = '#F00';
 			var from = (this.markerPos - this.start) / this.zoom;
 			this.context.fillRect(from, 0, 1, this.height());
