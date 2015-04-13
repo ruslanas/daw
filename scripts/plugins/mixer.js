@@ -30,6 +30,7 @@ define('plugins/mixer', [
             this.clear();
 
             var width = this.canvas.width / this.sliders.length;
+            this.vline(width, 0.5);
 
             for(var i=0;i<this.sliders.length;i++) {
 

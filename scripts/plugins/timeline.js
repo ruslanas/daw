@@ -33,7 +33,8 @@ define('plugins/timeline', [
         redraw: function() {
             this.clear();
             var scale = this.rack.bpm / 60;
-            for(var i=0;i<this.samples.length;i++) {
+            for(var i=0;i<this.tracks.length;i++) {
+                this.hline(this.h * (i + 1), 0.5);
                 if(this.samples[i] === undefined) {
                     continue;
                 }
@@ -46,7 +47,10 @@ define('plugins/timeline', [
             }
 
             if(this.rack.started) {
-                this.context.fillText(this.elapsed.toFixed(2), 2, this.height() - 2)
+                var s = ((this.elapsed / scale) % 60);
+                s = s.toFixed(2).length == 5 ? s.toFixed(2) : '0' + s.toFixed(2);
+                var t = Math.floor(this.elapsed / 60) + ':' + s;
+                this.context.fillText(t, this.elapsed + 2, this.height() - 2);
                 this.vline(this.elapsed, 0.5, '#FF0');
             }
 
@@ -79,15 +83,7 @@ define('plugins/timeline', [
             var self = this;
             this.rack.loadBuffer(url, function(buffer) {
 
-                self.gains[idx] = self.audio.createGain();
-                self.gains[idx].gain.value = 0.9;
-
                 self.samples[idx] = buffer;
-                self.mixer.connect({
-                    out: self.gains[idx],
-                    title: url.split('/').pop()
-                });
-
                 self.updated = true;
 
             });
@@ -135,7 +131,23 @@ define('plugins/timeline', [
         initialize: function() {
             this._super();
             var self = this;
-            this.tracks = new Array(8);
+
+            this.tracks = new Array(4);
+
+            if(!this.mixer) {
+                throw 'Mixer not connected';
+            }
+
+            for(var i=0;i<this.tracks.length;i++) {
+                this.gains[i] = this.audio.createGain();
+                this.gains[i].gain.value = 0.9;
+
+                this.mixer.connect({
+                    out: this.gains[i],
+                    title: 'track ' + i
+                });
+            }
+
             this.h = this.canvas.height / this.tracks.length;
 
 

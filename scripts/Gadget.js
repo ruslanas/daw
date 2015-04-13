@@ -241,6 +241,14 @@ define('Gadget', [
             this.context.fillRect(x, 0, width, this.height());
         },
 
+        hline: function(y, width, color) {
+            color = color || this.color;
+            width = width || 1;
+
+            this.context.fillStyle = color;
+            this.context.fillRect(0, y, this.width(), width);
+        },
+
 		getSampleRate: function() {
 			return this.audio.sampleRate;
 		}

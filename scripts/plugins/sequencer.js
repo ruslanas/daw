@@ -73,10 +73,16 @@ define('plugins/sequencer', [
         redraw: function() {
             this.clear();
 
+            var pattern = [2, 2, 1, 2, 2, 2]; // major
+
+            for(var i=0;i<this.pattern[0].length;i++) {
+                this.hline(this.dy * i, 0.3);
+            }
+
             var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
 
             for(var i=0;i<this.pattern.length/4;i++) {
-                this.context.fillRect(this.dx * 4 * i, 0, 0.3, this.height());
+                this.vline(this.dx * 4 * i, 0.5);
             }
 
             for(var i=0;i<this.pattern.length;i++) {
@@ -88,8 +94,7 @@ define('plugins/sequencer', [
                 }
             }
 
-            this.context.fillStyle = '#FF0';
-            this.context.fillRect(x, 0, 1, this.height());
+            this.vline(x, 1, '#FF0');
         },
 
         control: function(synth) {

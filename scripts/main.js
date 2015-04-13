@@ -143,8 +143,8 @@ require([
     });
 
     var timeline = new Timeline();
-    DAW.insert("#timeline", timeline);
     timeline.connect(mixer);
+    DAW.insert("#timeline", timeline);
 
     var delay = new Delay();
     DAW.insert('#effects', delay, {
