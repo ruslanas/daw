@@ -55,29 +55,21 @@ define('plugins/drumkit', [
         },
 
         loadBuffer: function(idx, url) {
-            var request = new XMLHttpRequest();
-            request.open('GET', url, true);
-            request.responseType = 'arraybuffer';
             var self = this;
-            request.onload = function() {
-                var audioData = request.response;
-                self.audio.decodeAudioData(audioData, function(buffer) {
-                    self.gains[idx] = self.audio.createGain();
-                    self.gains[idx].connect(self.out);
-                    self.gains[idx].gain.value = 0.5;
-                    self.samples[idx] = buffer;
-                    self.knobs[idx] = {
-                        x: idx * 25 + 15,
-                        y: self.baseline,
-                        val: 1,
-                        name: url
-                    };
-                    self.updated = true;
-                }, function(e) {
-                    console.log(e);
-                });
-            }
-            request.send();
+            this.rack.loadBuffer(url, function(buffer) {
+                self.gains[idx] = self.audio.createGain();
+                self.gains[idx].connect(self.out);
+                self.gains[idx].gain.value = 0.5;
+                self.knobs[idx] = {
+                    x: idx * 25 + 15,
+                    y: self.baseline,
+                    val: 1,
+                    name: url
+                };
+
+                self.samples[idx] = buffer;
+                self.updated = true;
+            });
         },
 
         initialize: function() {

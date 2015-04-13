@@ -27,6 +27,7 @@ define('daw', ['jquery'], function($) {
         onAir: false,
         worker: null,
         bpm: 180,
+        started: null,
 
         insert: function(selector, gadget, options) {
             this.gadgets.push(gadget);
@@ -103,13 +104,36 @@ define('daw', ['jquery'], function($) {
             this.onAir = true;
         },
 
+        addButton: function(icon, handler) {
+            var panel = document.getElementById('control-panel');
+            var iconElement = document.createElement('i');
+            iconElement.className = icon;
+
+            var button = document.createElement('button');
+            button.className = 'btn btn-lg btn-default';
+            button.appendChild(iconElement);
+            panel.appendChild(button);
+            button.setAttribute('data-on', true);
+            button.onclick = function() {
+                var on = false;
+                if(button.getAttribute('data-on')) {
+                    button.removeAttribute('data-on');
+                } else {
+                    on = true;
+                    button.setAttribute('data-on', 'on');
+                }
+                handler(on, this);
+            }
+
+        },
+
         appendFrame: function(buff) {
             var length = this.recordFrameLen;
             var end = length * this.pos;
 
             if(end + length > this.sample.length) {
-                // add one second
-                var grow = new Float32Array(this.sample.length + this.context.sampleRate);
+                // add ten second
+                var grow = new Float32Array(this.sample.length + 10 * this.context.sampleRate);
                 grow.set(this.sample);
                 this.sample = grow;
             }
@@ -208,16 +232,28 @@ define('daw', ['jquery'], function($) {
                     self.updateListeners[i].update();
                 }
             }, 1000 * 60 / this.bpm); // BPM
+
             for(var i=0;i<this.gadgets.length;i++) {
                 this.gadgets[i].on = true;
+
+                if(typeof(this.gadgets[i].start) === "function") {
+                    this.gadgets[i].start();
+                }
             }
+
+            this.started = this.context.currentTime;
         },
 
         stop: function() {
             clearInterval(this.interval);
             for(var i=0;i<this.gadgets.length;i++) {
                 this.gadgets[i].on = false;
+
+                if(typeof(this.gadgets[i].clean) === "function") {
+                    this.gadgets[i].clean();
+                }
             }
+            this.started = null;
         },
 
         setStatus: function(msg) {
@@ -265,6 +301,25 @@ define('daw', ['jquery'], function($) {
             window.requestAnimationFrame(function() {
                 self.redraw();
             });
+        },
+
+        loadBuffer: function(url, callback) {
+            this.setStatus('Loading ' + url + '...');
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
+            request.responseType = 'arraybuffer';
+
+            var self = this;
+            request.onload = function() {
+                var audioData = request.response;
+                self.context.decodeAudioData(request.response, function(buffer) {
+                    callback(buffer);
+                    self.setStatus('Audio data loaded');
+                }, function(e) {
+                    self.setStatus(e.getMessage());
+                });
+            }
+            request.send();
         },
 
         load: function(url, done) {

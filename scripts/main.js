@@ -18,7 +18,13 @@ require.config({
     baseUrl: "scripts",
     paths: {
         "jquery-mousewheel": ["lib/jquery-mousewheel/jquery.mousewheel"],
-        "jquery": ["lib/jquery/dist/jquery"]
+        "jquery": ["lib/jquery/dist/jquery"],
+        "numeric": ["lib/numericjs/src/numeric"]
+    },
+    shim: {
+        "numeric": {
+            exports: "numeric"
+        }
     }
 });
 
@@ -36,11 +42,12 @@ require([
     'plugins/filter',
     'plugins/noise',
     'plugins/compressor',
-    'plugins/drumkit'
+    'plugins/drumkit',
+    'plugins/timeline'
 
     ], function(
         DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer,
-        Mixer, Delay, Keyboard, Filter, Noise, Compressor, Drumkit) {
+        Mixer, Delay, Keyboard, Filter, Noise, Compressor, Drumkit, Timeline) {
 
     DAW.initialize({
         duration: 10,
@@ -74,7 +81,7 @@ require([
     });
 
     DAW.insert('#analyser', new Editor());
-    DAW.insert('#wide', mixer);
+    DAW.insert('#mixer', mixer);
 
     mixer.connect(sampler);
 
@@ -95,13 +102,14 @@ require([
     var lowShelf = new Filter();
     var noise = new Noise();
 
-    DAW.insert('#strings', lowShelf);
+    DAW.insert('#strings', lowShelf, {
+        title: 'Drum filter'
+    });
     DAW.insert('#strings', noise);
 
     lowShelf.connect(drum);
 
     mixer.connect(lowShelf);
-    mixer.connect(drum);
 
     var bass = new Synth();
     var bassSeq = new Sequencer();
@@ -134,6 +142,10 @@ require([
         len: 40000
     });
 
+    var timeline = new Timeline();
+    DAW.insert("#timeline", timeline);
+    timeline.connect(mixer);
+
     var delay = new Delay();
     DAW.insert('#effects', delay, {
         title: 'Noise delay'
@@ -147,9 +159,9 @@ require([
     document.getElementById('main-play').onclick = function() {
 
         var i = this.querySelector('i');
-        if(i.className !== 'fa fa-pause') {
+        if(i.className !== 'fa fa-stop') {
             DAW.start();
-            i.className = 'fa fa-pause';
+            i.className = 'fa fa-stop';
         } else {
             DAW.stop();
             i.className = 'fa fa-play';

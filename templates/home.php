@@ -83,17 +83,23 @@
         </div>
         <nav class="navbar navbar-default navbar-fixed-bottom">
             <div class="container">
-                <div class="col-sm-6">
-                    <button class="btn btn-default btn-lg" id="main-play"><i class="fa fa-play"></i></button>
+                <div class="row">
+                    <div class="col-sm-6" id="mixer"></div>
+                    <div class="col-sm-6" id="timeline"></div>
                 </div>
-                <div class="col-sm-6">
-                    <p id="message">Click the circle to record</p>
-                    <small>
-                        © 2015 Powered by
-                        <a href="http://github.com/ruslanas/daw"
-                        target="_blank">daw</a>.
-                        Report <a href="https://github.com/ruslanas/daw/issues">issues</a>.
-                    </small>
+                <div class="row">
+                    <div class="col-sm-6" id="control-panel">
+                        <button class="btn btn-default btn-lg" id="main-play"><i class="fa fa-play"></i></button>
+                    </div>
+                    <div class="col-sm-6">
+                        <p id="message">Click the circle to record</p>
+                        <small>
+                            © 2015 Powered by
+                            <a href="http://github.com/ruslanas/daw"
+                            target="_blank">daw</a>.
+                            Report <a href="https://github.com/ruslanas/daw/issues">issues</a>.
+                        </small>
+                    </div>
                 </div>
             </div>
         </nav>

@@ -55,8 +55,8 @@ define('plugins/editor', [
 			// frame number
 			this.context.fillText(this.status, 2, this.canvas.height - 2);
 
-			this.context.fillText('Loop start:' + this.markerPos / this.audio.sampleRate, 2, this.canvas.height - 22);
-			this.context.fillText('Loop end:  ' + this.markerEnd / this.audio.sampleRate, 2, this.canvas.height - 12);
+			this.context.fillText('Loop start: ' + this.markerPos / this.audio.sampleRate, 2, this.canvas.height - 22);
+			this.context.fillText('Loop end: ' + this.markerEnd / this.audio.sampleRate, 2, this.canvas.height - 12);
 
 			this.context.fillStyle = '#F00';
 			var from = (this.markerPos - this.start) / this.zoom;
@@ -180,7 +180,13 @@ define('plugins/editor', [
 
 			this.scaleY = this.height() / 2;
 			this.markerEnd = this.rack.sample.length;
-			this.addButton('fa fa-microphone-slash', function(on) {
+			this.rack.addButton('fa fa-microphone-slash', function(on, button) {
+
+				if(on) {
+					button.querySelector('i').className = 'fa fa-microphone-slash';
+				} else {
+					button.querySelector('i').className = 'fa fa-microphone';
+				}
 
                 if(self.rack.micGain.gain.value > 0) {
                     self.rack.micGain.gain.value = 0;
@@ -204,15 +210,14 @@ define('plugins/editor', [
                     });
 
                 }
-			}, {
-				type: 'checkbox',
-				checked: 'fa fa-microphone'
 			});
 
-			this.addButton('glyphicon glyphicon-record', function(on) {
+			this.rack.addButton('glyphicon glyphicon-record', function(on, button) {
 				if(self.rack.onAir) {
+					button.style.color = 'white';
 					self.rack.pause();
 				} else {
+					button.style.color = 'red';
 					self.rack.record();
 				}
 			});
@@ -221,6 +226,7 @@ define('plugins/editor', [
 
 				self.rack.pause();
 			});
+
 			this.addButton('glyphicon glyphicon-play', function(on) {
 				var from = self.markerPos / self.rack.context.sampleRate;
 				var duration = (self.markerEnd - self.markerPos) / self.rack.context.sampleRate;

@@ -11,7 +11,7 @@ function getDb() {
 }
 
 $app = new \Slim\Slim([
-    'debug' => false
+    'debug' => Config::$debug
     ]);
 
 $app->hook('slim.before', function() use ($app) {

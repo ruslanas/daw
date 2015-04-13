@@ -232,6 +232,15 @@ define('Gadget', [
 			this.initialize();
 		},
 
+        // draw vertical line
+        vline: function(x, width, color) {
+            color = color || this.color;
+            width = width || 1;
+
+            this.context.fillStyle = color;
+            this.context.fillRect(x, 0, width, this.height());
+        },
+
 		getSampleRate: function() {
 			return this.audio.sampleRate;
 		}

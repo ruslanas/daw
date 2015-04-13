@@ -101,6 +101,7 @@ define('plugins/mixer', [
         },
 
         connect: function(gadget) {
+
             if(!gadget.out) {
                 throw 'No out node';
             }
@@ -115,6 +116,7 @@ define('plugins/mixer', [
             fader.connect(this.rack.masterGain);
 
             gadget.out.connect(fader);
+            this.updated = true;
         },
 
         initialize: function() {
@@ -122,15 +124,17 @@ define('plugins/mixer', [
             this._super();
 
             var self = this;
-            this.addButton('glyphicon glyphicon-volume-up', function(on) {
+            this.rack.addButton('glyphicon glyphicon-volume-up', function(on, button) {
+                if(on) {
+                    button.querySelector('i').className = 'glyphicon glyphicon-volume-up';
+                } else {
+                    button.querySelector('i').className = 'glyphicon glyphicon-volume-off';
+                }
                 if(self.sliders[0] > 0) {
                     self.sliders[0] = 0;
                 } else {
                     self.sliders[0] = 0.3;
                 }
-            }, {
-                type: 'checkbox',
-                checked: 'glyphicon glyphicon-volume-off'
             });
         }
     });

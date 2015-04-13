@@ -1,13 +1,8 @@
 body {
     padding-top: 70px;
-    padding-bottom: 70px;
+    padding-bottom: 255px;
 }
-.btn i {
-    transition: transform .2s;
-}
-.btn:hover i {
-    transform: scale(1.6, 1.6);
-}
+
 #tracks {
     height: 200px;
     border: 1px solid;
