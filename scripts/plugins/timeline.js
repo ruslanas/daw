@@ -38,18 +38,22 @@ define('plugins/timeline', [
                 if(this.samples[i] === undefined) {
                     continue;
                 }
+
                 var width = scale * this.samples[i].length / this.audio.sampleRate;
                 var x = this.tracks[i].x;
+
                 this.context.fillRect(x, i * this.h, width, this.h);
                 this.context.fillStyle = '#000';
                 this.context.fillText(this.tracks[i].title, x + 2, i * this.h + this.h - 2);
                 this.context.fillStyle = this.color;
+
             }
 
             if(this.rack.started) {
-                var s = ((this.elapsed / scale) % 60);
+                var real = this.elapsed / scale;
+                var s = real % 60;
                 s = s.toFixed(2).length == 5 ? s.toFixed(2) : '0' + s.toFixed(2);
-                var t = Math.floor(this.elapsed / 60) + ':' + s;
+                var t = Math.floor(real / 60) + ':' + s;
                 this.context.fillText(t, this.elapsed + 2, this.height() - 2);
                 this.vline(this.elapsed, 0.5, '#FF0');
             }
@@ -65,6 +69,32 @@ define('plugins/timeline', [
         update: function() {
             this.elapsed = this.getElapsed() * this.rack.bpm / 60;
             this.updated = true;
+        },
+
+
+        onMouseDown: function(e) {
+            this.down = this.tracks[Math.floor(this.getY(e) / this.h)];
+            this.shift = this.getX(e) - this.down.x;
+        },
+
+        onChange: function(e) {
+            if(this.on) {
+                this.clean();
+                this.start();
+            }
+            if(this.down) {
+                this.down.x = Math.max(0, this.getX(e) - this.shift);
+            }
+            this.updated = true;
+        },
+
+        onMouseMove: function(e) {
+            this.onChange(e);
+        },
+
+        onMouseUp: function(e) {
+            this.down = null;
+            this.onChange(e);
         },
 
         onDrop: function(e) {
@@ -84,12 +114,14 @@ define('plugins/timeline', [
             this.rack.loadBuffer(url, function(buffer) {
 
                 self.samples[idx] = buffer;
+                self.tracks[idx].buffer = buffer;
                 self.updated = true;
-
+                self.onChange(e);
             });
         },
 
         clean: function() {
+            this.on = false;
             for(var i=0;i<this.sources.length;i++) {
                 try {
                     this.sources[i].stop();
@@ -101,30 +133,41 @@ define('plugins/timeline', [
         },
 
         start: function() {
+            this.on = true;
+            var scale = this.rack.bpm / 60;
+
+            var idx = 0;
             for(var i=0;i<this.samples.length;i++) {
-                if(this.samples[i] === undefined) {
+                if(!this.samples[i]) {
                     continue;
                 }
 
-                var buffSrc = this.audio.createBufferSource();
-
-                buffSrc.buffer = this.samples[i];
+                this.sources[idx] = this.audio.createBufferSource();
+                this.sources[idx].buffer = this.samples[i];
                 var gain = this.gains[i];
-                buffSrc.connect(gain);
+                this.sources[idx].connect(gain);
 
-                var time = this.audio.currentTime - this.rack.started + this.tracks[i].x / (this.rack.bpm / 60);
+                var time = this.tracks[i].x / scale - this.getElapsed();
+
                 var self = this;
-                buffSrc.onended = function() {
-                    if(!buffSrc) {
+                this.sources[idx].onended = function() {
+
+                    if(!self.sources[idx]) {
                         return;
                     }
-                    buffSrc.disconnect(gain);
-                    buffSrc.onended = null;
-                    buffSrc = null;
+
+                    self.sources[idx].disconnect(gain);
+                    self.sources[idx].onended = null;
+                    self.sources[idx] = null;
                     self.rack.setStatus('Buffer source freed');
                 };
-                this.sources.push(buffSrc);
-                buffSrc.start(time);
+
+                if(time < 0) {
+                    this.sources[idx].start(0, -time);
+                } else {
+                    this.sources[idx].start(this.audio.currentTime + time);
+                }
+                idx++;
             }
         },
 

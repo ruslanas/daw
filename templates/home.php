@@ -92,7 +92,7 @@
                         <button class="btn btn-default btn-lg" id="main-play"><i class="fa fa-play"></i></button>
                     </div>
                     <div class="col-sm-6">
-                        <p id="message">Click the circle to record</p>
+                        <p id="message"></p>
                         <small>
                             © 2015 Powered by
                             <a href="http://github.com/ruslanas/daw"

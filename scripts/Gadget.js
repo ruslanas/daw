@@ -225,6 +225,8 @@ define('Gadget', [
 		// do not call from plugins
 		attach: function(container, rack, options) {
 			this.title = options.title || this.title;
+			this.height(options.height);
+
 			this.parent = document.querySelector(container);
 			this.options = options;
 			this.rack = rack;

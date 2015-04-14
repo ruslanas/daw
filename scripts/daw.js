@@ -233,6 +233,8 @@ define('daw', ['jquery'], function($) {
                 }
             }, 1000 * 60 / this.bpm); // BPM
 
+            this.started = this.context.currentTime;
+
             for(var i=0;i<this.gadgets.length;i++) {
                 this.gadgets[i].on = true;
 
@@ -241,7 +243,6 @@ define('daw', ['jquery'], function($) {
                 }
             }
 
-            this.started = this.context.currentTime;
         },
 
         stop: function() {

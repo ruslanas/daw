@@ -73,7 +73,15 @@ define('plugins/sequencer', [
         redraw: function() {
             this.clear();
 
-            var pattern = [2, 2, 1, 2, 2, 2]; // major
+            var pattern = [2, 2, 1, 2, 2, 2, 1]; // major
+
+            var k = -8;
+            this.context.globalAlpha = 0.3;
+            for(var i=0;i<this.pattern.length;i++) {
+                k += pattern[i % pattern.length];
+                this.context.fillRect(0, this.height() - this.dy * k, this.width(), this.dy);
+            }
+            this.context.globalAlpha = 1;
 
             for(var i=0;i<this.pattern[0].length;i++) {
                 this.hline(this.dy * i, 0.3);

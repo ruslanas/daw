@@ -119,13 +119,14 @@ require([
 
     bassSeq.control(bass);
     DAW.insert('#drums', bassSeq, {
-        len: 32
+        len: 32,
+        height: 150
     });
 
     DAW.insert('#drums', bass, {
         title: 'Bass',
-        modes: [2, 4, 6],
-        len: 30000,
+        modes: [2, 3, 4],
+        len: 20000,
         base_frequency: 55
     });
 
