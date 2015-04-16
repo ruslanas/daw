@@ -13,7 +13,6 @@ define('Gadget', [
 		_width: 0,
 		_height: 0,
 		title: '',
-		titleHeight: 14,
 		color: 'rgb(119, 119, 119)',
 		status: '',
 		updated: false,
@@ -59,13 +58,13 @@ define('Gadget', [
 			this.down = false;
 		},
 
+		getStyleProperty: function(prop) {
+			return getComputedStyle(this.canvas).getPropertyValue(prop);
+		},
+
 		initialize: function() {
 
 			var self = this;
-
-			if(!this.title) {
-				this.titleHeight = 0;
-			}
 
 			this.canvas = document.createElement('canvas');
 
@@ -73,7 +72,7 @@ define('Gadget', [
 			var titleBar = document.createElement('h5');
 
 			this.container = container;
-			container.className = 'gadget';
+			container.className = 'gadget ' + this.title.toLowerCase().replace(' ', '');
 			titleBar.className = 'titlebar';
 
 			container.appendChild(titleBar);
@@ -84,7 +83,14 @@ define('Gadget', [
 			this.parent.appendChild(container);
 
 			this.canvas.setAttribute('height', this.height());
-			this.canvas.setAttribute('width', this.container.offsetWidth);
+
+			var bw = parseInt(this.getStyleProperty('border-left-width'));
+			bw += parseInt(this.getStyleProperty('border-right-width'));
+
+			this.canvas.setAttribute('width', this.container.offsetWidth - bw);
+
+			this.color = this.getStyleProperty('color');
+
 			this.width(this.container.offsetWidth);
 
 			this.context = this.canvas.getContext('2d');

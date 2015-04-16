@@ -44,9 +44,11 @@ define('plugins/drumkit', [
         },
 
         onMouseMove: function(event) {
+
             if(!this.down) {
                 return;
             }
+
             var dy = this.y - this.getY(event);
             var val = this.down.gain.value + 0.1 * dy / this.height();
             // clamp

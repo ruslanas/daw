@@ -56,6 +56,17 @@ canvas {
     user-select: none;
     cursor: default;
 }
+
+.sequencer canvas {
+    border: 1px solid rgb(119, 119, 119);
+    color: black;
+    background: rgb(119, 119, 119);
+}
+
+.spectrogram canvas {
+    border-color: #F00;
+}
+
 ::-webkit-scrollbar {
     width: 10px;
 }
@@ -71,4 +82,12 @@ canvas {
     width: 100%;
     height: 60px;
     background: #000;
+}
+.drumkit .titlebar {
+    display: none;
+}
+#bpm {
+    border: 2px solid rgb(119,119,119);
+    background-color: black;
+    width: 50px;
 }

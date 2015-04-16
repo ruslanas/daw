@@ -51,8 +51,8 @@ require([
 
     DAW.initialize({
         duration: 10,
-        buffer_size: 1024,
-        bpm: 180
+        buffer_size: 512,
+        bpm: 120
     });
 
     DAW.insert('#buffer', new Visualiser(), {

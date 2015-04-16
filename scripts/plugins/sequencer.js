@@ -21,6 +21,8 @@ define('plugins/sequencer', [
         range: 24,
         dx: 0,
         dy: 0,
+        needsFullRedraw: true,
+        prevX: -1,
 
         init: function() {
             this._super();
@@ -38,6 +40,7 @@ define('plugins/sequencer', [
             var pos = Math.floor(x / this.dx);
 
             this.pattern[pos][note] = !this.pattern[pos][note] ? 1 : 0;
+            this.needsFullRedraw = true;
             this.updated = true;
         },
 
@@ -47,6 +50,7 @@ define('plugins/sequencer', [
                     this.pattern[i][j] = parseInt(data[i][j]);
                 }
             }
+            this.needsFullRedraw = true;
         },
 
         update: function() {
@@ -70,7 +74,7 @@ define('plugins/sequencer', [
             }
         },
 
-        redraw: function() {
+        redrawFull: function() {
             this.clear();
 
             var pattern = [2, 2, 1, 2, 2, 2, 1]; // major
@@ -83,16 +87,6 @@ define('plugins/sequencer', [
             }
             this.context.globalAlpha = 1;
 
-            for(var i=0;i<this.pattern[0].length;i++) {
-                this.hline(this.dy * i, 0.3);
-            }
-
-            var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
-
-            for(var i=0;i<this.pattern.length/4;i++) {
-                this.vline(this.dx * 4 * i, 0.5);
-            }
-
             for(var i=0;i<this.pattern.length;i++) {
                 for(var j=0;j<this.pattern[i].length;j++) {
                     if(this.pattern[i][j] > 0) {
@@ -102,7 +96,36 @@ define('plugins/sequencer', [
                 }
             }
 
-            this.vline(x, 1, '#FF0');
+            for(var i=1;i<this.pattern[0].length;i++) {
+                this.hline(this.dy * i, 0.5);
+            }
+
+            for(var i=1;i<this.pattern.length/4;i++) {
+                this.vline(this.dx * 4 * i, 0.5);
+            }
+
+            this.prevX = -1;
+            this.context.globalCompositeOperation = "xor";
+            this.context.fillStyle = this.color;
+            this.context.fillRect(0, 0, this.width(), this.height());
+            this.context.globalCompositeOperation = "source-over";
+        },
+
+        redraw: function() {
+
+            if(this.needsFullRedraw) {
+                this.redrawFull();
+                this.needsFullRedraw = false;
+            }
+
+            var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
+            x = Math.floor(x);
+            this.context.globalCompositeOperation = "xor";
+            this.vline(this.prevX);
+            this.prevX = x;
+            this.vline(x);
+            this.context.globalCompositeOperation = "source-over";
+
         },
 
         control: function(synth) {
@@ -121,6 +144,7 @@ define('plugins/sequencer', [
                     this.pattern[i][j] = 0;
                 }
             }
+            this.needsFullRedraw = true;
         },
 
         updateStep: function() {
