@@ -219,6 +219,14 @@ define('daw', ['jquery'], function($) {
 
             this.createProcessors();
 
+            var input = document.getElementById('bpm');
+            input.value = this.bpm;
+            input.onchange = function() {
+                self.stop();
+                self.bpm = this.value;
+                self.start();
+            };
+
             window.requestAnimationFrame(function() {
                 self.redraw();
             });

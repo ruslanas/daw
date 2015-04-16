@@ -63,8 +63,9 @@ require([
     DAW.insert('#buffer', compressor);
 
     DAW.insert('#analyser', new Analyzer(), {
-        title: 'Analyser',
-        fft_size: 128
+        title: 'Spectrogram',
+        fft_size: 256,
+        height: 128
     });
 
     var mixer = new Mixer();
@@ -125,7 +126,7 @@ require([
 
     DAW.insert('#drums', bass, {
         title: 'Bass',
-        modes: [2, 3, 4],
+        modes: [2, 4, 8, 16, 32, 64],
         len: 20000,
         base_frequency: 55
     });
@@ -148,14 +149,14 @@ require([
     DAW.insert("#timeline", timeline);
 
     var delay = new Delay();
-    DAW.insert('#effects', delay, {
-        title: 'Noise delay'
-    });
+    // DAW.insert('#effects', delay, {
+    //     title: 'Noise delay'
+    // });
     mixer.connect(melodySynth);
     kbd.control(melodySynth);
 
-    delay.connect(noise);
-    mixer.connect(delay);
+    //delay.connect(noise);
+    mixer.connect(noise);
 
     document.getElementById('main-play').onclick = function() {
 

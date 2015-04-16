@@ -20,15 +20,26 @@ define('plugins/compressor', ['Gadget'], function(Gadget) {
             var knee = this.compressor.knee.value;
             var ratio = this.compressor.ratio.value;
 
-            var status = threshold + 'dB'
+            var status = threshold.toFixed(2) + 'dB'
                 + ' knee: ' + knee
-                + ' radio: ' + ratio
+                + ' radio: ' + ratio.toFixed(2)
                 + ' release: ' + this.compressor.release.value
                 + ' attack: ' + this.compressor.attack.value
                 ;
 
             this.context.fillText(status, 2, this.height() - 2);
             this.updated = false;
+            var x = this.width() * this.compressor.threshold.value / 100;
+            this.vline(-x);
+            var y = this.height() * this.compressor.ratio.value / 20;
+            this.hline(y);
+            this.updated = false;
+        },
+
+        onMouseDown: function(e) {
+            this.compressor.threshold.value = -100 * this.getX(e) / this.width();
+            this.compressor.ratio.value = 20 * this.getY(e) / this.height();
+            this.updated = true;
         },
 
         initialize: function() {

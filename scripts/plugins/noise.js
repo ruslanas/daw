@@ -31,10 +31,11 @@ define('plugins/noise', ['Gadget'], function(Gadget) {
                 this.source.connect(this.out);
                 this.source.start();
 
-            } else {
+            } else if(this.source) {
                 this.source.stop();
                 this.source.disconnect(this.out);
             }
+
             this.updated = true;
         },
 
@@ -57,9 +58,18 @@ define('plugins/noise', ['Gadget'], function(Gadget) {
                 1, len, this.audio.sampleRate);
 
             var chData = this.arrayBuffer.getChannelData(0);
+
+            // white noise
             for(var i=0;i<len;i++) {
                 chData[i] = Math.random() * 2 - 1;
             }
+
+            // Brown noise
+            // var curr = 0;
+            // for(var i=0;i<len;i++) {
+            //     curr += (Math.random(1) - 0.5) / 20;
+            //     chData[i] = curr;
+            // }
 
             this.out = this.audio.createGain();
 

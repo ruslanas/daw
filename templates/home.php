@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>DAW</title>
+        <title>Tonmeister</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -31,8 +31,8 @@
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="<?php echo $baseUrl;?>">Digital Audio Workstation
-                        <sup><small>Beta 0.2.0</small></sup>
+                    <a class="navbar-brand" href="<?php echo $baseUrl;?>">Tonmeister
+                        <sup><small>Beta 0.3.0</small></sup>
                     </a>
                 </div>
             </div>
@@ -89,6 +89,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-6" id="control-panel">
+                        <input type="number" id="bpm" size="4"/>
                         <button class="btn btn-default btn-lg" id="main-play"><i class="fa fa-play"></i></button>
                     </div>
                     <div class="col-sm-6">

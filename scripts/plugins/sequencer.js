@@ -51,7 +51,7 @@ define('plugins/sequencer', [
 
         update: function() {
             if(this.on) {
-
+                this.updateStep();
                 var offset = this.audio.currentTime % this.duration;
                 var beat = Math.floor(this.len / 4 * offset / this.duration);
 
@@ -123,6 +123,12 @@ define('plugins/sequencer', [
             }
         },
 
+        updateStep: function() {
+            // 15 = 60 / 4
+            this.duration = 15 * this.len / this.rack.bpm;
+            this.step = this.duration / (this.len / 4);
+        },
+
         initialize: function() {
             this._super();
 
@@ -132,8 +138,6 @@ define('plugins/sequencer', [
             this.pattern = [];
             this.initPattern();
 
-            this.duration = 60 * this.len / 4 / this.rack.bpm;
-            this.step = this.duration / (this.len / 4);
             this.dx = this.width() / this.len;
             this.dy = this.height() / this.range;
 

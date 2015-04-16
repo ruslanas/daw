@@ -9,6 +9,9 @@
 define('plugins/analyzer', ['Gadget'], function(Gadget) {
 
     var Analyzer = Gadget.extend({
+
+        column: 0,
+
         init: function() {
             this._super();
             this.title = 'Analyzer';
@@ -16,17 +19,17 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 
         redraw: function() {
 
-            this.clear();
-
             this.rack.analyzer.getByteFrequencyData(this.dataArray);
 
-            var barHeight, x = 0;
-
             for(var i = 0; i < this.bufferLength; i++) {
-                barHeight = this.dataArray[i] / 2;
-                this.context.fillRect(x, this.canvas.height - barHeight, this.barWidth, barHeight);
-                x += this.barWidth + 1;
+
+                var intensity = this.dataArray[i];
+
+                this.context.fillStyle = 'rgb('+intensity+', 0, 0)';
+                this.context.fillRect(this.column % this.width(), this.height() - i, 1, 1);
             }
+
+            this.column++;
         },
 
         // insert between masterGain and visualiser
@@ -37,10 +40,10 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
             this.rack.visualiser.disconnect(this.rack.context.destination);
             this.rack.visualiser.connect(this.rack.analyzer);
             this.rack.analyzer.connect(this.rack.context.destination);
+
             this.rack.analyzer.fftSize = this.options.fft_size || 128;
 
             this.bufferLength = this.rack.analyzer.frequencyBinCount;
-            this.barWidth = 2.5 * this.width() / this.bufferLength;
             this.dataArray = new Uint8Array(this.bufferLength);
         }
     });

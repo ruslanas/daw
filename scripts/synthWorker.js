@@ -14,7 +14,7 @@ onmessage = function(msg) {
         var c = 1;
         for(var k=0;k<msg.data.modes.length;k++) {
             buff[j] += Math.sin(msg.data.modes[k] * 2 * Math.PI * j / cycle) * c;
-            c *= 0.8;
+            c *= 0.5;
         }
         if(msg.data.noise) {
             buff[j] += Math.random() * msg.data.noise;
