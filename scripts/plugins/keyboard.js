@@ -7,7 +7,7 @@
 "use strict";
 
 define('plugins/keyboard', [
-    'plugins/sequencer',
+    'Gadget',
     ], function(Gadget) {
 
     var Keyboard = Gadget.extend({
@@ -20,10 +20,12 @@ define('plugins/keyboard', [
             14, 14, 14, 15, 15, 15, 16, 16, 17, 17, 18, 18,
             19, 19, 19, 20, 20, 20, 21, 21, 22, 22, 23
         ],
+        synth: null,
 
         init: function() {
             this._super();
             this.title = 'Keyboard';
+            this.synth = [];
         },
 
         getNote: function(event) {
@@ -40,15 +42,15 @@ define('plugins/keyboard', [
             return note;
         },
 
-        onClick: function(event) {
-            // void
-        },
-
         onMouseMove: function(event) {
             var note = this.getNote(event);
             if(this.key !== false && this.key !== note) {
                 this.play(note);
             }
+        },
+
+        control: function(synth) {
+            this.synth.push(synth);
         },
 
         play: function(note) {
@@ -66,10 +68,13 @@ define('plugins/keyboard', [
         },
 
         redraw: function() {
+
             var kw = this.canvas.width / 14;
+
             for(var i=0;i<24;i++) {
                 this.context.fillRect(i*kw + kw, 0, 1, this.canvas.height);
             }
+
             // black
             for(var i=0;i<24;i++) {
                 if(i===2 || i===5 || i===9 || i === 12) {
@@ -92,7 +97,8 @@ define('plugins/keyboard', [
                     70: 9,  // f
                     71: 11, // g
                     72: 13, // h
-                    74: 15  // j
+                    74: 15, // j
+                    75: 16  // k
                 };
                 if(keyMap[event.which] !== undefined) {
                     self.play(keyMap[event.which]);

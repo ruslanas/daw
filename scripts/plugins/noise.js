@@ -21,7 +21,7 @@ define('plugins/noise', ['Gadget'], function(Gadget) {
             this.title = 'Noise Generator';
         },
 
-        onClick: function(event) {
+        onMouseDown: function(event) {
             this.on = !this.on;
             if(this.on) {
                 this.source = this.audio.createBufferSource();

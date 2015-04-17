@@ -158,6 +158,23 @@ require([
     //delay.connect(noise);
     mixer.connect(noise);
 
+    // draggable keyboard
+    var tb = document.querySelector('.keyboard .titlebar');
+
+    tb.addEventListener('mousedown', function(e) {
+        var dx = e.clientX - this.parentNode.offsetLeft;
+        var dy = e.clientY - this.parentNode.offsetTop;
+        var mMove = function(e) {
+            var panel = document.querySelector('.keyboard');
+            panel.style.left = (e.clientX - dx) + 'px';
+            panel.style.top = (e.clientY - dy) + 'px';
+        };
+        window.addEventListener('mousemove', mMove, true);
+        window.addEventListener('mouseup', function(e) {
+            window.removeEventListener('mousemove', mMove, true);
+        }, true);
+    }, false);
+
     document.getElementById('main-play').onclick = function() {
 
         var i = this.querySelector('i');

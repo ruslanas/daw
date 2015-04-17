@@ -58,8 +58,8 @@ define('Gadget', [
 			this.down = false;
 		},
 
-		getStyleProperty: function(prop) {
-			return getComputedStyle(this.canvas).getPropertyValue(prop);
+		getStyleProperty: function(elm, prop) {
+			return getComputedStyle(elm).getPropertyValue(prop);
 		},
 
 		initialize: function() {
@@ -84,12 +84,18 @@ define('Gadget', [
 
 			this.canvas.setAttribute('height', this.height());
 
-			var bw = parseInt(this.getStyleProperty('border-left-width'));
-			bw += parseInt(this.getStyleProperty('border-right-width'));
+			var bw = parseInt(this.getStyleProperty(this.canvas, 'border-left-width'));
+			bw += parseInt(this.getStyleProperty(this.canvas, 'border-right-width'));
 
-			this.canvas.setAttribute('width', this.container.offsetWidth - bw);
+			var pad = parseInt(this.getStyleProperty(this.container, 'padding-left'));
+			pad += parseInt(this.getStyleProperty(this.container, 'padding-right'));
 
-			this.color = this.getStyleProperty('color');
+			var pbw = parseInt(this.getStyleProperty(this.container, 'border-left-width'));
+			pbw += parseInt(this.getStyleProperty(this.container, 'border-right-width'));
+
+			this.canvas.setAttribute('width', this.container.offsetWidth - bw -pbw - pad);
+
+			this.color = this.getStyleProperty(this.canvas, 'color');
 
 			this.width(this.container.offsetWidth);
 

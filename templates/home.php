@@ -97,7 +97,7 @@
                         <small>
                             © 2015 Powered by
                             <a href="http://github.com/ruslanas/daw"
-                            target="_blank">daw</a>.
+                            target="_blank">DAW</a>.
                             Report <a href="https://github.com/ruslanas/daw/issues">issues</a>.
                         </small>
                     </div>

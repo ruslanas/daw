@@ -86,8 +86,35 @@ canvas {
 .drumkit .titlebar {
     display: none;
 }
+.mixer {
+    color: #00F;
+}
+.buffer {
+    color: yellow;
+}
 #bpm {
     border: 2px solid rgb(119,119,119);
     background-color: black;
     width: 50px;
+}
+
+.keyboard .titlebar {
+    cursor: default;
+    color: #FFF;
+}
+
+.keyboard {
+    background-color: #007;
+    position: fixed;
+    z-index: 1050;
+    width: 256px;
+    top: 200px;
+    left: 200px;
+    padding: 0 5px;
+}
+
+.keyboard canvas {
+    background-color: #FFF;
+    border: none;
+    color: #000;
 }

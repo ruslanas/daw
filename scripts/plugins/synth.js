@@ -138,6 +138,10 @@ define('plugins/synth', [
         },
 
         playNote: function(note, time) {
+            if(this.samples[note] === undefined) {
+                return;
+            }
+
             time = time || 0;
 
             var self = this;

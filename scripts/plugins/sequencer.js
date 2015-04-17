@@ -7,16 +7,15 @@
 "use strict";
 
 define('plugins/sequencer', [
-    'Gadget',
+    'plugins/keyboard',
     'jquery'
-    ], function(Gadget, $) {
+    ], function(Keyboard, $) {
 
-    var Sequencer = Gadget.extend({
+    var Sequencer = Keyboard.extend({
 
         pattern: null,
         len: 16,
         on: false,
-        synth: null,
         duration: 0,
         range: 24,
         dx: 0,
@@ -27,7 +26,6 @@ define('plugins/sequencer', [
         init: function() {
             this._super();
             this.pattern = [];
-            this.synth = [];
             this.title = 'Sequencer';
         },
 
@@ -126,10 +124,6 @@ define('plugins/sequencer', [
             this.vline(x);
             this.context.globalCompositeOperation = "source-over";
 
-        },
-
-        control: function(synth) {
-            this.synth.push(synth);
         },
 
         play: function() {
