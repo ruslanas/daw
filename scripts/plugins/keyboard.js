@@ -25,6 +25,7 @@ define('plugins/keyboard', [
         init: function() {
             this._super();
             this.title = 'Keyboard';
+            this.down = false;
             this.synth = [];
         },
 
@@ -44,7 +45,7 @@ define('plugins/keyboard', [
 
         onMouseMove: function(event) {
             var note = this.getNote(event);
-            if(this.key !== false && this.key !== note) {
+            if(this.down !== false && this.down !== note) {
                 this.play(note);
             }
         },
@@ -58,12 +59,12 @@ define('plugins/keyboard', [
         },
 
         onMouseUp: function(event) {
-            this.key = false;
+            this.down = false;
         },
 
         onMouseDown: function(event) {
             var note = this.getNote(event);
-            this.key = note;
+            this.down = note;
             this.play(note);
         },
 

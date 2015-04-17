@@ -43,8 +43,14 @@ define('plugins/sequencer', [
         },
 
         loadPattern: function(data) {
-            for(var i=0;i<data.length;i++) {
-                for(var j=0;j<data[i].length;j++) {
+            for(var i=0;i<this.pattern.length;i++) {
+                if(!data[i]) {
+                    continue;
+                }
+                for(var j=0;j<this.pattern[i].length;j++) {
+                    if(!data[i][j]) {
+                        continue;
+                    }
                     this.pattern[i][j] = parseInt(data[i][j]);
                 }
             }

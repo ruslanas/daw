@@ -50,7 +50,7 @@ define('plugins/drumkit', [
             }
 
             var dy = this.y - this.getY(event);
-            var val = this.down.gain.value + 0.1 * dy / this.height();
+            var val = this.down.gain.value + 0.5 * dy / this.height();
             // clamp
             this.down.gain.value = Math.min(1, Math.max(0, val));
             this.updated = true;

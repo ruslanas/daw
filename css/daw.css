@@ -1,6 +1,8 @@
 body {
     padding-top: 70px;
     padding-bottom: 255px;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 #tracks {
@@ -99,7 +101,7 @@ canvas {
 }
 
 .keyboard .titlebar {
-    cursor: default;
+    cursor: move;
     color: #FFF;
 }
 
