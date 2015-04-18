@@ -7,5 +7,5 @@ class Config {
     static $user = 'db_user';
     static $password = 'db_password';
     static $dbname = 'db_name';
-    static $debug = 'false';
+    static $debug = false;
 }
