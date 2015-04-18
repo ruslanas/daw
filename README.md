@@ -13,14 +13,11 @@ Fork and/or clone repository in your servers public directory.
 
 ```git clone https://github.com/ruslanas/daw.git```
 
-Install [Slim Framework](http://docs.slimframework.com/) with
-[composer](https://getcomposer.org/).
+Install [Slim Framework](http://docs.slimframework.com/) and [bower](http://bower.io/) packages with [composer](https://getcomposer.org/).
 
 ```composer install```
 
-Install JavaScript libraries with [bower](http://bower.io/).
-
-```bower install```
+Copy `config.sample.php` to `config.php` and edit as needed.
 
 Plugins
 -------

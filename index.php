@@ -5,7 +5,7 @@ require 'vendor/autoload.php';
 require 'config.php';
 
 function getDb() {
-    $conn = new PDO("mysql:host=localhost;dbname=".Config::$dbname, Config::$user, Config::$password);
+    $conn = new PDO("mysql:host=".Config::$dbhost.";dbname=".Config::$dbname, Config::$user, Config::$password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     return $conn;
 }

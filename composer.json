@@ -1,5 +1,9 @@
 {
 	"require": {
 		"slim/slim": "2.*"
-	}
+	},
+    "scripts": {
+        "post-install-cmd": ["bower install"],
+        "post-update-cmd": ["bower update"]
+    }
 }
