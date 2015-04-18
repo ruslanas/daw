@@ -17,33 +17,58 @@ define('plugins/mixer', [
         padding: 20,
         channels: null,
         down: false,
+        defaultLevel: 0,
 
         init: function() {
             this._super();
-            this.sliders = [0.2];
+            this.defaultLevel = 0.8;
+            this.oldLevel = this.defaultLevel;
+            this.sliders = [this.defaultLevel];
             this.channels = [];
             this.height(150);
             this.title = 'Mixer';
         },
 
+        drawSlider: function(title, i, val) {
+
+            var width = this.width() / this.sliders.length;
+
+            var x = i * width + width / 2;
+            this.context.strokeRect(x - 3, this.padding, 6, this.sliderHeight);
+
+            var y = this.height() - this.padding - val * this.sliderHeight;
+
+            this.context.beginPath();
+            this.context.moveTo(x + 3, y);
+            this.context.lineTo(x + 10, y - 5);
+            this.context.lineTo(x + 10, y + 5);
+            this.context.fill();
+
+            this.context.fillRect(x - 3, y, 6, this.height() - y - this.padding);
+
+            this.context.fillText(title, x, this.height() - 5);
+
+        },
+
         redraw: function() {
+
             this.clear();
 
-            var width = this.canvas.width / this.sliders.length;
-            this.vline(width, 0.5);
+            var width = this.width() / this.sliders.length;
+            var x = width / 2;
+            var bottom = this.height() - this.padding;
+            var labelY = this.height() - 5;
 
-            for(var i=0;i<this.sliders.length;i++) {
+            // master fader
+            this.drawSlider('Master', 0, this.sliders[0]);
+            this.vline(width);
 
-                var x = i * width + width / 2;
-                this.context.strokeRect(
-                    x - 3,
-                    this.padding,
-                    6,
-                    this.canvas.height - this.padding * 2);
+            for(var i=1;i<this.sliders.length;i++) {
 
-                var height = this.canvas.height - 2 * this.padding;
+                x += width;
+                var y = bottom - this.sliders[i] * this.sliderHeight;
 
-                var y = this.canvas.height - this.padding - this.sliders[i] * height;
+                this.context.strokeRect(x - 3, this.padding, 6, this.sliderHeight);
 
                 this.context.beginPath();
                 this.context.moveTo(x + 3, y);
@@ -51,21 +76,13 @@ define('plugins/mixer', [
                 this.context.lineTo(x + 10, y + 5);
                 this.context.fill();
 
-                this.context.fillRect(x - 3, y, 6, this.height() - y - this.padding);
+                this.context.fillRect(x - 3, y, 6, bottom - y);
 
-                this.context.textAlign = 'center';
-                if(i === 0) {
-                    var title = "Master";
-                } else {
-                    var title = this.channels[i - 1].title;
-                }
-                this.context.fillText(title, x, this.canvas.height - 5);
+                var title = this.channels[i - 1].title;
+                this.context.fillText(title, x, labelY);
             }
-            this.updated = false;
-        },
 
-        update: function() {
-            this.rack.setVolume(this.sliders[0]);
+            this.updated = false;
         },
 
         updateSlider: function(x, y) {
@@ -81,7 +98,10 @@ define('plugins/mixer', [
 
             if(idx > 0) {
                 this.channels[idx - 1].input.gain.value = val;
+            } else {
+                this.rack.setVolume(this.sliders[0]);
             }
+
             this.updated = true;
         },
 
@@ -107,13 +127,15 @@ define('plugins/mixer', [
                 throw 'No out node';
             }
 
-            var fader = this.rack.context.createGain();
-            this.sliders.push(0.6);
+            var fader = this.audio.createGain();
+
+            this.sliders.push(this.defaultLevel);
             this.channels.push({
                 input: fader,
                 title: gadget.title
             });
-            fader.gain.value = 0.5;
+
+            fader.gain.value = this.defaultLevel;
             fader.connect(this.rack.masterGain);
 
             gadget.out.connect(fader);
@@ -124,18 +146,32 @@ define('plugins/mixer', [
 
             this._super();
 
+            this.sliderHeight = this.height() - this.padding * 2;
+
+            // all labels are centered, it will not change
+            this.context.textAlign = 'center';
+
             var self = this;
+
             this.rack.addButton('glyphicon glyphicon-volume-up', function(on, button) {
+
+                var icon = button.querySelector('i');
+
                 if(on) {
-                    button.querySelector('i').className = 'glyphicon glyphicon-volume-up';
+                    icon.className = 'glyphicon glyphicon-volume-up';
                 } else {
-                    button.querySelector('i').className = 'glyphicon glyphicon-volume-off';
+                    icon.className = 'glyphicon glyphicon-volume-off';
                 }
+
                 if(self.sliders[0] > 0) {
+                    self.oldLevel = self.sliders[0];
                     self.sliders[0] = 0;
                 } else {
-                    self.sliders[0] = 0.3;
+                    self.sliders[0] = self.oldLevel;
                 }
+
+                self.rack.setVolume(self.sliders[0]);
+                self.updated = true;
             });
         }
     });

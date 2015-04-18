@@ -14,10 +14,8 @@ define('daw', ['jquery'], function($) {
         sampleBuffLen: 0,
         sample: null,
         canvas: null,
-        ctx: null,
         visualiser: null,
         mic: null,
-        recorder: null,
         player: null,
         pos: 0,
         duration: 5,           // seconds
@@ -150,37 +148,26 @@ define('daw', ['jquery'], function($) {
             this.visualiser = audio.createScriptProcessor(bufferLength, 1, 1);
 
             // update visualiser buffer
+            // merged with recorder
             this.visualiser.onaudioprocess = function(e) {
 
                 self.buffer = e.inputBuffer.getChannelData(0);
                 var output = e.outputBuffer.getChannelData(0);
                 output.set(self.buffer);
-            };
 
-            this.recorder = audio.createScriptProcessor(
-                this.recordFrameLen, 1, 1);
-
-            this.recorder.onaudioprocess = function(e) {
-                var input = e.inputBuffer.getChannelData(0);
-
-                var output = e.outputBuffer.getChannelData(0);
-
-                output.set(input);
-                // add frame to buffer
                 if(self.onAir) {
                     self.appendFrame(output);
                 }
-            };
 
-            this.masterGain = audio.createGain();
+            };
 
             this.micGain = audio.createGain();
             this.micGain.gain.value = 0;
-            this.micGain.connect(this.recorder);
+            this.micGain.connect(this.visualiser);
 
-            this.masterGain.connect(this.recorder);
-            this.recorder.connect(this.visualiser);
-            this.visualiser.connect(audio.destination);
+            // must insert mastering plugin (i.e. compressor)
+
+            this.masterGain = audio.createGain();
 
         },
 

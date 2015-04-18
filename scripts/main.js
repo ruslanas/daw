@@ -51,7 +51,7 @@ require([
 
     DAW.initialize({
         duration: 10,
-        buffer_size: 512,
+        buffer_size: 1024,
         bpm: 120
     });
 
@@ -69,6 +69,7 @@ require([
     });
 
     var mixer = new Mixer();
+
     var sampler = new Sampler();
 
     DAW.insert('daw-playlist', sampler, {

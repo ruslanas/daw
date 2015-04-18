@@ -47,6 +47,7 @@ define('plugins/keyboard', [
             var note = this.getNote(event);
             if(this.down !== false && this.down !== note) {
                 this.play(note);
+                this.down = note;
             }
         },
 

@@ -34,26 +34,6 @@ define('Gadget', [
 			return this._height;
 		},
 
-		onMouseMove: function(event) {
-			// void
-		},
-
-		onClick: function(event) {
-			// void
-		},
-
-		onMouseDown: function(event) {
-			// void
-		},
-
-		onMouseUp: function(event) {
-			// void
-		},
-
-		onMouseWheel: function(event) {
-			// void
-		},
-
 		onMouseOut: function(event) {
 			this.down = false;
 		},
@@ -107,28 +87,45 @@ define('Gadget', [
 			this.context.strokeStyle = this.color;
 
 			// events
-            this.canvas.onmousemove = function(event) {
-            	self.onMouseMove(event);
-            };
-            this.canvas.onclick = function(event) {
-            	self.onClick(event);
-            };
-            this.canvas.onmousedown = function(event) {
-            	self.onMouseDown(event);
-            };
-            this.canvas.onmouseup = function(event) {
-            	self.onMouseUp(event);
-            };
-            this.canvas.onmousemove = function(event) {
-            	self.onMouseMove(event);
-            };
             this.canvas.onmouseout = function(event) {
             	self.onMouseOut(event);
-            },
+            };
 
-			$(this.canvas).on('mousewheel', function(event) {
-				self.onMouseWheel(event);
-			});
+            if(typeof(this.onMouseMove) === 'function') {
+	            this.canvas.onmousemove = function(event) {
+	            	self.onMouseMove(event);
+	            };
+        	}
+
+            if(typeof(this.onClick) === 'function') {
+	            this.canvas.onclick = function(event) {
+	            	self.onClick(event);
+	            };
+        	}
+
+            if(typeof(this.onMouseDown) === 'function') {
+	            this.canvas.onmousedown = function(event) {
+	            	self.onMouseDown(event);
+	            };
+	        }
+
+            if(typeof(this.onMouseUp) === 'function') {
+	            this.canvas.onmouseup = function(event) {
+	            	self.onMouseUp(event);
+	            };
+	        }
+
+            if(typeof(this.onMouseMove) === 'function') {
+	            this.canvas.onmousemove = function(event) {
+	            	self.onMouseMove(event);
+	            };
+	        }
+
+            if(typeof(this.onMouseWheel) === 'function') {
+				$(this.canvas).on('mousewheel', function(event) {
+					self.onMouseWheel(event);
+				});
+			}
 
 			this.updated = true;
 		},

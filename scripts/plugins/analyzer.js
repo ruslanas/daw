@@ -23,9 +23,7 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
 
             for(var i = 0; i < this.bufferLength; i++) {
 
-                var intensity = this.dataArray[i];
-
-                this.context.fillStyle = 'rgb('+intensity+', 0, 0)';
+                this.context.fillStyle = 'rgb(' + this.dataArray[i] + ', 0, 0)';
                 this.context.fillRect(this.column % this.width(), this.height() - i, 1, 1);
             }
 
@@ -37,7 +35,7 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
             this._super();
 
             this.rack.analyzer = this.rack.context.createAnalyser();
-            this.rack.visualiser.disconnect(this.rack.context.destination);
+
             this.rack.visualiser.connect(this.rack.analyzer);
             this.rack.analyzer.connect(this.rack.context.destination);
 

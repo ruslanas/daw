@@ -28,7 +28,7 @@ define('plugins/synth', [
         noise: 0,
         gain: 1,
         out: null,
-        bezierPoints: null,
+        envelope: null,
         down: false,
         x: -1,
         y: -1,
@@ -40,7 +40,7 @@ define('plugins/synth', [
             this.notes = [];
             this.samples = [];
 
-            this.bezierPoints = {
+            this.envelope = {
                 p0: Bezier.point(0, 1),
                 p1: Bezier.point(1, 0),
                 c0: Bezier.point(0, 0),
@@ -53,7 +53,7 @@ define('plugins/synth', [
             this.clear();
 
             // draw envelope shape
-            var points = this.bezierPoints;
+            var points = this.envelope;
             var scaleX = this.canvas.width;
             var scaleY = this.canvas.height;
 
@@ -86,6 +86,7 @@ define('plugins/synth', [
             this.context.fillStyle = '#FF0';
             this.context.fillRect(cx1 - 2, cy1 - 2, 4, 4);
             this.context.fillRect(cx2 - 2, cy2 - 2, 4, 4);
+
             this.updated = false;
         },
 
@@ -108,15 +109,15 @@ define('plugins/synth', [
             var x = this.getX(event);
             var y = this.height() - this.getY(event);
 
-            var dx0 = x - this.bezierPoints.c0.x * this.width();
-            var dy0 = y - (1 - this.bezierPoints.c0.y) * this.height();
-            var dx1 = x - this.bezierPoints.c1.x * this.width();
-            var dy1 = y - (1 - this.bezierPoints.c1.y) * this.height();
+            var dx0 = x - this.envelope.c0.x * this.width();
+            var dy0 = y - (1 - this.envelope.c0.y) * this.height();
+            var dx1 = x - this.envelope.c1.x * this.width();
+            var dy1 = y - (1 - this.envelope.c1.y) * this.height();
 
             if(dx0 * dx0 + dy0 * dy0 < dx1 * dx1 + dy1 * dy1) {
-                this.down = this.bezierPoints.c0;
+                this.down = this.envelope.c0;
             } else {
-                this.down = this.bezierPoints.c1;
+                this.down = this.envelope.c1;
             }
 
             this.onChange(event);
@@ -174,7 +175,7 @@ define('plugins/synth', [
                     freq: this.notes[i],
                     sampleRate: this.getSampleRate(),
                     len: self.len,
-                    bezier: this.bezierPoints
+                    bezier: this.envelope
                 });
 
             }

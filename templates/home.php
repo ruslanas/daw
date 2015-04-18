@@ -41,8 +41,8 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div id="narrow" class="row">
-                        <div class="col-sm-6" id="buffer"></div>
-                        <div class="col-sm-6" id="analyser"></div>
+                        <div class="col-sm-5" id="buffer"></div>
+                        <div class="col-sm-7" id="analyser"></div>
                     </div>
                     <div id="save-form">
                         <form>

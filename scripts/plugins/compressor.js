@@ -65,9 +65,8 @@ define('plugins/compressor', ['Gadget'], function(Gadget) {
             this._super();
 
             this.compressor = this.audio.createDynamicsCompressor();
-            this.rack.recorder.disconnect(this.rack.visualiser);
+            this.rack.masterGain.connect(this.compressor);
             this.compressor.connect(this.rack.visualiser);
-            this.rack.recorder.connect(this.compressor);
         }
     });
 
