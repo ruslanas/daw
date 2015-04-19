@@ -19,6 +19,7 @@ define('plugins/editor', [
 		zoom: 128,
 		select: false,
 		stopButton: null,
+		help: "You can drop files from file system",
 
 		init: function() {
 			this._super();

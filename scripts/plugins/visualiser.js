@@ -12,6 +12,7 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 
         max: 0,
         peakTime: null,
+        help: "Visualizes current buffer data and displays peak amplitude",
 
         init: function() {
             this._super();
@@ -38,11 +39,10 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
             }
 
             this.context.fillText(this.max.toFixed(4), 7, this.canvas.height - 2);
-            //this.context.fillStyle = 'rgb(' + Math.round(this.max * 255) + ', 0, 0)';
-            this.context.fillRect(0, this.canvas.height, 5, -(this.canvas.height * this.max));
+            this.context.fillRect(0, this.canvas.height, 5, -Math.min(this.canvas.height, this.canvas.height * this.max));
 
-            // drop by 1 in 1 second
-            this.max = this.max - (this.audio.currentTime - this.peakTime);
+            // drop by 2 in 1 second
+            this.max = this.max - (this.audio.currentTime - this.peakTime) * 2;
             this.peakTime = this.audio.currentTime;
         },
 
@@ -51,7 +51,7 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
             this._super();
 
             this.scale = this.height() / 2;
-            this.parent.querySelector('.titlebar').innerHTML += ' (' + this.rack.recordFrameLen + ')';
+            this.parent.querySelector('.titlebar h5').innerHTML += ' (' + this.rack.recordFrameLen + ')';
         }
     });
 

@@ -16,6 +16,7 @@ define('plugins/timeline', [
         tracks: null,  // parameters of loaded tracks
         sources: null, // reference array to buffer source nodes
         h: 10,         // track height
+        help: "You can drag & drop files from playlist",
 
         init: function() {
             this._super();

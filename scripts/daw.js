@@ -211,7 +211,7 @@ define('daw', ['jquery'], function($) {
             input.onchange = function() {
                 self.stop();
                 self.bpm = this.value;
-                self.start();
+                //self.start();
             };
 
             window.requestAnimationFrame(function() {
@@ -312,7 +312,7 @@ define('daw', ['jquery'], function($) {
                     callback(buffer);
                     self.setStatus('Audio data loaded');
                 }, function(e) {
-                    self.setStatus(e.getMessage());
+                    self.setStatus('Decoding failed');
                 });
             }
             request.send();

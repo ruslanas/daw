@@ -16,9 +16,7 @@ onmessage = function(msg) {
             buff[j] += Math.sin(msg.data.modes[k] * 2 * Math.PI * j / cycle) * c;
             c *= 0.5;
         }
-        if(msg.data.noise) {
-            buff[j] += Math.random() * msg.data.noise;
-        }
+        buff[j] += Math.random() * msg.data.noise;
     }
 
     var points = msg.data.bezier;

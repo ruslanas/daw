@@ -43,6 +43,11 @@ define('plugins/basesynth', [
         },
 
         playNote: function(note, time) {
+
+            if(!this.samples[note]) {
+                return;
+            }
+
             time = time || 0;
 
             var self = this;

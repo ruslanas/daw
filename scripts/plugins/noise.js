@@ -18,7 +18,7 @@ define('plugins/noise', ['Gadget'], function(Gadget) {
 
         init: function() {
             this._super();
-            this.title = 'Noise Generator';
+            this.title = 'Noise';
         },
 
         onMouseDown: function(event) {

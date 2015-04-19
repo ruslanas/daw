@@ -43,11 +43,13 @@ require([
     'plugins/noise',
     'plugins/compressor',
     'plugins/drumkit',
-    'plugins/timeline'
+    'plugins/timeline',
+    'plugins/oscillator'
 
     ], function(
         DAW, Sampler, Editor, Visualiser, Analyzer, Synth, Sequencer,
-        Mixer, Delay, Keyboard, Filter, Noise, Compressor, Drumkit, Timeline) {
+        Mixer, Delay, Keyboard, Filter, Noise, Compressor,
+        Drumkit, Timeline, Oscillator) {
 
     DAW.initialize({
         duration: 10,
@@ -90,7 +92,7 @@ require([
     var drum = new Drumkit();
     var sequencer = new Sequencer();
     DAW.insert('#drums', sequencer, {
-        range: 10
+        range: 8
     });
 
     sequencer.control(drum);
@@ -127,22 +129,26 @@ require([
 
     DAW.insert('#drums', bass, {
         title: 'Bass',
-        modes: [2, 4, 8, 16, 32, 64],
+        modes: [2, 4, 5, 8],
+        envelope: {
+            p0: Bezier.point(0, 1),
+            p1: Bezier.point(1, 0),
+            c0: Bezier.point(0.4, 0.8),
+            c1: Bezier.point(0.6, 0.6)
+        },
         len: 20000,
-        base_frequency: 55
+        base_frequency: 110
     });
 
     mixer.connect(bass);
 
     var kbd = new Keyboard();
-    var melodySynth = new Synth();
+    var melodySynth = new Oscillator();
 
     DAW.insert('#keyboard', kbd);
     DAW.insert('#keyboard', melodySynth, {
         title: 'Melody',
-        base_frequency: 110,
-        modes: [2, 4, 6],
-        len: 40000
+        base_frequency: 440,
     });
 
     var timeline = new Timeline();

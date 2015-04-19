@@ -17,6 +17,7 @@ define('Gadget', [
 		status: '',
 		updated: false,
         knobs: [],
+        help: "Help not available",
 
 		// Constructor. No DOM operations here
 		init: function() {
@@ -49,7 +50,12 @@ define('Gadget', [
 			this.canvas = document.createElement('canvas');
 
 			var container = document.createElement('div');
-			var titleBar = document.createElement('h5');
+			var titleBar = document.createElement('div');
+			var titleElement = document.createElement('h5');
+			var buttons = document.createElement('div');
+			buttons.className = 'buttons';
+
+			titleBar.appendChild(titleElement);
 
 			this.container = container;
 			container.className = 'gadget ' + this.title.toLowerCase().replace(' ', '');
@@ -59,7 +65,9 @@ define('Gadget', [
 			container.appendChild(this.canvas);
 
 			var title = document.createTextNode(this.title);
-			titleBar.appendChild(title);
+			titleElement.appendChild(title);
+			titleBar.appendChild(buttons);
+
 			this.parent.appendChild(container);
 
 			this.canvas.setAttribute('height', this.height());
@@ -85,6 +93,17 @@ define('Gadget', [
 
 			this.context.fillStyle = this.color;
 			this.context.strokeStyle = this.color;
+
+			var icon = document.createElement('i');
+			var btn = document.createElement('button');
+			btn.className = 'btn btn-sm btn-default';
+			icon.className  = 'glyphicon glyphicon-info-sign';
+			btn.appendChild(icon);
+			buttons.appendChild(btn);
+
+			btn.onmouseover = function() {
+				self.rack.setStatus(self.title + ': ' + self.help);
+			};
 
 			// events
             this.canvas.onmouseout = function(event) {
@@ -138,20 +157,23 @@ define('Gadget', [
             return event.clientY - $(this.canvas).offset().top + $(window).scrollTop();
         },
 
-        drawKnob: function(x, y, val) {
+        drawKnob: function(knob, val) {
             this.context.beginPath();
             this.context.lineWidth = 3;
-            this.context.arc(x, y, 10, 0, Math.PI * 2, false);
+            this.context.arc(knob.x, knob.y, knob.radius, 0, Math.PI * 2, false);
             this.context.stroke();
             this.context.beginPath();
 
             this.context.save();
-            this.context.translate(x, y);
+            this.context.translate(knob.x, knob.y);
             this.context.rotate(val * Math.PI);
             this.context.moveTo(-2, 0);
             this.context.lineTo(-10, 0);
             this.context.stroke();
             this.context.restore();
+
+            this.context.textAlign = 'center';
+            this.context.fillText(knob.name, knob.x, knob.y + knob.radius + 15);
         },
 
 		addButton: function(icon, handler, options) {
@@ -160,7 +182,7 @@ define('Gadget', [
 				group: 'group'
 			};
 
-			var titleBar = this.container.querySelector('.titlebar');
+			var titleBar = this.container.querySelector('.buttons');
 			var iconElement = document.createElement('i');
 			iconElement.className = icon;
 

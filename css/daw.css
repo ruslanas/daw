@@ -53,7 +53,7 @@ a:hover {
     opacity: 1;
     height: 200px;
 }
-canvas {
+.gadget canvas {
     border: 1px solid;
     -webkit-user-select: none;
     user-select: none;
@@ -104,6 +104,7 @@ canvas {
 .keyboard .titlebar {
     cursor: move;
     color: #FFF;
+    height: 30px;
 }
 
 .keyboard {
@@ -120,4 +121,14 @@ canvas {
     background-color: #FFF;
     border: none;
     color: #000;
+    float: left;
+}
+.drumkit canvas {
+    border: none;
+}
+.titlebar h5 {
+    float: left;
+}
+.buttons {
+    float: right;
 }

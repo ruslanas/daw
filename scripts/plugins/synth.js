@@ -85,7 +85,11 @@ define('plugins/synth', [
 
             this.context.fillStyle = '#FF0';
             this.context.fillRect(cx1 - 2, cy1 - 2, 4, 4);
+            this.context.fillText(
+                '(' + points.c0.x.toFixed(3) + ';' + points.c0.y.toFixed(3) + ')', cx1 + 6, cy1);
             this.context.fillRect(cx2 - 2, cy2 - 2, 4, 4);
+            this.context.fillText(
+                '(' + points.c1.x.toFixed(3) + ';' + points.c1.y.toFixed(3) + ')', cx2 + 6, cy2);
 
             this.updated = false;
         },
@@ -190,6 +194,7 @@ define('plugins/synth', [
             this.modes = this.options.modes || [];
             this.len = this.options.len || this.len;
             this.noise = this.options.noise || this.noise;
+            this.envelope = this.options.envelope || this.envelope;
 
             for(var i=0;i<24;i++) {
                 this.notes.push(f);

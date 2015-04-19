@@ -22,6 +22,7 @@ define('plugins/sequencer', [
         dy: 0,
         needsFullRedraw: true,
         prevX: -1,
+        help: "CTRL + click for major chord",
 
         init: function() {
             this._super();
@@ -38,6 +39,14 @@ define('plugins/sequencer', [
             var pos = Math.floor(x / this.dx);
 
             this.pattern[pos][note] = !this.pattern[pos][note] ? 1 : 0;
+
+            if(event.ctrlKey) {
+                var majorThird = note + 4;
+                var perfectFith = note + 7;
+                this.pattern[pos][majorThird] = 1;
+                this.pattern[pos][perfectFith] = 1;
+            }
+
             this.needsFullRedraw = true;
             this.updated = true;
         },
@@ -61,17 +70,17 @@ define('plugins/sequencer', [
             if(this.on) {
                 this.updateStep();
                 var offset = this.audio.currentTime % this.duration;
-                var beat = Math.floor(this.len / 4 * offset / this.duration);
+                var beat = Math.floor((this.len / 4) * offset / this.duration);
 
                 var beatStart = this.audio.currentTime - offset + (beat + 1) * this.step;
 
                 for(var i=0;i<4;i++) {
+                    var curr = 4 * beat + i;
+                    for(var j=0;j<this.pattern[curr].length;j++) {
 
-                    for(var j=0;j<this.pattern[4 * beat + i].length;j++) {
-
-                        if(this.pattern[4 * beat + i][j] > 0) {
+                        if(this.pattern[curr][j] > 0) {
                             var time = beatStart + i * this.duration / this.len;
-                            this.synth[0].playNote(j, time);
+                            this.synth.playNote(j, time);
                         }
                     }
                 }
@@ -184,7 +193,7 @@ define('plugins/sequencer', [
             this.addButton('fa fa-coffee', function(on) {
                 self.rack.load('api/patterns/3', function(data) {
                     self.loadPattern(data);
-                })
+                });
             });
         }
     });

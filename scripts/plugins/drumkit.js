@@ -12,6 +12,8 @@ define('plugins/drumkit', [
 
     var Drumkit = BaseSynth.extend({
 
+        dx: 0,
+
         init: function() {
             this._super();
             this.title = 'Drumkit';
@@ -22,24 +24,21 @@ define('plugins/drumkit', [
             for(var i=0;i<this.knobs.length;i++) {
                 var knob = this.knobs[i];
                 if(knob !== undefined) {
-                    this.drawKnob(knob.x, knob.y, this.gains[i].gain.value);
+                    this.drawKnob(knob, this.gains[i].gain.value);
                 }
             }
-            this.context.fillText(this.status, 2, this.height() - 2);
             this.updated = false;
         },
 
         onMouseDown: function(event) {
-            var idx = Math.floor(this.getX(event) / 25);
+            var idx = Math.floor(this.getX(event) / this.dx);
             this.y = this.getY(event);
             this.down = this.gains[idx];
-            this.setStatus(this.knobs[idx].name);
             this.updated = true;
         },
 
         onMouseUp: function(event) {
             this.down = false;
-            this.setStatus('');
             this.updated = true;
         },
 
@@ -59,16 +58,6 @@ define('plugins/drumkit', [
         loadBuffer: function(idx, url) {
             var self = this;
             this.rack.loadBuffer(url, function(buffer) {
-                self.gains[idx] = self.audio.createGain();
-                self.gains[idx].connect(self.out);
-                self.gains[idx].gain.value = 0.5;
-                self.knobs[idx] = {
-                    x: idx * 25 + 15,
-                    y: self.baseline,
-                    val: 1,
-                    name: url
-                };
-
                 self.samples[idx] = buffer;
                 self.updated = true;
             });
@@ -80,9 +69,21 @@ define('plugins/drumkit', [
             this.rack.load('api/drumkits/1', function(data) {
                 self.knobs = new Array(data.length);
                 self.gains = new Array(data.length);
-
+                self.dx = self.canvas.width / data.length;
                 for(var i=0;i<data.length;i++) {
-                    self.loadBuffer(i, data[i]);
+                    self.gains[i] = self.audio.createGain();
+                    self.gains[i].connect(self.out);
+                    self.gains[i].gain.value = data[i].gain;
+
+                    self.knobs[i] = {
+                        x: i * self.dx + 15,
+                        y: self.baseline,
+                        val: 1,
+                        name: data[i].name,
+                        radius: 10
+                    };
+
+                    self.loadBuffer(i, data[i].file);
                 }
             });
 
