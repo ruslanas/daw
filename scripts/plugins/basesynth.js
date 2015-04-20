@@ -24,6 +24,7 @@ define('plugins/basesynth', [
         gain: 1,
         out: null,
         down: false,
+        baseFreq: 440,
 
         init: function() {
             this._super();
@@ -72,6 +73,8 @@ define('plugins/basesynth', [
         // gadget inserted and attached
         initialize: function() {
             this._super();
+
+            this.baseFreq = this.options.base_frequency || this.baseFreq;
 
             var amp = this.audio.createGain();
             amp.gain.value = this.gain;

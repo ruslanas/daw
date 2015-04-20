@@ -12,21 +12,40 @@ define('plugins/keyboard', [
 
     var Keyboard = Gadget.extend({
 
-        key: false,
-        row1: [0, 2, 3, 5, 7, 8, 10, 12, 14, 15, 17, 19, 21, 22],
-        row2: [
-            -1, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6,
-            7, 7, 7, 8, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13,
-            14, 14, 14, 15, 15, 15, 16, 16, 17, 17, 18, 18,
-            19, 19, 19, 20, 20, 20, 21, 21, 22, 22, 23
-        ],
+        row1: null,
+        row2: null,
+        major: [2, 2, 1, 2, 2, 2, 1],                // major key pattern
+        black: [3, 2, 2, 2, 3, 3, 2, 2, 2, 2, 2, 3], // black key pattern
+        pitches: "CDEFGAB",                          // pitch names
         synth: null,
+        keyMap: null,
+        notesOn: null,
+        help: "You can use computer keypord Z, X, C, V, etc.",
+        octaves: 2,
 
         init: function() {
+
             this._super();
+
             this.title = 'Keyboard';
+            this.height(60);
             this.down = false;
-            this.synth = [];
+        },
+
+        fillRows: function() {
+            this.row1 = [];
+            var semitone = 0;
+            for(var i=0;i<7 * this.octaves;i++) {
+                this.row1.push(semitone + 3);
+                semitone += this.major[i % this.major.length];
+            }
+
+            this.row2 = [];
+            for(var i=0;i<this.black.length * this.octaves;i++) {
+                for(var j=0;j<this.black[i % this.black.length];j++) {
+                    this.row2.push(i + 3);
+                }
+            }
         },
 
         getNote: function(event) {
@@ -34,10 +53,10 @@ define('plugins/keyboard', [
             var y = this.height() - this.getY(event);
 
             if(y < this.baseline) {
-                var k = Math.floor(x / this.canvas.width * 14);
+                var k = Math.floor(x / this.canvas.width * this.row1.length);
                 var note = this.row1[k];
             } else {
-                var k = Math.floor((x / this.canvas.width * 56));
+                var k = Math.floor((x / this.canvas.width * this.row2.length));
                 var note = this.row2[k];
             }
             return note;
@@ -46,44 +65,85 @@ define('plugins/keyboard', [
         onMouseMove: function(event) {
             var note = this.getNote(event);
             if(this.down !== false && this.down !== note) {
+                this.stop(this.down);
                 this.play(note);
-                this.down = note;
             }
         },
 
         control: function(synth) {
-            this.synth.push(synth);
+            this.synth = synth;
         },
 
         play: function(note) {
-            this.synth[0].playNote(note);
+            this.down = note;
+            this.notesOn[note] = true;
+            this.synth.playNote(note);
+            this.updated = true;
+        },
+
+        stop: function(note) {
+            this.notesOn[note] = false;
+            this.synth.stop(note);
+            this.down = false;
+            this.updated = true;
         },
 
         onMouseUp: function(event) {
-            this.down = false;
+            var note = this.getNote(event);
+            this.stop(note);
         },
 
         onMouseDown: function(event) {
             var note = this.getNote(event);
-            this.down = note;
             this.play(note);
         },
 
         redraw: function() {
 
-            var kw = this.canvas.width / 14;
+            this.clear();
 
-            for(var i=0;i<24;i++) {
-                this.context.fillRect(i*kw + kw, 0, 1, this.canvas.height);
-            }
+            this.context.textAlign = 'center';
+            var numKeys = 7 * this.octaves;
+            var kw = this.canvas.width / numKeys;
 
-            // black
-            for(var i=0;i<24;i++) {
-                if(i===2 || i===5 || i===9 || i === 12) {
-                    continue;
+            var b = 0; // count black keys
+
+            var dx = 3 * kw / 4;
+            for(var i=0;i<numKeys;i++) {
+
+                if(this.notesOn[i + b + 3] === true) {
+
+                    this.context.fillStyle = '#FF0';
+                    this.context.fillRect(i * kw, 0, kw, this.canvas.height);
+                    this.context.fillStyle = this.color;
                 }
-                this.context.fillRect(i * kw - kw / 4, 0, kw / 2, this.canvas.height / 2);
+
+                this.context.fillRect(i*kw + kw, 0, 1, this.canvas.height);
+
+                // black
+                if(this.major[i % this.major.length] === 2) {
+                    b++;
+                }
+
+                this.context.fillText(this.pitches[i % this.pitches.length], i * kw + kw/2, this.height() - 2);
+
+
             }
+
+            b = 0;
+
+            for(var i=0;i<numKeys;i++) {
+                if(this.major[i % this.major.length] === 2) {
+                    if(this.notesOn[i + b + 4]) {
+                        this.context.fillStyle = '#F00';
+                    } else {
+                        this.context.fillStyle = this.color;
+                    }
+                    this.context.fillRect(i * kw + dx, 0, kw / 2, this.canvas.height / 2);
+                    b++;
+                }
+            }
+
             this.updated = false;
         },
 
@@ -91,19 +151,24 @@ define('plugins/keyboard', [
             this._super();
 
             var self = this;
+            var keys = "zsxdcvgbhnjmq2w3er5t6y7ui".toUpperCase();
+
+            this.fillRows();
+            this.keyMap = [];
+
+            for(var i=0;i<keys.length;i++) {
+                this.keyMap[keys[i].charCodeAt(0)] = i + 3;
+            }
+
+            this.notesOn = [];
             document.onkeydown = function(event) {
-                var keyMap = {
-                    65: 4,  // a
-                    83: 6,  // s
-                    68: 8,  // d
-                    70: 9,  // f
-                    71: 11, // g
-                    72: 13, // h
-                    74: 15, // j
-                    75: 16  // k
-                };
-                if(keyMap[event.which] !== undefined) {
-                    self.play(keyMap[event.which]);
+                if(self.keyMap[event.which] !== undefined) {
+                    self.play(self.keyMap[event.which]);
+                }
+            }
+            document.onkeyup = function(event) {
+                if(self.keyMap[event.which] !== undefined) {
+                    self.stop(self.keyMap[event.which]);
                 }
             }
         }

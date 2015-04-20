@@ -147,8 +147,7 @@ require([
 
     DAW.insert('#keyboard', kbd);
     DAW.insert('#keyboard', melodySynth, {
-        title: 'Melody',
-        base_frequency: 440,
+        title: 'Melody'
     });
 
     var timeline = new Timeline();
