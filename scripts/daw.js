@@ -318,6 +318,16 @@ define('daw', ['jquery'], function($) {
             request.send();
         },
 
+        loadXml: function(url, done) {
+            $.get(url, {}, function(data) {
+
+                var parser = new DOMParser();
+                var xmlDoc = parser.parseFromString(data, "text/xml");
+
+                done(xmlDoc);
+            });
+        },
+
         load: function(url, done) {
 
             $.getJSON(url, {}, function(data) {

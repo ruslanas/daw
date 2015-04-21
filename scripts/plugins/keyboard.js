@@ -151,7 +151,7 @@ define('plugins/keyboard', [
             this._super();
 
             var self = this;
-            var keys = "zsxdcvgbhnjmq2w3er5t6y7ui".toUpperCase();
+            var keys = "zsxdcvgbhnjmq2w3er5t6y7ui9O0P".toUpperCase();
 
             this.fillRows();
             this.keyMap = [];

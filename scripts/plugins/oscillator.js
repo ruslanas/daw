@@ -32,22 +32,32 @@ define('plugins/oscillator', [
             }
 
             var oscillator = this.audio.createOscillator();
-            oscillator.connect(this.out);
-            oscillator.type = this.waveForm;
-            oscillator.frequency.value = this.notes[note];
-            oscillator.start();
             this.sources[note] = oscillator;
+            this.sources[note].type = this.waveForm;
+            this.sources[note].frequency.value = this.notes[note];
+
+            this.sources[note].connect(this.out);
+
+            var self = this;
+            oscillator.onended = function() {
+                self.sources[note].disconnect();
+                self.sources[note].onended = null;
+                self.sources[note] = null;
+            };
+
+            this.sources[note].start();
         },
 
         stop: function(note) {
             this.sources[note].stop();
-            this.sources[note].disconnect();
-            this.sources[note] = null;
         },
 
         initialize: function() {
+
             this._super();
+
             this.out = this.audio.createGain();
+            this.out.gain.value = 1;
             this.sources = [];
             this.notes = [];
 
