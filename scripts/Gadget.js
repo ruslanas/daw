@@ -62,7 +62,11 @@ define('Gadget', [
 			titleBar.className = 'titlebar';
 
 			container.appendChild(titleBar);
-			container.appendChild(this.canvas);
+			// stack
+			var stack = document.createElement('div');
+			stack.className = 'stack';
+			container.appendChild(stack);
+			stack.appendChild(this.canvas);
 
 			var title = document.createTextNode(this.title);
 			titleElement.appendChild(title);
@@ -81,6 +85,7 @@ define('Gadget', [
 			var pbw = parseInt(this.getStyleProperty(this.container, 'border-left-width'));
 			pbw += parseInt(this.getStyleProperty(this.container, 'border-right-width'));
 
+			this.canvas.className = 'background';
 			this.canvas.setAttribute('width', this.container.offsetWidth - bw -pbw - pad);
 
 			this.color = this.getStyleProperty(this.canvas, 'color');
@@ -280,6 +285,16 @@ define('Gadget', [
 
             this.context.fillStyle = color;
             this.context.fillRect(0, y, this.width(), width);
+        },
+
+        addLayer: function() {
+            var layer = document.createElement('canvas');
+            this.canvas.parentNode.appendChild(layer);
+            layer.className = 'layer';
+            layer.width = this.canvas.width;
+            layer.height = this.height();
+            this.layer = layer;
+            this.layerContext = layer.getContext('2d');
         },
 
 		getSampleRate: function() {
