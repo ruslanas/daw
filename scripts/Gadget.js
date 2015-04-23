@@ -58,7 +58,13 @@ define('Gadget', [
 			titleBar.appendChild(titleElement);
 
 			this.container = container;
+
 			container.className = 'gadget ' + this.title.toLowerCase().replace(' ', '');
+
+			if(this.options.draggable) {
+	    		this.container.className += ' draggable';
+	    	}
+
 			titleBar.className = 'titlebar';
 
 			container.appendChild(titleBar);
@@ -73,6 +79,7 @@ define('Gadget', [
 			titleBar.appendChild(buttons);
 
 			this.parent.appendChild(container);
+			stack.style.height = this.height() + 'px';
 
 			this.canvas.setAttribute('height', this.height());
 
@@ -149,6 +156,30 @@ define('Gadget', [
 				$(this.canvas).on('mousewheel', function(event) {
 					self.onMouseWheel(event);
 				});
+			}
+
+		    // draggable keyboard
+		    if(this.options.draggable) {
+
+			    var tb = this.container.querySelector('.titlebar');
+
+			    tb.addEventListener('mousedown', function(e) {
+			        var dx = e.clientX - this.parentNode.offsetLeft;
+			        var dy = e.clientY - this.parentNode.offsetTop;
+
+			        self.container.style.zIndex = 2000;
+			        var mMove = function(e) {
+
+			            self.container.style.left = (e.clientX - dx) + 'px';
+			            self.container.style.top = (e.clientY - dy) + 'px';
+			        };
+
+			        window.addEventListener('mousemove', mMove, true);
+			        window.addEventListener('mouseup', function(e) {
+			        	self.container.style.zIndex = 1050;
+			            window.removeEventListener('mousemove', mMove, true);
+			        }, true);
+			    }, false);
 			}
 
 			this.updated = true;
@@ -260,11 +291,13 @@ define('Gadget', [
 
 		// do not call from plugins
 		attach: function(container, rack, options) {
-			this.title = options.title || this.title;
-			this.height(options.height);
 
 			this.parent = document.querySelector(container);
+
+			this.title = options.title || this.title;
+			this.height(options.height);
 			this.options = options;
+
 			this.rack = rack;
 			this.audio = this.rack.context;
 			this.initialize();
