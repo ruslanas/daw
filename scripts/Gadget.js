@@ -135,7 +135,7 @@ define('Gadget', [
         	}
 
             if(typeof(this.onMouseDown) === 'function') {
-	            this.canvas.onmousedown = function(event) {
+	            stack.onmousedown = function(event) {
 	            	self.onMouseDown(event);
 	            };
 	        }
@@ -304,12 +304,13 @@ define('Gadget', [
 		},
 
         // draw vertical line
-        vline: function(x, width, color) {
+        vline: function(x, width, color, ctx) {
             color = color || this.color;
             width = width || 1;
+            ctx = ctx || this.context;
 
-            this.context.fillStyle = color;
-            this.context.fillRect(x, 0, width, this.height());
+            ctx.fillStyle = color;
+            ctx.fillRect(x, 0, width, this.height());
         },
 
         hline: function(y, width, color) {

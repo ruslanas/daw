@@ -47,7 +47,6 @@ define('plugins/sequencer', [
                 this.pattern[pos][perfectFith] = 1;
             }
 
-            this.needsFullRedraw = true;
             this.updated = true;
         },
 
@@ -93,22 +92,13 @@ define('plugins/sequencer', [
             var pattern = [2, 2, 1, 2, 2, 2, 1]; // major
 
             var k = -8;
-            this.context.globalAlpha = 0.3;
+            this.context.fillStyle = '#FFF';
             for(var i=0;i<this.pattern.length;i++) {
                 k += pattern[i % pattern.length];
                 this.context.fillRect(0, this.height() - this.dy * k, this.width(), this.dy);
             }
-            this.context.globalAlpha = 1;
 
-            for(var i=0;i<this.pattern.length;i++) {
-                for(var j=0;j<this.pattern[i].length;j++) {
-                    if(this.pattern[i][j] > 0) {
-                        var y = this.height() - this.dy * (j + 1);
-                        this.context.fillRect(this.dx * i, y, this.dx, this.dy);
-                    }
-                }
-            }
-
+            this.context.fillStyle = '#CCC';
             for(var i=1;i<this.pattern[0].length;i++) {
                 this.hline(this.dy * i, 0.5);
             }
@@ -117,11 +107,10 @@ define('plugins/sequencer', [
                 this.vline(this.dx * 4 * i, 0.5);
             }
 
-            this.prevX = -1;
-            this.context.globalCompositeOperation = "xor";
-            this.context.fillStyle = this.color;
-            this.context.fillRect(0, 0, this.width(), this.height());
-            this.context.globalCompositeOperation = "source-over";
+        },
+
+        clearLayer: function() {
+            this.layerContext.clearRect(0, 0, this.width(), this.height());
         },
 
         redraw: function() {
@@ -131,13 +120,26 @@ define('plugins/sequencer', [
                 this.needsFullRedraw = false;
             }
 
+            this.clearLayer();
+
             var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
-            x = Math.floor(x);
-            this.context.globalCompositeOperation = "xor";
-            this.vline(this.prevX);
-            this.prevX = x;
-            this.vline(x);
-            this.context.globalCompositeOperation = "source-over";
+            this.vline(x, 1, '#00F', this.layerContext);
+            for(var i=0;i<this.pattern.length;i++) {
+                for(var j=0;j<this.pattern[i].length;j++) {
+                    if(this.pattern[i][j] > 0) {
+                        var noteX = this.dx * i;
+                        if(x > noteX && x < noteX + this.dy) {
+                            this.layerContext.fillStyle = '#CCC';
+                        } else {
+                            this.layerContext.fillStyle = '#000';
+                        }
+
+                        var y = this.height() - this.dy * (j + 1);
+                        this.layerContext.fillRect(noteX, y, this.dx, this.dy);
+                    }
+                }
+            }
+
 
         },
 
@@ -175,6 +177,8 @@ define('plugins/sequencer', [
             this.dy = this.height() / this.range;
 
             var self = this;
+
+            this.addLayer();
 
             this.addButton('fa fa-floppy-o', function(on) {
                 $.post('api/patterns', {
