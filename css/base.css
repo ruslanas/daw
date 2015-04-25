@@ -1,0 +1,56 @@
+/* Basic Gadget CSS */
+
+canvas {
+  float: left;
+  cursor: default;
+  background-color: #FFF;
+}
+
+.background {
+  position: absolute;
+}
+
+.layer {
+  position: absolute;
+  background: transparent !important;
+}
+
+.gadget {
+  background-color: #CCC;
+  margin-bottom: 5px;
+}
+
+.titlebar {
+  overflow: hidden;
+  border-bottom: 3px solid;
+}
+
+.titlebar h5 {
+  margin-left: 10px;
+  float: left;
+}
+
+.stack {
+  height: 180px;
+}
+
+.buttons {
+  float: right;
+  margin: 3px 0 0;
+}
+
+.draggable {
+  box-shadow: 2px 2px 3px #000;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: #FFF;
+  z-index: 1050;
+  width: 400px;
+  border: none;
+}
+
+.draggable .titlebar {
+  background-color: #007;
+  cursor: move;
+}

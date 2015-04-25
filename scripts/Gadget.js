@@ -83,17 +83,11 @@ define('Gadget', [
 
 			this.canvas.setAttribute('height', this.height());
 
-			var bw = parseInt(this.getStyleProperty(this.canvas, 'border-left-width'));
-			bw += parseInt(this.getStyleProperty(this.canvas, 'border-right-width'));
-
-			var pad = parseInt(this.getStyleProperty(this.container, 'padding-left'));
-			pad += parseInt(this.getStyleProperty(this.container, 'padding-right'));
-
-			var pbw = parseInt(this.getStyleProperty(this.container, 'border-left-width'));
-			pbw += parseInt(this.getStyleProperty(this.container, 'border-right-width'));
+			var bw = parseFloat(this.getStyleProperty(this.canvas, 'border-left-width'));
+			bw += parseFloat(this.getStyleProperty(this.canvas, 'border-right-width'));
 
 			this.canvas.className = 'background';
-			this.canvas.setAttribute('width', this.container.offsetWidth - bw -pbw - pad);
+			this.canvas.setAttribute('width', stack.offsetWidth - bw);
 
 			this.color = this.getStyleProperty(this.canvas, 'color');
 
@@ -326,7 +320,7 @@ define('Gadget', [
             this.canvas.parentNode.appendChild(layer);
             layer.className = 'layer';
             layer.width = this.canvas.width;
-            layer.height = this.height();
+            layer.height = this.canvas.height;
             this.layer = layer;
             this.layerContext = layer.getContext('2d');
         },

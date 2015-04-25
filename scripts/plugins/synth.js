@@ -66,13 +66,13 @@ define('plugins/synth', [
             var cx2 = points.c1.x * scaleX;
             var cy2 = points.c1.y * scaleY;
 
-            this.context.strokeStyle = '#F00';
+            this.context.strokeStyle = this.color;
             this.context.beginPath();
             this.context.moveTo(x1, y1);
             this.context.bezierCurveTo(cx1, cy1, cx2, cy2, this.canvas.width, 0);
             this.context.stroke();
 
-            this.context.strokeStyle = '#FF0';
+            this.context.strokeStyle = '#F00';
             this.context.beginPath();
             this.context.moveTo(x1, y1);
             this.context.lineTo(cx1, cy1);
@@ -83,7 +83,6 @@ define('plugins/synth', [
             this.context.lineTo(cx2, cy2);
             this.context.stroke();
 
-            this.context.fillStyle = '#FF0';
             this.context.fillRect(cx1 - 2, cy1 - 2, 4, 4);
             this.context.fillText(
                 '(' + points.c0.x.toFixed(3) + ';' + points.c0.y.toFixed(3) + ')', cx1 + 6, cy1);
