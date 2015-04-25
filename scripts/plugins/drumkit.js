@@ -13,6 +13,7 @@ define('plugins/drumkit', [
     var Drumkit = BaseSynth.extend({
 
         dx: 0,
+        help: "Control drum sample volume.",
 
         init: function() {
             this._super();

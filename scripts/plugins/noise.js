@@ -15,6 +15,7 @@ define('plugins/noise', ['Gadget'], function(Gadget) {
         on: false,
         source: null,
         arrayBuffer: null,
+        help: "White noise generator. Click on area below to toggle playback.",
 
         init: function() {
             this._super();

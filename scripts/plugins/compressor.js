@@ -9,6 +9,11 @@
 define('plugins/compressor', ['Gadget'], function(Gadget) {
 
     var Compressor = Gadget.extend({
+
+        help: "Compression is the process of lessening the dynamic range between"
+            + " the loudest and quietest parts of an audio signal. This is done by"
+            + " boosting the quieter signals and attenuating the louder signals.",
+
         init: function() {
             this._super();
             this.title = 'Compressor';

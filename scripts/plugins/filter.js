@@ -14,6 +14,7 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
         out: null,
         type: 'lowshelf',
         down: false,
+        help: "Low shelf filter. Drag red square to change frequency and gain.",
 
         init: function() {
             this._super();
@@ -22,7 +23,7 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
 
         redraw: function() {
             this.clear();
-            this.context.fillStyle = '#FF0';
+            this.context.fillStyle = '#F00';
             this.context.fillRect(this.x - 2, this.y - 2, 4, 4);
             this.context.fillStyle = '#00F';
             this.context.fillRect(this.x - 2, this.height() / 2, 4, 4);
@@ -102,6 +103,9 @@ define('plugins/filter', ['Gadget'], function(Gadget) {
             this.phaseResponse = new Float32Array(width);
             // nyquist frequency
             this.nyquist = this.audio.sampleRate / 2;
+            this.x = 10;
+            this.y = this.baseline + 10;
+            this.reset();
 
         }
     });

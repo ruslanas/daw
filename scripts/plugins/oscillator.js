@@ -15,6 +15,7 @@ define('plugins/oscillator', [
         sources: null,
         notes: null,
         waveForm: 'triangle',
+        help: "Triangle wave oscillator. It has no controllable parameters at the moment.",
 
         init: function() {
             this._super();

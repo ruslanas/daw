@@ -19,7 +19,7 @@ define('plugins/editor', [
 		zoom: 128,
 		select: false,
 		stopButton: null,
-		help: "You can drop files from file system",
+		help: "To record audio from master output click record button in main control panel.",
 
 		init: function() {
 			this._super();
@@ -180,7 +180,8 @@ define('plugins/editor', [
 			}, false);
 
 			this.scaleY = this.height() / 2;
-			this.markerEnd = this.rack.sample.length;
+			//this.markerEnd = this.rack.sample.length;
+			this.markerEnd = this.markerPos;
 			this.rack.addButton('fa fa-microphone-slash', function(on, button) {
 
 				if(on) {
@@ -226,15 +227,22 @@ define('plugins/editor', [
 			this.stopButton = this.addButton('glyphicon glyphicon-stop', function(on) {
 
 				self.rack.pause();
+			}, {
+				tooltip: "Stop playback of recorded audio."
 			});
 
 			this.addButton('glyphicon glyphicon-play', function(on) {
 				var from = self.markerPos / self.rack.context.sampleRate;
 				var duration = (self.markerEnd - self.markerPos) / self.rack.context.sampleRate;
 				self.rack.play(from, duration);
+			}, {
+				tooltip: "Play recorder audio."
 			});
+
 			this.addButton('glyphicon glyphicon-cloud-upload', function(on) {
                 self.rack.upload();
+			}, {
+				tooltip: "Upload recorded sound to server."
 			});
 
 			this.updateStatus();

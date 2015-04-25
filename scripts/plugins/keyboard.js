@@ -20,7 +20,9 @@ define('plugins/keyboard', [
         synth: null,
         keyMap: null,
         notesOn: null,
-        help: "You can use computer keypord Z, X, C, V, etc.",
+        help: "You can use computer keyboard Z, X, C, V, etc. and Q, W, E, R,"
+              + " etc. one octave higher",
+
         octaves: 2,
 
         init: function() {

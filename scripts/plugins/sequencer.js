@@ -22,7 +22,9 @@ define('plugins/sequencer', [
         dy: 0,
         needsFullRedraw: true,
         prevX: -1,
-        help: "CTRL + click for major chord",
+        help: "On the step sequencers, musical notes are rounded into the steps"
+              + " of equal time-interval. White stripes represent major keys."
+              + " CTRL + click for major chord.",
 
         init: function() {
             this._super();
@@ -189,15 +191,22 @@ define('plugins/sequencer', [
                 }, 'json');
             }, {
                 type: 'checkbox',
-                checked: 'fa fa-floppy-o'
+                checked: 'fa fa-floppy-o',
+                tooltip: "Save pattern."
             });
+
             this.addButton('fa fa-file-o', function(on) {
                 self.initPattern();
+            }, {
+                tooltip: "Clear pattern."
             });
+
             this.addButton('fa fa-coffee', function(on) {
                 self.rack.load('api/patterns/3', function(data) {
                     self.loadPattern(data);
                 });
+            }, {
+                tooltip: "Load random pattern."
             });
         }
     });

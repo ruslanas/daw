@@ -52,5 +52,7 @@ canvas {
 
 .draggable .titlebar {
   background-color: #007;
+  color: #FFF;
+  border-color: #00A;
   cursor: move;
 }

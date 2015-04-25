@@ -11,6 +11,8 @@ define('plugins/analyzer', ['Gadget'], function(Gadget) {
     var Analyzer = Gadget.extend({
 
         column: 0,
+        help: "Visual representation of the spectrum of"
+              + " frequencies in master output as they vary with time.",
 
         init: function() {
             this._super();

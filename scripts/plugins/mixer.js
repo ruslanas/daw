@@ -68,7 +68,7 @@ define('plugins/mixer', [
 
             // master fader
             this.drawSlider('Master', 0, this.sliders[0]);
-            this.vline(width);
+            this.vline(width, 1, '#00A');
 
             for(var i=1;i<this.sliders.length;i++) {
 

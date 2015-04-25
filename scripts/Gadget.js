@@ -5,7 +5,8 @@
 
 define('Gadget', [
 		'Class',
-		'jquery-mousewheel'
+		'jquery-mousewheel',
+		'popover'
 	], function() {
 
 	var Gadget = Class.extend({
@@ -102,14 +103,21 @@ define('Gadget', [
 
 			var icon = document.createElement('i');
 			var btn = document.createElement('button');
+
+			btn.setAttribute('data-container', 'body');
+			btn.setAttribute('data-toggle', 'popover');
+			btn.setAttribute('data-content', this.help);
+
 			btn.className = 'btn btn-sm btn-default';
 			icon.className  = 'glyphicon glyphicon-info-sign';
 			btn.appendChild(icon);
 			buttons.appendChild(btn);
 
-			btn.onmouseover = function() {
-				self.rack.setStatus(self.title + ': ' + self.help);
-			};
+			$(btn).popover({
+				title: this.title,
+				trigger: 'hover',
+				placement: 'auto'
+			});
 
 			// events
             this.canvas.onmouseout = function(event) {
@@ -207,10 +215,13 @@ define('Gadget', [
         },
 
 		addButton: function(icon, handler, options) {
-			var options = options || {
-				type: 'radio',
-				group: 'group'
-			};
+
+			var options = options || {};
+
+			if(options.type === undefined) {
+				options.type = 'radio';
+				options.group = 'group';
+			}
 
 			var titleBar = this.container.querySelector('.buttons');
 			var iconElement = document.createElement('i');
@@ -229,7 +240,18 @@ define('Gadget', [
 				button.setAttribute('data-class', options.checked || '');
 			}
 
+			if(options.tooltip) {
+				$(button).popover({
+					trigger: 'hover',
+					content: options.tooltip,
+					container: 'body',
+					placement: 'auto'
+				});
+			}
+
 			button.onclick = function() {
+
+				$(button).popover('hide');
 
 				var icn = this.querySelector('i');
 
@@ -303,8 +325,10 @@ define('Gadget', [
             width = width || 1;
             ctx = ctx || this.context;
 
+            var oldStyle = ctx.fillStyle;
             ctx.fillStyle = color;
             ctx.fillRect(x, 0, width, this.height());
+            ctx.fillStyle = oldStyle;
         },
 
         hline: function(y, width, color) {

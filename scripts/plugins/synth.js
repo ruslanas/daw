@@ -32,6 +32,7 @@ define('plugins/synth', [
         down: false,
         x: -1,
         y: -1,
+        help: "Drag control points (square) to change sound envelope.",
 
         init: function() {
             this._super();

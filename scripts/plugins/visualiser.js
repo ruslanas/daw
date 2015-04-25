@@ -12,7 +12,7 @@ define('plugins/visualiser', ['Gadget'], function(Gadget) {
 
         max: 0,
         peakTime: null,
-        help: "Visualizes current buffer data and displays peak amplitude",
+        help: "Visualizes current data in buffer and displays peak amplitude. Keeep it below 1.",
 
         init: function() {
             this._super();
