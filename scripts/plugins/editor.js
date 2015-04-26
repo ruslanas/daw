@@ -228,7 +228,7 @@ define('plugins/editor', [
 
 				self.rack.pause();
 			}, {
-				tooltip: "Stop playback of recorded audio."
+				tooltip: "Stop playback of recorded audio"
 			});
 
 			this.addButton('glyphicon glyphicon-play', function(on) {
@@ -236,13 +236,13 @@ define('plugins/editor', [
 				var duration = (self.markerEnd - self.markerPos) / self.rack.context.sampleRate;
 				self.rack.play(from, duration);
 			}, {
-				tooltip: "Play recorder audio."
+				tooltip: "Play recorder audio"
 			});
 
 			this.addButton('glyphicon glyphicon-cloud-upload', function(on) {
                 self.rack.upload();
 			}, {
-				tooltip: "Upload recorded sound to server."
+				tooltip: "Upload recorded sound to server"
 			});
 
 			this.updateStatus();

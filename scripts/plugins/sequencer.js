@@ -130,7 +130,7 @@ define('plugins/sequencer', [
                 for(var j=0;j<this.pattern[i].length;j++) {
                     if(this.pattern[i][j] > 0) {
                         var noteX = this.dx * i;
-                        if(x > noteX && x < noteX + this.dy) {
+                        if(x > noteX && x < noteX + this.dy * 1.5) {
                             this.layerContext.fillStyle = '#CCC';
                         } else {
                             this.layerContext.fillStyle = '#000';
@@ -184,7 +184,9 @@ define('plugins/sequencer', [
 
             this.addButton('fa fa-floppy-o', function(on) {
                 $.post('api/patterns', {
-                    pattern: self.pattern
+                    pattern: self.pattern,
+                    range: self.range,
+                    length: self.len
                 }, function(response) {
                     self.rack.setStatus('Pattern saved');
                     self.pattern = response.pattern;
@@ -192,21 +194,23 @@ define('plugins/sequencer', [
             }, {
                 type: 'checkbox',
                 checked: 'fa fa-floppy-o',
-                tooltip: "Save pattern."
+                tooltip: "Save pattern"
             });
 
             this.addButton('fa fa-file-o', function(on) {
                 self.initPattern();
             }, {
-                tooltip: "Clear pattern."
+                tooltip: "Clear pattern"
             });
 
             this.addButton('fa fa-coffee', function(on) {
-                self.rack.load('api/patterns/3', function(data) {
+                self.rack.load('api/pattern/random/' + self.len, function(data) {
                     self.loadPattern(data);
                 });
             }, {
-                tooltip: "Load random pattern."
+                type: 'checkbox',
+                checked: 'fa fa-coffee',
+                tooltip: "Load random pattern"
             });
         }
     });

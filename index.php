@@ -33,6 +33,16 @@ $app->get('/', function() use ($app) {
 	$app->render('home.php');
 });
 
+$app->get('/composer', function() use ($app) {
+    $app->render('composer.php');
+});
+
+// experimental
+$app->get('/api/scores/:id', function($id) {
+    $score = file_get_contents("xml/March_of_the_Wooden_Soldiers.xml");
+    echo $score;
+});
+
 $app->get('/api/drumkits/:id', function($id) {
     $db = getDb();
     $stmt = $db->prepare("SELECT * FROM waves WHERE kit_id = :id");
@@ -65,14 +75,38 @@ $app->get('/api/patterns/:id', function($id) {
         echo json_encode(["error" => $e->getMessage()]);
     }
 });
+$app->get('/api/pattern/random/:length', function($len) {
+    try {
+        $db = getDb();
+
+        $query = "SELECT * FROM patterns"
+            ." WHERE length = :length ORDER BY RAND() LIMIT 1";
+
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(":length", $len);
+        $stmt->execute();
+        $data = $stmt->fetch();
+        echo $data["pattern"];
+    } catch (PDOException $e) {
+        $app->response->setStatus(404);
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+});
 
 $app->post('/api/patterns', function() use ($app) {
     $req = $app->request();
     try {
         $db = getDb();
-        $stmt = $db->prepare("INSERT INTO patterns (pattern) VALUES (:pattern)");
+
+        $query = "INSERT INTO patterns (pattern, `range`, length)"
+                ." VALUES (:pattern, :range, :length)";
+
+        $stmt = $db->prepare($query);
         $pattern = json_encode($req->post('pattern'));
         $stmt->bindParam("pattern", $pattern);
+        $stmt->bindParam("range", $req->post('range'));
+        $stmt->bindParam("length", $req->post('length'));
+
         $stmt->execute();
         $db = null;
     } catch(PDOException $e) {
