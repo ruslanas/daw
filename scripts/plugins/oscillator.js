@@ -27,7 +27,8 @@ define('plugins/oscillator', [
             // draw to this.context
         },
 
-        playNote: function(note) {
+        playNote: function(note, time) {
+            time = time || 0;
             if(this.sources[note]) {
                 return;
             }
@@ -46,11 +47,12 @@ define('plugins/oscillator', [
                 self.sources[note] = null;
             };
 
-            this.sources[note].start();
+            this.sources[note].start(time);
         },
 
-        stop: function(note) {
-            this.sources[note].stop();
+        stop: function(note, time) {
+            time = time || 0;
+            this.sources[note].stop(time);
         },
 
         initialize: function() {

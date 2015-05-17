@@ -13,6 +13,7 @@ define('plugins/drumkit', [
     var Drumkit = BaseSynth.extend({
 
         dx: 0,
+        data: [],
         help: "Control drum sample volume.",
 
         init: function() {
@@ -29,6 +30,35 @@ define('plugins/drumkit', [
                 }
             }
             this.updated = false;
+        },
+
+        playNote: function(note, time, velocity) {
+
+            velocity = velocity || 1;
+            if(!this.samples[note]) {
+                return;
+            }
+
+            time = time || 0;
+
+            var self = this;
+
+            var buffSrc = this.audio.createBufferSource();
+
+            buffSrc.buffer = this.samples[note];
+            var gain = this.gains[note];
+            gain.gain.value = this.data[note].gain * velocity;
+            buffSrc.connect(gain);
+
+            buffSrc.onended = function() {
+                buffSrc.disconnect(gain);
+                gain = null;
+                buffSrc.onended = null;
+                buffSrc = null;
+            }
+
+            buffSrc.start(time);
+
         },
 
         onMouseDown: function(event) {
@@ -68,6 +98,7 @@ define('plugins/drumkit', [
             this._super();
             var self = this;
             this.rack.load('api/drumkits/1', function(data) {
+                self.data = data;
                 self.knobs = new Array(data.length);
                 self.gains = new Array(data.length);
                 self.dx = self.canvas.width / data.length;

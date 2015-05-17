@@ -297,6 +297,10 @@ define('Gadget', [
 			this.context.fillStyle = this.color;
 		},
 
+        clearLayer: function() {
+            this.layerContext.clearRect(0, 0, this.width(), this.height());
+        },
+
 		redraw: function() {
 			// void
 		},
@@ -308,7 +312,11 @@ define('Gadget', [
 		// do not call from plugins
 		attach: function(container, rack, options) {
 
-			this.parent = document.querySelector(container);
+			if(typeof(container) === 'object') {
+				this.parent = container;
+			} else {
+				this.parent = document.querySelector(container);
+		    }
 
 			this.title = options.title || this.title;
 			this.height(options.height);

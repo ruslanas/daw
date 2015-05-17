@@ -142,7 +142,8 @@ define('plugins/synth', [
             this.generate();
         },
 
-        playNote: function(note, time) {
+        playNote: function(note, time, velocity) {
+            velocity = velocity || 1;
             if(this.samples[note] === undefined) {
                 return;
             }
@@ -151,13 +152,21 @@ define('plugins/synth', [
 
             var self = this;
 
+            var gain = this.audio.createGain();
+
+            gain.gain.value = velocity;
+
+            gain.connect(this.out);
+
             var buffSrc = this.audio.createBufferSource();
 
             buffSrc.buffer = this.samples[note];
-            buffSrc.connect(this.out);
+            buffSrc.connect(gain);
 
             buffSrc.onended = function() {
-                buffSrc.disconnect(self.out);
+                gain.disconnect(self.out);
+                buffSrc.disconnect(gain);
+                gain = null;
                 buffSrc.onended = null;
                 buffSrc = null;
             }

@@ -43,33 +43,6 @@ define('plugins/basesynth', [
             done();
         },
 
-        playNote: function(note, time) {
-
-            if(!this.samples[note]) {
-                return;
-            }
-
-            time = time || 0;
-
-            var self = this;
-
-            var buffSrc = this.audio.createBufferSource();
-
-            buffSrc.buffer = this.samples[note];
-            var gain = this.gains[note];
-            buffSrc.connect(gain);
-
-            buffSrc.onended = function() {
-                buffSrc.disconnect(gain);
-                gain = null;
-                buffSrc.onended = null;
-                buffSrc = null;
-            }
-
-            buffSrc.start(time);
-
-        },
-
         // gadget inserted and attached
         initialize: function() {
             this._super();

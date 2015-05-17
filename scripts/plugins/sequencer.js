@@ -24,7 +24,7 @@ define('plugins/sequencer', [
         prevX: -1,
         help: "On the step sequencers, musical notes are rounded into the steps"
               + " of equal time-interval. White stripes represent major keys."
-              + " CTRL + click for major chord.",
+              + " CTRL + click for major triad. SHIFT + click for minor triad.",
 
         init: function() {
             this._super();
@@ -48,8 +48,13 @@ define('plugins/sequencer', [
                 this.pattern[pos][majorThird] = 1;
                 this.pattern[pos][perfectFith] = 1;
             }
-
+            if(event.shiftKey) {
+                // minor third
+                this.pattern[pos][note + 3] = 1;
+                this.pattern[pos][note + 7] = 1;
+            }
             this.updated = true;
+            this.needsFullRedraw = true;
         },
 
         loadPattern: function(data) {
@@ -68,20 +73,27 @@ define('plugins/sequencer', [
         },
 
         update: function() {
+
             if(this.on) {
+
                 this.updateStep();
+
                 var offset = this.audio.currentTime % this.duration;
+
                 var beat = Math.floor((this.len / 4) * offset / this.duration);
 
                 var beatStart = this.audio.currentTime - offset + (beat + 1) * this.step;
 
                 for(var i=0;i<4;i++) {
+
                     var curr = 4 * beat + i;
+
                     for(var j=0;j<this.pattern[curr].length;j++) {
 
                         if(this.pattern[curr][j] > 0) {
+                            var velocity = (curr % 4) ? 0.7 : 1;
                             var time = beatStart + i * this.duration / this.len;
-                            this.synth.playNote(j, time);
+                            this.synth.playNote(j, time, velocity);
                         }
                     }
                 }
@@ -90,6 +102,7 @@ define('plugins/sequencer', [
 
         redrawFull: function() {
             this.clear();
+            this.clearLayer();
 
             var pattern = [2, 2, 1, 2, 2, 2, 1]; // major
 
@@ -105,14 +118,24 @@ define('plugins/sequencer', [
                 this.hline(this.dy * i, 0.5);
             }
 
-            for(var i=1;i<this.pattern.length/4;i++) {
-                this.vline(this.dx * 4 * i, 0.5);
+            for(var i=1;i<this.pattern.length;i++) {
+                var w = 0.2;
+                if(i % 4 == 0) {
+                    w = 1;
+                }
+                this.vline(this.dx * i, w);
             }
 
-        },
-
-        clearLayer: function() {
-            this.layerContext.clearRect(0, 0, this.width(), this.height());
+            this.context.fillStyle = this.color;
+            for(var i=0;i<this.pattern.length;i++) {
+                var noteX = this.dx * i;
+                for(var j=0;j<this.pattern[i].length;j++) {
+                    if(this.pattern[i][j] > 0) {
+                        var y = this.height() - this.dy * (j + 1);
+                        this.layerContext.fillRect(noteX, y, this.dx, this.dy);
+                    }
+                }
+            }
         },
 
         redraw: function() {
@@ -122,26 +145,33 @@ define('plugins/sequencer', [
                 this.needsFullRedraw = false;
             }
 
-            this.clearLayer();
+            var x = ((this.audio.currentTime - this.step) % this.duration)
+                    * this.canvas.width / this.duration;
+            var idx = Math.floor(x / this.dx);
 
-            var x = ((this.audio.currentTime - this.step) % this.duration) * this.width() / this.duration;
-            this.vline(x, 1, '#00F', this.layerContext);
-            for(var i=0;i<this.pattern.length;i++) {
+
+            if(idx > 0) {
+                var a = [idx - 1, idx];
+                var sx = (idx - 1) * this.dx;
+                this.layerContext.clearRect(sx, 0, this.dx * 2, this.canvas.height);
+            } else {
+                this.layerContext.clearRect(0, 0, this.dx, this.height());
+                this.layerContext.clearRect(this.width() - this.dx, 0, this.dx, this.height());
+                var a = [this.pattern.length - 1, 0];
+            }
+
+            for(var k=0;k<2;k++) {
+                var i = a[k];
+                var noteX = this.dx * i;
                 for(var j=0;j<this.pattern[i].length;j++) {
                     if(this.pattern[i][j] > 0) {
-                        var noteX = this.dx * i;
-                        if(x > noteX && x < noteX + this.dy * 1.5) {
-                            this.layerContext.fillStyle = '#CCC';
-                        } else {
-                            this.layerContext.fillStyle = '#000';
-                        }
-
-                        var y = this.height() - this.dy * (j + 1);
-                        this.layerContext.fillRect(noteX, y, this.dx, this.dy);
+                        var y = this.canvas.height - this.dy * j;
+                        this.layerContext.fillRect(noteX, y, this.dx, -this.dy);
                     }
                 }
             }
 
+            this.vline(x, 1, '#00F', this.layerContext);
 
         },
 

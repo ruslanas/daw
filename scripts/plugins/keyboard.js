@@ -149,6 +149,18 @@ define('plugins/keyboard', [
             this.updated = false;
         },
 
+        onKeyDown: function(event) {
+            if(this.keyMap[event.which] !== undefined) {
+                this.play(this.keyMap[event.which]);
+            }
+        },
+
+        onKeyUp: function(event) {
+            if(this.keyMap[event.which] !== undefined) {
+                this.stop(this.keyMap[event.which]);
+            }
+        },
+
         initialize: function() {
             this._super();
 
@@ -163,16 +175,12 @@ define('plugins/keyboard', [
             }
 
             this.notesOn = [];
-            document.onkeydown = function(event) {
-                if(self.keyMap[event.which] !== undefined) {
-                    self.play(self.keyMap[event.which]);
-                }
-            }
-            document.onkeyup = function(event) {
-                if(self.keyMap[event.which] !== undefined) {
-                    self.stop(self.keyMap[event.which]);
-                }
-            }
+            document.addEventListener('keydown', function(event) {
+                self.onKeyDown(event);
+            });
+            document.addEventListener('keyup', function(event) {
+                self.onKeyUp(event);
+            });
         }
     });
 
